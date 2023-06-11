@@ -27,7 +27,11 @@ trait UserCreation
 
             'password' => Hash::make('password'),
         ]);
-        $user->assignRole(Role::Admin);
+        if(class_exists(Role::class))
+        {
+            $user->assignRole(Role::Admin);
+        }
+
         $loginUrl = route('filament.auth.login');
 
         $this->info('Success! Super Admin Created :-');

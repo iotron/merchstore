@@ -149,7 +149,7 @@ class JetPaxInstall extends Command
             $this->warn('iotron: Please wait...');
             sleep(2);
 
-            // $this->createSuperAdmin();
+             $this->createSuperAdmin();
         }
     }
 
