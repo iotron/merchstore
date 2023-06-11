@@ -95,13 +95,13 @@ class CustomerResource extends Resource
                 TextColumn::make('name')->toggleable()->searchable(),
                 TextColumn::make('email')->toggleable(),
                 TextColumn::make('contact')->formatStateUsing(function ($state){
-                    return is_null($state) ? 'undefined!' : $state;
+                    return is_null($state) ? 'undefined' : $state;
                 })->toggleable(),
                 TextColumn::make('whatsapp')->formatStateUsing(function ($state){
-                    return is_null($state) ? 'undefined!' : $state;
+                    return is_null($state) ? 'undefined' : $state;
                 })->toggleable()->toggledHiddenByDefault(),
                 TextColumn::make('alt_contact')->formatStateUsing(function ($state){
-                    return is_null($state) ? 'undefined!' : $state;
+                    return is_null($state) ? 'undefined' : $state;
                 })->toggleable()->toggledHiddenByDefault(),
 
                 IconColumn::make('contact_verified_at')
