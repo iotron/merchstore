@@ -48,16 +48,22 @@ return new class extends Migration
             $table->integer('min_range')->default(1);
             $table->integer('max_range')->default(1);
 
-
-            // currently not used
-            // $table->integer('return_window')->default(0);
-            // $table->integer('production_time')->default(0);
-
-            // $table->foreignId('tax_category_id')->nullable()->constrained('tax_categories')->onUpdate('cascade')->onDelete('set null');
-
-
             $table->timestamps();
         });
+
+
+        // Relation With Category ThroughOut Table
+
+        Schema::create('product_categories', function (Blueprint $table) {
+            $table->boolean('base_category')->default(false);
+            $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
+        });
+
+
+
+
+
     }
 
     /**
@@ -66,5 +72,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('products');
+        Schema::dropIfExists('product_categories');
     }
 };
