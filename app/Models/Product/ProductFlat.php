@@ -23,8 +23,8 @@ class ProductFlat extends Model
     ];
 
     protected $casts = [
-        'meta_data' => AsArrayObject::class,
-        'filter_attributes' => AsArrayObject::class,
+        'meta_data' => 'array',
+        'filter_attributes' => 'array',
     ];
 
 
@@ -40,15 +40,15 @@ class ProductFlat extends Model
     }
 
 
-    /**
-     * Retrieve type instance
-     *
-     * @return AbstractType
-     */
-    public function getTypeInstance()
-    {
-        return $this->product->getTypeInstance();
-    }
+//    /**
+//     * Retrieve type instance
+//     *
+//     * @return AbstractType
+//     */
+//    public function getTypeInstance()
+//    {
+//        return $this->product->getTypeInstance();
+//    }
 
     /**
      * Get product type value from base product

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
-
+    protected static ?string $slug = 'product';
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
     public static function form(Form $form): Form
@@ -72,58 +72,14 @@ class ProductResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('attribute_group_id'),
-                Tables\Columns\TextColumn::make('parent_id'),
-                Tables\Columns\TextColumn::make('sku'),
-                Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('url_key'),
-                Tables\Columns\TextColumn::make('quantity'),
-                Tables\Columns\TextColumn::make('popularity'),
-                Tables\Columns\TextColumn::make('view_count'),
-                Tables\Columns\IconColumn::make('featured')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\IconColumn::make('visible_individually')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('base_price'),
-                Tables\Columns\TextColumn::make('commission_percent'),
-                Tables\Columns\TextColumn::make('commission_amount'),
-                Tables\Columns\TextColumn::make('hsn_code'),
-                Tables\Columns\TextColumn::make('tax_percent'),
-                Tables\Columns\TextColumn::make('tax_amount'),
-                Tables\Columns\TextColumn::make('price'),
-                Tables\Columns\TextColumn::make('commissions'),
-                Tables\Columns\TextColumn::make('min_range'),
-                Tables\Columns\TextColumn::make('max_range'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime(),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
-    }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -132,5 +88,5 @@ class ProductResource extends Resource
             'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }    
+    }
 }

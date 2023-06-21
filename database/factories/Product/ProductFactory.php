@@ -19,16 +19,16 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'sku' => $this->faker->unique()->word,
+            'sku' => fake()->unique()->word,
             'type' => Product::SIMPLE,
-            'name' => $productName = $this->faker->unique()->word,
-            'url_key' => $productName . '_' . $this->faker->unique()->word,
+            'name' => $productName = fake()->unique()->word,
+            'url_key' => $productName . '_' . fake()->unique()->word,
             'status' => Product::PUBLISHED,
-            'base_price' => $basePrice = $this->faker->numberBetween(100, 900),
+            'base_price' => $basePrice = fake()->numberBetween(100, 900),
             'commission_percent' => $commission = config('cloudcom.defaults.commission_percent',0),
             'commission_amount' => $commissionAmount = $basePrice * $commission / 100,
             'price' => $basePrice + $commissionAmount,
-            'attribute_group_id' => $this->faker->randomElement([5, 6]),
+            'attribute_group_id' => fake()->randomElement([5, 6]),
             'quantity' => 0,
         ];
     }
