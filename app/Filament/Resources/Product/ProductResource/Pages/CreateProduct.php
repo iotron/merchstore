@@ -28,7 +28,7 @@ class CreateProduct extends Page
     public int $step = 1;
     public bool $isContinue = false;
     public array|object $attributeBag = [];
-    protected static string $view = 'filament.resources.product.pages.product-create';
+    protected static string $view = 'filament.custom.default.resources.product.pages.product-create';
 
     /**
      * Get Current Form State & Data
@@ -45,6 +45,8 @@ class CreateProduct extends Page
         return [
             Action::make('Create')->action('create')->label(function (){
                 return ($this->step == 1 && $this->isContinue) ? 'Continue' : 'Create';
+            })->color(function (){
+                return ($this->step == 1 && $this->isContinue) ? 'primary' : 'success';
             }),
         ];
     }

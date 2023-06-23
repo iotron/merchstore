@@ -17,12 +17,13 @@ class ProductFlatFactory extends Factory
     public function definition(): array
     {
         return [
-            'description' => fake()->paragraphs(3),
-            'short_description' => fake()->text(180),
+            'description' => fake()->paragraph,
+            'short_description' => fake()->sentence,
             'height' => 23,
             'width' => 324,
             'length' => 233,
             'weight' => 232,
+            'filter_attributes' => []
         ];
     }
 }

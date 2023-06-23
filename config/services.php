@@ -31,4 +31,28 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+
+    /*
+     * Custom Services
+     */
+
+    'defaults' => [
+        'country' => 'IN',
+        'currency' => 'INR',
+        'locale' => 'en',
+        'max_gst_free_amount' => 50000,
+        'commission_percent' => '25',
+        'payout' => [
+            'tax' => 0,
+            'tcs' => 0,
+            'tds' => 0
+        ],
+    ],
+
+
+
+
+
+
+
 ];

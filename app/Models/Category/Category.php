@@ -21,22 +21,22 @@ class Category extends Model
         'name',
         'url',
         'parent_id',
-        'image_path',
+//        'image_path',
         'status',
         'is_visible_on_front',
         'view_count',
         'order',
         'desc',
         'meta_data',
-        'hsn_4',
-        'hsn_8',
-        'gst',
+//        'hsn_4',
+//        'hsn_8',
+//        'gst',
     ];
 
     protected $casts = [
         'meta_data' => AsArrayObject::class,
-        'hsn_8' => AsCollection::class,
-        'gst' => AsCollection::class,
+//        'hsn_8' => AsCollection::class,
+//        'gst' => AsCollection::class,
     ];
 
     public function getRouteKeyName(): string

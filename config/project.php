@@ -5,7 +5,17 @@
  */
 return [
 
+    'client_url' => env('CLIENT_URL', 'http://localhost:3000'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Product Type Configuration
+    |--------------------------------------------------------------------------
+    |
+    | The product types array is used to access the different product types and their
+    | respective classes which contain their CRUD functions.
+    |
+    */
 
     'product_types' => [
         'simple' => [

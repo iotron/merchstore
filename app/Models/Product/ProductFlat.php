@@ -19,7 +19,6 @@ class ProductFlat extends Model
         'length',
         'weight',
         'filter_attributes',
-        'product_id',
     ];
 
     protected $casts = [

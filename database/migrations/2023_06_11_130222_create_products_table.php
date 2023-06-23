@@ -30,8 +30,10 @@ return new class extends Migration
             $table->boolean('visible_individually')->default(false);
 
             $table->float('base_price', 10, 2, true)->default(0.00);
-            $table->float('commission_percent', 4, 2, true)->default(0.00);
-            $table->float('commission_amount', 10, 2, true)->default(0.00);
+
+//            $table->float('commission_percent', 4, 2, true)->default(0.00);
+//            $table->float('commission_amount', 10, 2, true)->default(0.00);
+//            $table->json('commissions')->nullable();
 
             // tax info
             $table->string('hsn_code')->nullable();
@@ -40,7 +42,8 @@ return new class extends Migration
 
             $table->float('price', 10, 2, true)->default(0.00);
 
-            $table->json('commissions')->nullable();
+
+
             $table->foreignId('attribute_group_id')->nullable()->constrained('attribute_groups')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('parent_id')->nullable()->constrained('products')->onUpdate('cascade')->onDelete('cascade');
 
