@@ -9,8 +9,6 @@ use App\Models\Category\Category;
 use App\Models\Product\Product;
 use Closure;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -18,16 +16,12 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Pages\Actions;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\Concerns\HasRelationManagers;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\Pages\EditRecord;
 use FilamentTiptapEditor\TiptapEditor;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class EditProduct extends Page
 {
@@ -41,7 +35,7 @@ class EditProduct extends Page
     protected $queryString = ['activeRelationManager',];
     protected $listeners = ['refresh' => '$refresh'];
 
-
+    public $data;
 
     protected function getFormModel(): Product
     {
