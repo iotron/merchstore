@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category\Category;
 use App\Models\Product\Product;
 use App\Models\Product\ProductFlat;
+use App\Models\Product\ProductStock;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -22,6 +23,32 @@ class ProductSeeder extends Seeder
             ->create()
             ->each(function (Product $product) use($parentCategories){
                 $product->categories()->attach($parentCategories->random()->id,['base_category' => true]);
+
+                // Add Stock
+
+                $stock = ProductStock::create([
+                    'init_quantity' => 200,
+                    'sold_quantity' => 0,
+                    'in_stock' => true,
+                    'product_id' => $product->id,
+                ]);
+
+                $stock = ProductStock::create([
+                    'init_quantity' => 200,
+                    'sold_quantity' => 0,
+                    'in_stock' => true,
+                    'product_id' => $product->id,
+                ]);
+
+                $stock = ProductStock::create([
+                    'init_quantity' => 200,
+                    'sold_quantity' => 0,
+                    'in_stock' => true,
+                    'product_id' => $product->id,
+                ]);
+
+
+
             })
         ;
     }
