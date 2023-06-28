@@ -320,7 +320,7 @@ class EditProduct extends Page
                 ->schema(array_merge([
                     Select::make('categories')
                         ->relationship('categories', 'name', function ($query) {
-                            return $query->notParents()->select('id', 'name', 'desc')->orderBy('name');
+                            return $query->notParents()->select('id', 'name', 'desc')->where('status','=',true)->orderBy('name');
                         })
                         ->getOptionLabelFromRecordUsing(fn (Category $record) => "{$record->name} - {$record->desc}")
                         ->multiple()

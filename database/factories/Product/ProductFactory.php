@@ -24,7 +24,7 @@ class ProductFactory extends Factory
             'name' => $productName = fake()->unique()->word,
             'url_key' => $productName . '_' . fake()->unique()->word,
             'status' => Product::PUBLISHED,
-            'base_price' => $basePrice = fake()->numberBetween(10000, 90000),
+            'base_price' => $basePrice = fake()->numberBetween(1000, 30000),
             'price' => $basePrice,
             'attribute_group_id' => fake()->randomElement([5, 6]),
             'quantity' => 0,

@@ -88,51 +88,7 @@ class CustomerResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('name')->toggleable()->searchable(),
-                TextColumn::make('email')->toggleable(),
-                TextColumn::make('contact')->formatStateUsing(function ($state){
-                    return is_null($state) ? 'undefined' : $state;
-                })->toggleable(),
-                TextColumn::make('whatsapp')->formatStateUsing(function ($state){
-                    return is_null($state) ? 'undefined' : $state;
-                })->toggleable()->toggledHiddenByDefault(),
-                TextColumn::make('alt_contact')->formatStateUsing(function ($state){
-                    return is_null($state) ? 'undefined' : $state;
-                })->toggleable()->toggledHiddenByDefault(),
 
-                IconColumn::make('contact_verified_at')
-                    ->label(__('Contact Verified'))
-                    ->boolean()
-                    ->default(false)
-                    ->sortable()->toggleable()->toggledHiddenByDefault(),
-                IconColumn::make('email_verified_at')
-                    ->label(__('Email Verified'))
-                    ->boolean()
-                    ->default(false)
-                    ->sortable()->toggleable(),
-
-
-
-                TextColumn::make('created_at')->label(__('Created On'))
-                    ->dateTime()->since()->toggleable()->toggledHiddenByDefault(),
-                TextColumn::make('updated_at')->label(__('Updated On'))
-                    ->dateTime()->since()->toggleable(),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
-    }
 
     public static function getRelations(): array
     {
@@ -148,6 +104,8 @@ class CustomerResource extends Resource
             'create' => Pages\CreateCustomer::route('/create'),
             'view' => Pages\ViewCustomer::route('/{record}'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
+            'cart' => Pages\ListCustomerCart::route('/{record}/cart'),
+
         ];
     }
 }

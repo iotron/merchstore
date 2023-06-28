@@ -127,8 +127,8 @@ class CreateProduct extends Page
         {
             return $this->createConfigurable($formData);
         }else{
+            $this->notify('danger','undefined product type selected');
             $this->halt();
-            $this->notify('danger','please reload form');
         }
 
 

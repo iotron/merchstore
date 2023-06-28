@@ -16,7 +16,7 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $parentCategories = Category::Parents()->orderBy('name')->get();
+        $parentCategories = Category::notParents()->orderBy('name')->get();
         // Create Product + Product Flat
         Product::factory()->count(50)
             ->hasFlat(1)
@@ -33,14 +33,14 @@ class ProductSeeder extends Seeder
                     'product_id' => $product->id,
                 ]);
 
-                $stock = ProductStock::create([
+                $stock2 = ProductStock::create([
                     'init_quantity' => 200,
                     'sold_quantity' => 0,
                     'in_stock' => true,
                     'product_id' => $product->id,
                 ]);
 
-                $stock = ProductStock::create([
+                $stock3 = ProductStock::create([
                     'init_quantity' => 200,
                     'sold_quantity' => 0,
                     'in_stock' => true,

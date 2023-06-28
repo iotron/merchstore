@@ -17,6 +17,20 @@ class ProductStock extends Model
         'priority',
     ];
 
+    protected static function booted()
+    {
+//        ProductStock::observe(ProductStockObserver::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+//    public function address()
+//    {
+//        return $this->belongsTo(Address::class, 'vendor_address_id', 'addressable_id', 'vendor');
+//    }
 
 
 

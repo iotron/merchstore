@@ -4,6 +4,7 @@ namespace App\Models\Product;
 
 use App\Helpers\FilterHelper\Filterable;
 use App\Helpers\Money\MoneyCast;
+use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
 use App\Models\Category\Category;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ class Product extends Model implements HasMedia
 {
     use HasFactory,InteractsWithMedia,Filterable;
 
+    protected ?ProductTypeSupportContract $typeInstance=null;
 
     public const PRODUCT_CATEGORY_TABLE='product_categories';
 
@@ -40,7 +42,7 @@ class Product extends Model implements HasMedia
         self::PUBLISHED => 'Published',
     ];
 
-    protected $filterDataScope = 'ProductDataScope';
+//    protected $filterDataScope = 'ProductDataScope';
 
     protected $fillable = [
         'type',
@@ -86,50 +88,50 @@ class Product extends Model implements HasMedia
     }
 
 
-//
-//    public function getTypeInstance()
-//    {
-//        if ($this->typeInstance) {
-//            return $this->typeInstance;
-//        }
-//        $this->typeInstance = app(config('project.product_types.' . $this->type . '.class'));
-//
-//        $this->typeInstance->setProduct($this);
-//
-//        return $this->typeInstance;
-//    }
-//
-//
-//
-//    /**
-//     * STOCK MANAGEMENT
-//     * All the stocks that belong to the product. For stock history/CRUD.
-//     */
-//
-//    public function allStocks()
-//    {
-//        return $this->hasMany(ProductStock::class, 'product_id');
-//    }
-//
-//    /**
-//     * STOCK MANAGEMENT
-//     * in_stock stocks that belong to the product. For calculating in_stock/available stocks.
-//     */
-//
-//    public function availableStocks()
-//    {
-//        return $this->allStocks()->where('in_stock', true)->orderBy('priority');
-//    }
-//
-//    public function stockCount()
-//    {
-//        return $this->getTypeInstance()->totalQuantity();
-//    }
-//    public function minStock($count)
-//    {
-//        return min($this->quantity, $count);
-//    }
-//
+    /**
+     * @return ProductTypeSupportContract
+     */
+    public function getTypeInstance():ProductTypeSupportContract
+    {
+        if ($this->typeInstance) {
+            return $this->typeInstance;
+        }
+        $this->typeInstance = app(config('project.product_types.' . $this->type . '.class'));
+        $this->typeInstance->setProduct($this);
+        return $this->typeInstance;
+    }
+
+
+
+    /**
+     * STOCK MANAGEMENT
+     * All the stocks that belong to the product. For stock history/CRUD.
+     */
+
+    public function allStocks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductStock::class, 'product_id');
+    }
+
+    /**
+     * STOCK MANAGEMENT
+     * in_stock stocks that belong to the product. For calculating in_stock/available stocks.
+     */
+
+    public function availableStocks()
+    {
+        return $this->allStocks()->where('in_stock', true)->orderBy('priority');
+    }
+
+    public function stockCount()
+    {
+        return $this->getTypeInstance()->totalQuantity();
+    }
+    public function minStock($count)
+    {
+        return min($this->quantity, $count);
+    }
+
 
 
 
