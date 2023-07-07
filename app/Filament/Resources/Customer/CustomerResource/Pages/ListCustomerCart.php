@@ -3,24 +3,35 @@
 namespace App\Filament\Resources\Customer\CustomerResource\Pages;
 
 use App\Filament\Resources\Customer\CustomerResource;
+use App\Helpers\Money\Money;
 use App\Models\Category\Category;
 use App\Models\Customer\Customer;
 use App\Models\Product\Product;
 use BaconQrCode\Common\Mode;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\Concerns\UsesResourceForm;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Table;
-
+use Filament\Forms;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Livewire\TemporaryUploadedFile;
+use Zxing\QrReader;
 
 class ListCustomerCart extends ListRecords
 {
@@ -28,14 +39,10 @@ class ListCustomerCart extends ListRecords
     protected static string $resource = CustomerResource::class;
 
 
-
     protected static ?string $title = 'Customer Cart';
     public $customerId;
     public $customer;
-
-
-
-
+    public $scannedData;
 
 
     public function mount($record=''): void
@@ -46,6 +53,11 @@ class ListCustomerCart extends ListRecords
     }
 
 
+
+
+
+    // TABLE AREA
+    // _______________________________________________________________________________
     public function getTableQuery(): Builder
     {
         return $this->customer->cart()->getQuery();
@@ -57,58 +69,95 @@ class ListCustomerCart extends ListRecords
         return $table
             ->columns([
 
-                TextColumn::make('product')->label(__('Product'))->formatStateUsing(function ($record){
-                    return $record->name;
+                TextColumn::make('sku')->label(__('SKU'))->formatStateUsing(function ($record){
+                    return $record->sku;
+                }),
+
+                TextColumn::make('price')->label(__('Price'))->formatStateUsing(function ($record){
+                    return $record->price->formatted();
                 }),
 
                 TextColumn::make('quantity'),
-                TextColumn::make('discount'),
+                TextColumn::make('discount')->formatStateUsing(function ($record){
+                    $discount = new Money($record->discount);
+                    return $discount->formatted();
+                }),
+                TextColumn::make('total')->formatStateUsing(function ($record){
+
+                    $total = $record->price->multiplyOnce($record->quantity);
+                    return $total->formatted();
+
+                }),
 
             ])
-            ->actions([])
+            ->actions([
+
+                \Filament\Tables\Actions\Action::make('remove')
+                    ->url(function (Model $record){
+
+                        return route('remove-cart',[
+                            'customer' => $record->customer_id,
+                            'product' => $record->product_id,
+                        ]);
+                    })
+                    //->visible(fn (Product $record): bool => auth()->user()->can('remove', $record))
+                    ,
+
+            ])
             ->filters([]);
 
 
     }
 
-
-
-    protected function getTableActions(): array
-    {
-        return array_merge(parent::getTableActions(),[
-
-            \Filament\Tables\Actions\Action::make('cleanup')->action('hezo'),
-
-            DeleteAction::make(),
-
-        ]);
-    }
-
-    public function hezo()
-    {
-        dd("Hellozzz");
-    }
+//    public function getTableRecordTitle($record): string
+//    {
+//        if ($record instanceof \Illuminate\Database\Eloquent\Model) {
+//            // Modify this code to return the appropriate title for the record
+//            return $record->name;
+//        }
+//
+//        return '';
+//    }
 
 
 
 
 
 
-    // Add Product To Cart
+
+
+    // PAGE ACTIONS
 
     protected function getActions(): array
     {
         return [
+
+
+            Action::make('scan_sku')
+                ->label(__('Scan SKU'))
+                ->action('scanQr')
+                ->modalContent(view('filament.custom.qr-scanner')),
+
+
+
             Action::make('addProduct')
                 ->label(__('Add To Cart'))
                 ->action(function (array $data): void {
                     if ($data['stock'] >= $data['quantity'])
                     {
-                        $this->customer->cart()->attach($data['product_id'],['quantity' => $data['quantity']]);
+                        $this->customer->cart()->attach($data['product_id'],['quantity' => $data['quantity'],'discount' => $data['discount']]);
                     }
 
                 })
-                ->form($this->customPOSForm())
+                ->form($this->customPOSForm()),
+
+            Action::make('placeOrder')
+                ->label(__('Place Order'))
+                ->color('success')
+                ->action('placeOrder')
+                ->visible(function (){
+                    return $this->customer->cart->count();
+                })->requiresConfirmation(),
 
         ];
     }
@@ -116,45 +165,24 @@ class ListCustomerCart extends ListRecords
 
 
 
+    // MODAL FORM
     public function customPOSForm()
     {
         return [
 
-            Select::make('category_id')
-                ->options(Category::notParents()->where('status','=',true)->whereHas('products',function ($q){ $q->where('status','=',Product::PUBLISHED);})
-                    ->with(['products' => function($q){ return $q->where('status','=',Product::PUBLISHED);}])
-                    ->orderBy('name')->pluck('name','id'))
-                ->lazy()
-                ->afterStateUpdated(function (\Closure $set,$state){
-                    $set('product_id','');
-                })
-                ->label(__('Select Category')),
-
 
             Select::make('product_id')
-                ->options(function (\Closure $get){
-                    if (!empty($get('category_id')))
-                    {
-                        $selectedCategory = Category::with('products')->firstWhere('id','=',$get('category_id'));
-                        $products = $selectedCategory->products;
-//                        return $products->map(function ($item) {
-//                            return [$item->id] = $item->name;
-//                        });
-                        return $products->pluck('name','id');
-                    }
-                    return [];
-                })
+                ->options(Product::where('status','=',Product::PUBLISHED)->get()->pluck('sku','id'))
                 ->label(__('Select Product'))
+                ->searchable()
+                ->placeholder(__('select or search product by sku'))
                 ->lazy()
                 ->afterStateUpdated(function ($state,\Closure $set){
                     $selectedProduct = Product::firstWhere('id',$state);
                     $set('stock',$selectedProduct->availableStocks()->sum('in_stock_quantity'));
                     $set('sku',$selectedProduct->sku);
-//                    $set('price',$selectedProduct->price->getAmount());
+                    $set('name',$selectedProduct->name);
                     $set('formatted_price',$selectedProduct->price->formatted());
-                })
-                ->visible(function (\Closure $get){
-                    return !empty($get('category_id'));
                 }),
 
 
@@ -163,8 +191,8 @@ class ListCustomerCart extends ListRecords
                     ->label(__('Bill Details'))
                     ->schema([
                         TextInput::make('stock')->inlineLabel()->disabled(),
+                        TextInput::make('name')->inlineLabel()->disabled(),
                         TextInput::make('sku')->inlineLabel()->disabled(),
-//                        TextInput::make('price')->inlineLabel(),
                         TextInput::make('formatted_price')->label(__('Price'))->inlineLabel()->disabled(),
 
 
@@ -194,6 +222,48 @@ class ListCustomerCart extends ListRecords
                             })
                             ->required(),
 
+                        TextInput::make('discount')
+                            ->label(__('Discount'))
+                            ->helperText(__('Use Promo Code'))
+                            ->numeric()
+                            ->inlineLabel()
+                            ->minValue(1)
+                            ->maxValue(999999999)
+                            ->lazy()
+                            ->afterStateUpdated(function (\Closure $get, \Closure $set, $state){
+
+                                if (!empty($state))
+                                {
+                                    $stockCount = $get('stock');
+                                    $quantityAsk = $get('quantity');
+                                    if ($quantityAsk <= $stockCount)
+                                    {
+                                        $discount = new Money($state);
+                                        $product = Product::firstWhere('id',$get('product_id'));
+                                        // Flat Discount On Cart Total
+                                        $total = $product->price->multiplyOnce($quantityAsk)->subOnce($discount);
+                                        $set('total',$total->getAmount());
+                                        $set('formatted_total',$total->formatted());
+                                    }else{
+                                        $set('formatted_total','Error');
+                                    }
+                                }else{
+                                    $stockCount = $get('stock');
+                                    $quantityAsk = $get('quantity');
+                                    if ($quantityAsk <= $stockCount)
+                                    {
+                                        $product = Product::firstWhere('id',$get('product_id'));
+                                        $total = $product->price->multiplyOnce($quantityAsk);
+
+
+                                        $set('total',$total->getAmount());
+                                        $set('formatted_total',$total->formatted());
+                                    }
+                                }
+
+
+                            }),
+
 
                         TextInput::make('total')->disabled()->inlineLabel()->hidden(),
                         TextInput::make('formatted_total')->label(__('Total'))->disabled()->inlineLabel(),
@@ -205,15 +275,13 @@ class ListCustomerCart extends ListRecords
                     })->columns(1),
 
 
-
-
-
         ];
     }
 
 
 
 
+    // METHODS
 
     public function getProductSelectOption()
     {
@@ -227,8 +295,81 @@ class ListCustomerCart extends ListRecords
 
 
 
+    public function scanQr()
+    {
+        // Access the scanned data from the form submission
+        $data = $this->scannedData;
+
+        dd($data);
+
+        // Process the scanned data and perform necessary actions
+        // ...
+
+        // Redirect or return a response if needed
+        // ...
+    }
 
 
+    public function placeOrder()
+    {
+
+        $cart = $this->customer->cart;
+
+        if ($cart->count())
+        {
+            $cartData = $this->calculateCart($cart);
+
+
+        }
+
+
+
+
+
+    }
+
+
+
+    protected function calculateCart(array|Collection $cartDetail)
+    {
+
+        $cartMeta = [];
+        $subTotal = new Money(0);
+        $totalDiscount = new Money(0);
+        $totalQuantity = 0;
+
+
+        foreach ($cartDetail as $item)
+        {
+
+            $totalQuantity = $totalQuantity + $item->pivot->quantity;
+            $subTotal->add($item->price->multiplyOnce($item->pivot->quantity));
+            $totalDiscount->add($item->pivot->discount);
+
+            $cartMeta[$item->id] = [
+                'id' => $item->id,
+                'name' => $item->name,
+                'sku' => $item->sku,
+                'quantity' => $item->pivot->quantity,
+                'price' => $item->price->getAmount(),
+                'price_formatted' => $item->price->formatted(),
+                'discount' => $item->pivot->discount,
+
+                'subTotal' => $item->price->multiplyOnce($item->pivot->quantity),
+                'subTotal_formatted' => $item->price->multiplyOnce($item->pivot->quantity)->formatted(),
+            ];
+        }
+
+
+        dd([
+           'quantity' => $totalQuantity,
+           'subTotal' => $subTotal->formatted(),
+           'discount' => $totalDiscount->formatted(),
+           'customer' => $this->customer,
+           'meta' => $cartMeta,
+        ]);
+
+    }
 
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customer\CustomerResource\Pages;
 
+use App\Filament\Resources\Customer\CartCustomerResource;
 use App\Filament\Resources\Customer\CustomerResource;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -36,6 +37,7 @@ class ListCustomers extends ListRecords
                 ->tooltip('Cart Details')
                 ->icon('heroicon-o-gift')
                 ->url(fn($record): string => static::getResource()::hasPage('cart') ? static::getResource()::getUrl('cart', ['record' => $record]) : null)
+
                 ->openUrlInNewTab(false),
 
         ],parent::getTableActions());

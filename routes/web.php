@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,23 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::middleware(['auth'])->group(function (){
+    Route::get('remove-cart/{customer}/{product}',function (\App\Models\Customer\Customer $customer,\App\Models\Product\Product $product){
+        if ($customer->cart->contains('id',$product->id))
+        {
+            if ($customer->cart()->detach($product->id))
+            {
+                Notification::make()
+                    ->title($product->sku.' Remove successfully')
+                    ->send();
+            }
+        }
+        return back();
+    })->name('remove-cart');
+});
+
 
 
 Route::get('test',[\App\Http\Controllers\TestController::class,'index']);

@@ -104,7 +104,7 @@ class CustomerResource extends Resource
             'create' => Pages\CreateCustomer::route('/create'),
             'view' => Pages\ViewCustomer::route('/{record}'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
-            'cart' => Pages\CustomerCart::route('/{record}/cart'),
+            'cart' => Pages\ListCustomerCart::route('/{record}/cart'),
 
         ];
     }

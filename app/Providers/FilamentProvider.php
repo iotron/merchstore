@@ -23,6 +23,11 @@ class FilamentProvider extends ServiceProvider
     {
 
         Filament::serving(function () {
+
+            Filament::registerScripts([
+                asset('script/instascan.min.js'),
+            ]);
+
             Filament::registerUserMenuItems([
                 //'logout' => UserMenuItem::make()->label('Log Out')->url(route('manager-panel.logout')),
                 'account' => UserMenuItem::make()->url(FilamentProfile::getUrl())->label(__('My Profile')),
