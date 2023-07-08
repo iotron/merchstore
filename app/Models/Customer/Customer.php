@@ -2,14 +2,19 @@
 
 namespace App\Models\Customer;
 
+use App\Models\Localization\Address;
 use App\Models\Product\Product;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Notifications\Notifiable;
 
-class Customer extends Model
+class Customer extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory;
+    use HasFactory,Notifiable;
 
 
 
@@ -35,11 +40,32 @@ class Customer extends Model
 
 
 
+    /**
+     * @return BelongsTo
+     */
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(CustomerGroup::class, 'customer_group_id');
+    }
+
+
+
+    /**
+     * @return MorphMany
+     */
+    public function addresses()
+    {
+        return $this->morphMany(Address::class, 'addressable');
+    }
+
+
     public function cart(): BelongsToMany
     {
         return $this->belongsToMany(Product::class,'cart_customer')
             ->withPivot('quantity','discount')->withTimestamps();
     }
+
+
 
 
 

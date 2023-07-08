@@ -24,6 +24,8 @@ return new class extends Migration
             $table->rememberToken();
             $table->string('referrer')->nullable();
             $table->boolean('has_push')->default(false);
+            $table->foreignId('customer_group_id')->nullable()->default(1)->constrained('customer_groups')
+                ->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
     }

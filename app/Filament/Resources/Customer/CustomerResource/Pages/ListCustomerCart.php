@@ -136,12 +136,14 @@ class ListCustomerCart extends ListRecords
             Action::make('scan_sku')
                 ->label(__('Scan SKU'))
                 ->action('scanQr')
+                ->color('warning')
                 ->modalContent(view('filament.custom.qr-scanner')),
 
 
 
             Action::make('addProduct')
                 ->label(__('Add To Cart'))
+                ->color('primary')
                 ->action(function (array $data): void {
                     if ($data['stock'] >= $data['quantity'])
                     {

@@ -2,8 +2,11 @@
 
 namespace App\Models\Localization;
 
+use App\Models\Customer\Customer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Address extends Model
 {
@@ -29,18 +32,37 @@ class Address extends Model
 
 
 
+    public static function boot()
+    {
+        parent::boot();
+        //For update & create functions
+        static::saving(function ($address) {
+            if ($address->default) {
+                $address->addressable->addresses()->update([
+                    'default' => false,
+                ]);
+            }
+        });
+    }
 
-    public function addressable()
+
+
+    public function addressable(): MorphTo
     {
         return $this->morphTo();
     }
 
 
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'iso_code_2', 'country_code');
     }
 
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'id', 'addressable_id');
+    }
 
 
 

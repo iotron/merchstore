@@ -6,6 +6,7 @@ use App\Filament\Resources\Customer\CustomerResource\Pages;
 use App\Filament\Resources\Customer\CustomerResource\RelationManagers;
 use App\Models\Customer\Customer;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -65,8 +66,14 @@ class CustomerResource extends Resource
                         ->default(false)
                         ->required(),
 
-                    //                    Forms\Components\Toggle::make('status')
-//                        ->required(),
+
+                    Select::make(__('customer_group_id'))
+                        ->default(1)
+                        ->label(__('Group'))->inlineLabel()
+                        ->relationship('group', 'name'),
+
+
+
                 ])->columns(3),
 
                 Forms\Components\Fieldset::make(__('Additional Information'))->schema([
