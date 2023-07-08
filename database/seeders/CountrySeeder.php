@@ -31,7 +31,7 @@ class CountrySeeder extends Seeder
                         'isd_code' => $country->isd_code,
                         'address_format' => $country->address_format,
                         'postcode_required' => $country->postcode_required,
-                        'status' => ! ((config('cloudcom.defaults.country') != $country->iso_code_2)),
+                        'status' => ! ((config('services.defaults.country') != $country->iso_code_2)),
                         'region' => $country->region,
                         'timezone' => $country->timezone,
                         'timezone_diff' => $country->timezone_diff,

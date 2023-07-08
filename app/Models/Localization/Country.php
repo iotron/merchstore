@@ -20,4 +20,11 @@ class Country extends Model
     ];
 
 
+
+    public function address()
+    {
+        return $this->hasMany(Address::class,'country_code','iso_code_2');
+    }
+
+
 }
