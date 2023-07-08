@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "34611587ec6e9e2f1139c0e9e945c87b",
+    "content-hash": "07406353937011f8c5ca80221d801132",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -1876,6 +1876,79 @@
                 }
             ],
             "time": "2022-05-21T17:30:32+00:00"
+        },
+        {
+            "name": "iotronlab/laravel-page-view",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iotronlab/laravel-page-view.git",
+                "reference": "a375838b5f941098f33617eec8e4eda80dd72a60"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iotronlab/laravel-page-view/zipball/a375838b5f941098f33617eec8e4eda80dd72a60",
+                "reference": "a375838b5f941098f33617eec8e4eda80dd72a60",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^9.0|^10.0",
+                "nesbot/carbon": "^2.62.1",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.9.2|^1.14.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^6.0|^7.9",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^7.0|^8.0",
+                "pestphp/pest": "^1.21|^2.0",
+                "pestphp/pest-plugin-laravel": "^1.1|^2.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Iotronlab\\LaravelPageView\\LaravelPageViewServiceProvider"
+                    ],
+                    "aliases": {
+                        "LaravelPageView": "Iotronlab\\LaravelPageView\\Facades\\LaravelPageView"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Iotronlab\\LaravelPageView\\": "src",
+                    "Iotronlab\\LaravelPageView\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Krishanu",
+                    "email": "krishanu.info@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel Model Client View Counting Made Easy",
+            "homepage": "https://github.com/iotronlab/laravel-page-view",
+            "keywords": [
+                "iotronlab",
+                "laravel",
+                "laravel-page-view"
+            ],
+            "support": {
+                "issues": "https://github.com/iotronlab/laravel-page-view/issues",
+                "source": "https://github.com/iotronlab/laravel-page-view/tree/v1.0.2"
+            },
+            "time": "2023-04-03T20:23:27+00:00"
         },
         {
             "name": "jeffgreco13/filament-breezy",
