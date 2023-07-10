@@ -6,9 +6,11 @@ use App\Helpers\FilterHelper\Filterable;
 use App\Helpers\Money\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
 use App\Models\Category\Category;
+use App\Models\Promotion\SaleProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -132,6 +134,18 @@ class Product extends Model implements HasMedia
         return min($this->quantity, $count);
     }
 
+
+
+
+    /**
+     * Sales Price
+     * On Sale Products Management
+     * @return HasMany
+     */
+    public function sale_prices(): HasMany
+    {
+        return $this->hasMany(SaleProduct::class, 'product_id');
+    }
 
 
 
