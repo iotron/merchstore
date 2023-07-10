@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Promotion\Sales\ProductSaleHelper;
 use App\Models\Category\Category;
 use App\Models\Product\Product;
+use App\Models\Promotion\Sale;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as SimpleQR;
 
@@ -15,9 +17,8 @@ class TestController extends Controller
     {
 
 
-        $product = Product::find(1);
-
-        $qrUrl = route('filament.resources.product.view',['record' => $product->id]);
+        $saleProducts = new ProductSaleHelper();
+        $saleProducts->reindexSaleableProducts();
 
 
     }
