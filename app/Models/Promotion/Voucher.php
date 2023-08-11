@@ -2,6 +2,7 @@
 
 namespace App\Models\Promotion;
 
+use App\Helpers\Money\MoneyCast;
 use App\Models\Customer\CustomerGroup;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,7 @@ class Voucher extends Model
 
     protected $casts = [
         'conditions' => 'array',
+        'discount_amount' => MoneyCast::class
     ];
 
 

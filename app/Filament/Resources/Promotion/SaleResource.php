@@ -16,34 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
-
+    protected static ?string $navigationGroup = 'Promotion';
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-//    public static function form(Form $form): Form
-//    {
-//        return $form
-//            ->schema([
-//                Forms\Components\TextInput::make('name')
-//                    ->maxLength(255),
-//                Forms\Components\TextInput::make('description')
-//                    ->maxLength(255),
-//                Forms\Components\DatePicker::make('starts_from'),
-//                Forms\Components\DatePicker::make('ends_till'),
-//                Forms\Components\Toggle::make('status')
-//                    ->required(),
-//                Forms\Components\Toggle::make('condition_type')
-//                    ->required(),
-//                Forms\Components\Textarea::make('conditions'),
-//                Forms\Components\Toggle::make('end_other_rules')
-//                    ->required(),
-//                Forms\Components\TextInput::make('action_type')
-//                    ->maxLength(255),
-////                Forms\Components\TextInput::make('discount_amount')
-////                    ->required(),
-//                Forms\Components\TextInput::make('sort_order')
-//                    ->required(),
-//            ]);
-//    }
 
     public static function table(Table $table): Table
     {
@@ -57,9 +32,6 @@ class SaleResource extends Resource
                     ->date(),
                 Tables\Columns\IconColumn::make('status')
                     ->boolean(),
-//                Tables\Columns\IconColumn::make('condition_type')
-//                    ->boolean(),
-//                Tables\Columns\TextColumn::make('conditions'),
                 Tables\Columns\IconColumn::make('end_other_rules')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('action_type'),
