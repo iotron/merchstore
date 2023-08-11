@@ -7,7 +7,7 @@ use App\Helpers\Money\Money;
 use App\Models\Product\Product;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
@@ -18,7 +18,7 @@ class ListProducts extends ListRecords
 {
     protected static string $resource = ProductResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make(),

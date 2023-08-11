@@ -12,7 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Pages\Actions;
 use Filament\Pages\Actions\Action;
 use Filament\Pages\Contracts\HasFormActions;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\Page;
 use Illuminate\Http\RedirectResponse;
@@ -40,7 +40,7 @@ class CreateProduct extends Page
     }
 
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Action::make('Create')->action('create')->label(function (){

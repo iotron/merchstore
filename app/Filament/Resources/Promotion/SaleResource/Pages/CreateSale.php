@@ -14,14 +14,14 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\Actions;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateSale extends CreateRecord
 {
     protected static string $resource = SaleResource::class;
     protected static bool $canCreateAnother = false;
-    public $data;
+    public ?array $data;
     protected SaleHelper $saleHelper;
     public $conditions;
 
@@ -49,7 +49,7 @@ class CreateSale extends CreateRecord
     /**
      * @return string
      */
-    protected function getFormStatePath(): string
+    public function getFormStatePath(): string
     {
         return 'data';
     }
@@ -168,7 +168,7 @@ class CreateSale extends CreateRecord
                                         return [];
                                     }
                                 })
-                                ->visible(function (\Closure $get){
+                                ->visible(function (\Filament\Forms\Get $get){
                                     return !empty($get('attribute'));
                                 })
                                 ->columnSpan(2),

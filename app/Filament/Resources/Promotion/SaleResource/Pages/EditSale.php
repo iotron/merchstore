@@ -13,7 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\Actions;
 use Filament\Forms\Components\Select;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
 
 class EditSale extends EditRecord
@@ -25,7 +25,7 @@ class EditSale extends EditRecord
     public $conditions;
 
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\ViewAction::make(),
@@ -35,7 +35,7 @@ class EditSale extends EditRecord
 
 
 
-    public function mount($record): void
+    public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);
 
@@ -191,7 +191,7 @@ class EditSale extends EditRecord
                                         return [];
                                     }
                                 })
-                                ->visible(function (\Closure $get){
+                                ->visible(function (\Filament\Forms\Get $get){
                                     return !empty($get('attribute'));
                                 })
                                 ->columnSpan(2),

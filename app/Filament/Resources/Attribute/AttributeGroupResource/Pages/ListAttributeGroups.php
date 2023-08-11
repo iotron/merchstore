@@ -10,7 +10,7 @@ class ListAttributeGroups extends ListRecords
 {
     protected static string $resource = AttributeGroupResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make()->label(__('New Attribute Group')),

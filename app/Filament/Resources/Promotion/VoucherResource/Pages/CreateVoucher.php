@@ -106,7 +106,7 @@ class CreateVoucher extends CreateRecord
                         ->required()
                         ->placeholder('Enter Discount')
                         ->hint(__('eg: 45020 = '.Money::format(45020)))
-                        ->afterStateUpdated(function (\Closure $set, $state){
+                        ->afterStateUpdated(function (\Filament\Forms\Set $set, $state){
                             $set('formatted_discount',Money::format($state));
                         })
                         ->lazy(),
@@ -193,7 +193,7 @@ class CreateVoucher extends CreateRecord
                                 }
                             })
                             ->label('Details')
-                            ->visible(function (\Closure $get){
+                            ->visible(function (\Filament\Forms\Get $get){
                                 return !empty($get('attribute'));
                             }),
 

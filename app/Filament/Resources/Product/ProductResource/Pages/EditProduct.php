@@ -64,7 +64,7 @@ class EditProduct extends Page
 
 
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Action::make('Save')->action('save')->color('success'),
@@ -159,11 +159,11 @@ class EditProduct extends Page
                     ->hint('Max - 255')
                     ->maxLength(255)
                     ->required(),
-                TiptapEditor::make('description')
-                    ->label(__('Long Description'))
-                    ->hint('Max - 2000')
-                    ->maxLength(2000)
-                    ->required(),
+//                TiptapEditor::make('description')
+//                    ->label(__('Long Description'))
+//                    ->hint('Max - 2000')
+//                    ->maxLength(2000)
+//                    ->required(),
 
             ]),
 
@@ -193,7 +193,7 @@ class EditProduct extends Page
                             }
                             return $state;
                         })
-                        ->afterStateUpdated(function (Closure $set, Closure $get, $state) {
+                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
                            $basePrice = new Money($state);
                            $taxPercent = $get('tax_percent');
                            $this->calculate($basePrice,$taxPercent,$set,$get);
@@ -210,7 +210,7 @@ class EditProduct extends Page
 
                     TextInput::make('formatted_total')
                         ->label(__('Formatted Total'))
-                        ->formatStateUsing(function (Closure $get){
+                        ->formatStateUsing(function (\Filament\Forms\Get $get){
                             $priceAmount = $get('price');
                             if($priceAmount instanceof Money)
                             {
@@ -237,7 +237,7 @@ class EditProduct extends Page
                     TextInput::make('hsn_code')->columnSpanFull()->maxLength(50)->hint(__('Max: 50')),
                     TextInput::make('tax_percent')
                         ->lazy()
-                        ->afterStateUpdated(function (Closure $set, Closure $get, $state) {
+                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
                             $taxPercent = $state;
                             $basePrice = new Money($get('base_price'));
                             $this->calculate($basePrice,$taxPercent,$set,$get);

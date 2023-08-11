@@ -10,7 +10,7 @@ class ViewSale extends ViewRecord
 {
     protected static string $resource = SaleResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),

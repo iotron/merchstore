@@ -5,9 +5,9 @@ namespace App\Filament\Resources\Product\ProductResource\RelationManagers;
 use App\Models\Product\Product;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -21,12 +21,12 @@ class AllStocksRelationManager extends RelationManager
     protected static ?string $recordTitleAttribute = 'in_stock_quantity';
     protected static ?string $label = 'Stock';
 
-    public static function canViewForRecord(Model $ownerRecord): bool
-    {
-        return $ownerRecord->type === Product::SIMPLE;
-    }
+//    public static function canViewForRecord(Model $ownerRecord): bool
+//    {
+//        return $ownerRecord->type === Product::SIMPLE;
+//    }
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -47,7 +47,7 @@ class AllStocksRelationManager extends RelationManager
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -55,7 +55,7 @@ class AllStocksRelationManager extends RelationManager
                 TextColumn::make('sold_quantity')->label('Sold Quantity'),
                 TextColumn::make('in_stock_quantity')->label('In Stock Quantity'),
                 Tables\Columns\IconColumn::make('in_stock')->boolean()
-                    ->trueIcon('heroicon-o-badge-check')
+                    ->trueIcon('heroicon-o-check-badge')
                     ->falseIcon('heroicon-o-x-circle'),
                 TextColumn::make('updated_at')->dateTime()->toggleable(),
                 TextColumn::make('created_at')->dateTime()->toggleable()->toggledHiddenByDefault(),

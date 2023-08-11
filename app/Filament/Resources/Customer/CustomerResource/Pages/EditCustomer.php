@@ -10,7 +10,7 @@ class EditCustomer extends EditRecord
 {
     protected static string $resource = CustomerResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\ViewAction::make(),

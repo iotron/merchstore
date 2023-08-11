@@ -17,7 +17,7 @@ use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\Concerns\UsesResourceForm;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Forms;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteAction;
@@ -128,7 +128,7 @@ class ListCustomerCart extends ListRecords
 
     // PAGE ACTIONS
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
 
@@ -179,7 +179,7 @@ class ListCustomerCart extends ListRecords
                 ->searchable()
                 ->placeholder(__('select or search product by sku'))
                 ->lazy()
-                ->afterStateUpdated(function ($state,\Closure $set){
+                ->afterStateUpdated(function ($state,\Filament\Forms\Set $set){
                     $selectedProduct = Product::firstWhere('id',$state);
                     $set('stock',$selectedProduct->availableStocks()->sum('in_stock_quantity'));
                     $set('sku',$selectedProduct->sku);
@@ -204,7 +204,7 @@ class ListCustomerCart extends ListRecords
                             ->minValue(1)
                             ->maxValue(999999999)
                             ->lazy()
-                            ->afterStateUpdated(function (\Closure $get, \Closure $set, $state){
+                            ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state){
                                 $stockCount = $get('stock');
                                 if ($state <= $stockCount)
                                 {
@@ -216,10 +216,10 @@ class ListCustomerCart extends ListRecords
                                     $set('formatted_total','Error');
                                 }
                             })
-                            ->helperText(function (\Closure $get){
+                            ->helperText(function (\Filament\Forms\Get $get){
                                 return empty($get('stock')) ? 'no stock available' : 'available stock :'.$get('stock');
                             })
-                            ->disabled(function (\Closure $get){
+                            ->disabled(function (\Filament\Forms\Get $get){
                                 return empty($get('stock'));
                             })
                             ->required(),
@@ -232,7 +232,7 @@ class ListCustomerCart extends ListRecords
                             ->minValue(1)
                             ->maxValue(999999999)
                             ->lazy()
-                            ->afterStateUpdated(function (\Closure $get, \Closure $set, $state){
+                            ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state){
 
                                 if (!empty($state))
                                 {
@@ -272,7 +272,7 @@ class ListCustomerCart extends ListRecords
 
 
 
-                    ])->visible(function (\Closure $get){
+                    ])->visible(function (\Filament\Forms\Get $get){
                         return !empty($get('product_id'));
                     })->columns(1),
 

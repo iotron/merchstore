@@ -25,7 +25,7 @@ class ViewVoucher extends ViewRecord
 
     public $conditions;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),
@@ -33,7 +33,7 @@ class ViewVoucher extends ViewRecord
     }
 
 
-    public function mount($record): void
+    public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);
 
@@ -126,7 +126,7 @@ class ViewVoucher extends ViewRecord
                         })
                         ->placeholder('Enter Discount')
                         ->hint(__('eg: 45020 = '.Money::format(45020)))
-                        ->afterStateUpdated(function (\Closure $set, $state){
+                        ->afterStateUpdated(function (\Filament\Forms\Set $set, $state){
                             $set('formatted_discount',Money::format($state));
                         })
                         ->lazy(),
@@ -215,7 +215,7 @@ class ViewVoucher extends ViewRecord
                                     }
                                 })
                                 ->label('Details')
-                                ->visible(function (\Closure $get){
+                                ->visible(function (\Filament\Forms\Get $get){
                                     return !empty($get('attribute'));
                                 }),
 

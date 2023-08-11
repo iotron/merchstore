@@ -6,9 +6,9 @@ use App\Filament\Resources\Category\CategoryResource\Pages;
 use App\Filament\Resources\Category\CategoryResource\RelationManagers;
 use App\Models\Category\Category;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +19,7 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
     protected static ?string $navigationGroup = 'Product Management';
     protected static ?string $slug = 'category';
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {

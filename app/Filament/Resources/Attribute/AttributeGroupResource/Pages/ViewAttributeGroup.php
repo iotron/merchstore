@@ -10,7 +10,7 @@ class ViewAttributeGroup extends ViewRecord
 {
     protected static string $resource = AttributeGroupResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),

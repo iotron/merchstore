@@ -6,9 +6,9 @@ use App\Filament\Resources\Promotion\SaleResource\Pages;
 use App\Filament\Resources\Promotion\SaleResource\RelationManagers;
 use App\Models\Promotion\Sale;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -17,7 +17,7 @@ class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
     protected static ?string $navigationGroup = 'Promotion';
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
 
     public static function table(Table $table): Table
