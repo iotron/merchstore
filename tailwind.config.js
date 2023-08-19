@@ -11,13 +11,13 @@ module.exports = {
         extend: {
             colors: {
                 danger: colors.rose,
-                primary: colors.fuchsia,
+                primary: colors.blue,
                 success: colors.teal,
                 warning: colors.yellow,
                 gray: {
-                    900: '#0f000c',
-                    800: '#1e0018',
-                    700: '#2d0024',
+                    900: '#1C2457',
+                    800: '#559C9F',
+                    700: '#669CCB',
                     // 400: '#ff96ea',
                     // 200: '#ffb4f0'
                   }

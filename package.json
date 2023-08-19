@@ -1,6 +1,5 @@
 {
     "private": true,
-    "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build"
@@ -8,17 +7,14 @@
     "devDependencies": {
         "@awcodes/alpine-floating-ui": "^3.4.0",
         "@tailwindcss/forms": "^0.5.3",
-        "@tailwindcss/typography": "^0.5.7",
-        "alpinejs": "^3.10.3",
+        "@tailwindcss/typography": "^0.5.9",
+        "alpinejs": "^3.12.1",
         "autoprefixer": "^10.4.14",
         "axios": "^1.1.2",
-        "laravel-vite-plugin": "^0.7.5",
-        "postcss": "^8.4.27",
-        "tailwindcss": "^3.3.3",
+        "laravel-vite-plugin": "^0.7.2",
+        "postcss": "^8.4.23",
+        "tailwindcss": "^3.3.2",
         "tippy.js": "^6.3.7",
         "vite": "^4.0.0"
-    },
-    "dependencies": {
-        "instascan": "^1.0.0"
     }
 }
