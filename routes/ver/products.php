@@ -4,5 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::resource('/',\App\Http\Controllers\Api\ProductController::class);
+Route::get('/',[\App\Http\Controllers\Api\ProductController::class,'index']);
+Route::get('{product:url}',[\App\Http\Controllers\Api\ProductController::class,'show']);
 

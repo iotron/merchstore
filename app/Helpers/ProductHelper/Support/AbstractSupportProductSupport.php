@@ -58,7 +58,7 @@ abstract class AbstractSupportProductSupport implements ProductTypeSupportContra
     {
         return array_merge($data,[
 //            'vendor_id' => auth()->user()->id,
-            'url_key' => Str::slug($data['name'].'-'.now())
+            'url' => Str::slug($data['name'].'-'.now())
         ]);
     }
 

@@ -127,7 +127,7 @@ class EditProduct extends Page
                     ->hint('Max - 100')
                     ->maxLength(100)
                     ->required(),
-                TextInput::make('url_key')
+                TextInput::make('url')
                     ->label(__('Url'))
                     ->prefix(fn () => config('project.client_url').'/product/')
                     ->helperText('Url of the product')

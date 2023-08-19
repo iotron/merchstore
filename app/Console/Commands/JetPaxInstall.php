@@ -29,7 +29,7 @@ class JetPaxInstall extends Command
      *
      * @return int
      */
-    use UserCreation;
+
 
     private bool $canRun = false;
 
@@ -56,7 +56,6 @@ class JetPaxInstall extends Command
             $this->setAppKey();
             $this->migrateTable();
             $this->seedTable();
-            $this->createAdmin();
             $this->storageLink();
 
             // $this->resetCache();

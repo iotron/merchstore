@@ -14,6 +14,23 @@ class ProductIndexResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+
+       return [
+        'name' => $this->name,
+        'url' => $this->url,
+        'quantity' => $this->quantity,
+        'popularity' => $this->popularity,
+        'view_count' => $this->view_count,
+        'price' => $this->price,
+
+        'sku' => $this->sku,
+        'type' => $this->type,
+
+        'productDisplay' => [
+            'src' => $this->getFirstMediaUrl('productDisplay'),
+            'srcset' => $this->getFirstMedia('productDisplay') ? $this->getFirstMedia('productDisplay')->getSrcset('optimized') : null,
+        ],
+
+    ];
     }
 }

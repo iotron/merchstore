@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->string('type');
             $table->string('name');
-            $table->string('url_key')->unique();
+            $table->string('url')->unique();
 
             $table->integer('quantity')->default(0);
             $table->integer('popularity')->default(0);

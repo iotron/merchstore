@@ -12,7 +12,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
@@ -50,7 +53,7 @@ class Product extends Model implements HasMedia
         'type',
         'name',
         'sku',
-        'url_key',
+        'url',
         'featured',
         'visible_individually',
         'status',
@@ -68,6 +71,39 @@ class Product extends Model implements HasMedia
     ];
 
 
+    // Spatie Media Library Conversion
+    public function registerMediaCollections(): void
+    {
+
+        $this->addMediaCollection('productDisplay')
+            ->useFallbackUrl(asset('display.webp'));
+
+        $this->addMediaCollection('productGallery')
+            ->useFallbackUrl(asset('display.webp'))
+            ->useFallbackUrl(asset('display.webp'),'thumb_1')
+            ->useFallbackUrl(asset('display.webp'),'thumb_2')
+            ->useFallbackUrl(asset('display.webp'),'thumb_3');
+
+
+    }
+
+    /**
+     * @param Media|null $media
+     * @return void
+     * @throws InvalidManipulation
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        if ($media && $media->extension === Manipulations::FORMAT_GIF) {
+            return;
+        }
+
+        $this->addMediaConversion('optimized')
+            ->format(Manipulations::FORMAT_WEBP)
+            ->withResponsiveImages()
+            // uncomment in production
+            ->nonQueued();
+    }
 
 
     public function flat(): HasOne

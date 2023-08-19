@@ -22,7 +22,7 @@ class ProductFactory extends Factory
             'sku' => fake()->unique()->word,
             'type' => Product::SIMPLE,
             'name' => $productName = fake()->unique()->word,
-            'url_key' => $productName . '_' . fake()->unique()->word,
+            'url' => $productName . '_' . fake()->unique()->word,
             'status' => Product::PUBLISHED,
             'base_price' => $basePrice = fake()->numberBetween(1000, 30000),
             'price' => $basePrice,
