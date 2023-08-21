@@ -6,6 +6,7 @@ use App\Models\Category\Category;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
@@ -18,36 +19,36 @@ class CategorySeeder extends Seeder
 
         foreach ($allCategories as $categoryBag) {
             $category = Category::updateOrCreate([
-                    'name' => $categoryBag->name,
-                    'url' => $categoryBag->url ?? $categoryBag->name,
-                    'desc' => $categoryBag->meta_desc,
+                    'name' => $name = $categoryBag->name,
+                    'url' => Str::slug($name),
+                 //   'desc' => $categoryBag->meta_desc,
                 ]
             );
             //  $category->attachments()->attach($this->addAttachment());
             // Inject products
 
-            if (isset($categoryBag->children)) {
-                foreach ($categoryBag->children as $subCat) {
-                    $subCategory = $category->children()->updateOrCreate([
-                        'name' => $subCat->name,
-                        'url' => $subCat->url ?? $subCat->name,
-                        'desc' => $subCat->meta_desc,
-                    ]);
-                    //    $subCategory->attachments()->attach($this->addAttachment());
-
-                    if (isset($subCat->children)) {
-                        foreach ($subCat->children as $child) {
-                            $cats = $subCategory->children()->updateOrCreate([
-                                'name' => $child->name,
-                                'url' => $child->url ?? $child->name,
-                                'desc' => $child->meta_desc,
-                            ]);
-
-                            $cats->save();
-                        }
-                    }
-                }
-            }
+//            if (isset($categoryBag->children)) {
+//                foreach ($categoryBag->children as $subCat) {
+//                    $subCategory = $category->children()->updateOrCreate([
+//                        'name' => $name = $subCat->name,
+//                        'url' => Str::slug($name),
+//                      //  'desc' => $subCat->meta_desc,
+//                    ]);
+//                    //    $subCategory->attachments()->attach($this->addAttachment());
+//
+//                    if (isset($subCat->children)) {
+//                        foreach ($subCat->children as $child) {
+//                            $cats = $subCategory->children()->updateOrCreate([
+//                                'name' => $name = $child->name,
+//                                'url' => Str::slug($name),
+//                               // 'desc' => $child->meta_desc,
+//                            ]);
+//
+//                            $cats->save();
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 

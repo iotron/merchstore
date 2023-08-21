@@ -27,23 +27,20 @@ class ProductSeeder extends Seeder
                 // Add Stock
 
                 $stock = ProductStock::create([
-                    'init_quantity' => 200,
+                    'init_quantity' => fake()->numberBetween(200, 600),
                     'sold_quantity' => 0,
-                    'in_stock' => true,
                     'product_id' => $product->id,
                 ]);
 
                 $stock2 = ProductStock::create([
-                    'init_quantity' => 200,
+                    'init_quantity' => fake()->numberBetween(200, 600),
                     'sold_quantity' => 0,
-                    'in_stock' => true,
                     'product_id' => $product->id,
                 ]);
 
                 $stock3 = ProductStock::create([
-                    'init_quantity' => 200,
+                    'init_quantity' => fake()->numberBetween(200, 600),
                     'sold_quantity' => 0,
-                    'in_stock' => true,
                     'product_id' => $product->id,
                 ]);
 
