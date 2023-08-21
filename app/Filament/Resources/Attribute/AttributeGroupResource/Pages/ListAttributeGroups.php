@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Attribute\AttributeGroupResource\Pages;
 
 use App\Filament\Resources\Attribute\AttributeGroupResource;
-use Filament\Pages\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListAttributeGroups extends ListRecords
@@ -13,7 +13,7 @@ class ListAttributeGroups extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label(__('New Attribute Group')),
+            CreateAction::make()->label(__('New Attribute Group')),
         ];
     }
 }

@@ -5,22 +5,20 @@ namespace App\Filament\Resources\Attribute;
 use App\Filament\Resources\Attribute\AttributeResource\Pages;
 use App\Filament\Resources\Attribute\AttributeResource\RelationManagers;
 use App\Models\Attribute\Attribute;
-use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Table;
 
 class AttributeResource extends Resource
 {
     protected static ?string $model = Attribute::class;
     protected static ?string $navigationGroup = 'Filters';
+    protected static ?string $slug = 'attributes';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

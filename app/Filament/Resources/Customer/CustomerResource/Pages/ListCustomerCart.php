@@ -4,34 +4,20 @@ namespace App\Filament\Resources\Customer\CustomerResource\Pages;
 
 use App\Filament\Resources\Customer\CustomerResource;
 use App\Helpers\Money\Money;
-use App\Models\Category\Category;
 use App\Models\Customer\Customer;
 use App\Models\Product\Product;
-use BaconQrCode\Common\Mode;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\Concerns\UsesResourceForm;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Pages\Page;
-use Filament\Tables\Table;
-use Filament\Forms;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Livewire\TemporaryUploadedFile;
-use Zxing\QrReader;
 
 class ListCustomerCart extends ListRecords
 {

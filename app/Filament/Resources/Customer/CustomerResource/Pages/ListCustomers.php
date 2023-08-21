@@ -4,15 +4,15 @@ namespace App\Filament\Resources\Customer\CustomerResource\Pages;
 
 use App\Filament\Resources\Customer\CartCustomerResource;
 use App\Filament\Resources\Customer\CustomerResource;
-use Filament\Pages\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class ListCustomers extends ListRecords
 {
@@ -21,7 +21,7 @@ class ListCustomers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 
@@ -29,18 +29,18 @@ class ListCustomers extends ListRecords
 
     protected function getTableActions(): array
     {
-        return array_merge([
-
+        return[
             Action::make('customer_cart_list')
 
                 ->label('Cart')
                 ->tooltip('Cart Details')
                 ->icon('heroicon-o-gift')
-                ->url(fn($record): string => static::getResource()::hasPage('cart') ? static::getResource()::getUrl('cart', ['record' => $record]) : null)
-
+                ->url(fn($record): string => CustomerResource::hasPage('cart') ? CustomerResource::getUrl('cart', ['record' => $record]) : null)
                 ->openUrlInNewTab(false),
 
-        ],parent::getTableActions());
+            ViewAction::make(),
+            EditAction::make(),
+        ];
     }
 
 
@@ -76,10 +76,7 @@ class ListCustomers extends ListRecords
             ->filters([
                 //
             ])
-            ->actions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
+            ->actions($this->getTableActions())
             ->bulkActions([
                 DeleteBulkAction::make(),
             ]);

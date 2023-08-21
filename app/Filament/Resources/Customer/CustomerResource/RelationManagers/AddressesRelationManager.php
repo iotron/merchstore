@@ -3,19 +3,15 @@
 namespace App\Filament\Resources\Customer\CustomerResource\RelationManagers;
 
 use App\Models\Localization\Country;
-use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Table;
 
 class AddressesRelationManager extends RelationManager
 {
@@ -43,12 +39,12 @@ class AddressesRelationManager extends RelationManager
                         TextInput::make('contact')
                             ->tel()
                             ->placeholder(__('Enter Contact Number'))
-                            ->mask(
-                                fn (TextInput\Mask $mask) => $mask->numeric()
-                                    ->integer()
-                                    ->minValue(1000000000)
-                                    ->maxValue(999999999999999)
-                            )
+//                            ->mask(
+//                                fn (TextInput\Mask $mask) => $mask->numeric()
+//                                    ->integer()
+//                                    ->minValue(1000000000)
+//                                    ->maxValue(999999999999999)
+//                            )
                             ->helperText('your default mobile or telephone number')
                             ->required(),
 
@@ -58,12 +54,12 @@ class AddressesRelationManager extends RelationManager
                             ->label(__('Alternate Contact'))
                             ->placeholder(__('Enter Alternative Contact Number'))
                             ->tel()
-                            ->mask(
-                                fn (TextInput\Mask $mask) => $mask->numeric()
-                                    ->integer()
-                                    ->minValue(1000000000)
-                                    ->maxValue(999999999999999)
-                            )
+//                            ->mask(
+//                                fn (TextInput\Mask $mask) => $mask->numeric()
+//                                    ->integer()
+//                                    ->minValue(1000000000)
+//                                    ->maxValue(999999999999999)
+//                            )
                             ->helperText('your alternative mobile or telephone number')
                             ->columnSpan(1),
 
@@ -108,13 +104,13 @@ class AddressesRelationManager extends RelationManager
                             ->maxLength(100),
 
                         TextInput::make('postal_code')
-                            ->required()
-                            ->mask(
-                                fn (TextInput\Mask $mask) => $mask->numeric()
-                                    ->integer()
-                                    ->minValue(100000)
-                                    ->maxValue(9999999999)
-                            ),
+//                            ->mask(
+//                                fn (TextInput\Mask $mask) => $mask->numeric()
+//                                    ->integer()
+//                                    ->minValue(100000)
+//                                    ->maxValue(9999999999)
+//                            )
+                            ->required(),
 
                         TextInput::make('state')
                             ->required()
@@ -123,13 +119,13 @@ class AddressesRelationManager extends RelationManager
                         TextInput::make('priority')
                             ->label(__('priority'))
                             ->default(1)
-                            ->mask(
-                                fn (TextInput\Mask $mask) => $mask->numeric()
-                                    ->integer()
-                                    ->minValue(1)
-                                    ->maxValue(10000)
-
-                            )
+//                            ->mask(
+//                                fn (TextInput\Mask $mask) => $mask->numeric()
+//                                    ->integer()
+//                                    ->minValue(1)
+//                                    ->maxValue(10000)
+//
+//                            )
                             ->required(),
 
                         Select::make('country_code')

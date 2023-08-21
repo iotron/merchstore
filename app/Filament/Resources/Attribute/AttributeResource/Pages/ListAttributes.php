@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Attribute\AttributeResource\Pages;
 
 use App\Filament\Resources\Attribute\AttributeResource;
-use Filament\Pages\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListAttributes extends ListRecords
@@ -13,7 +13,7 @@ class ListAttributes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label(__('New Attribute')),
+            CreateAction::make()->label(__('New Attribute')),
         ];
     }
 }

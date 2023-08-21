@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Promotion\SaleResource\Pages;
 use App\Filament\Resources\Promotion\SaleResource;
 use App\Helpers\Promotion\Sales\ProductSaleHelper;
 use App\Helpers\Promotion\Sales\SaleHelper;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
@@ -28,8 +30,8 @@ class EditSale extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 

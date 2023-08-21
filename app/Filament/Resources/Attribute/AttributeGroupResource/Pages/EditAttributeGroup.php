@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\Attribute\AttributeGroupResource\Pages;
 
 use App\Filament\Resources\Attribute\AttributeGroupResource;
-use Filament\Pages\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditAttributeGroup extends EditRecord
@@ -13,8 +14,8 @@ class EditAttributeGroup extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

@@ -5,19 +5,16 @@ namespace App\Filament\Resources\Product\ProductResource\Pages;
 use App\Filament\Resources\Product\ProductResource;
 use App\Models\Attribute\AttributeGroup;
 use App\Models\Product\Product;
-use Filament\Forms\Components\MultiSelect;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Pages\Actions;
-use Filament\Pages\Actions\Action;
 use Filament\Pages\Contracts\HasFormActions;
-use Filament\Forms\Form;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\Page;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Livewire\Component as Livewire;
-use Livewire\Redirector;
+
 
 class CreateProduct extends Page
 {

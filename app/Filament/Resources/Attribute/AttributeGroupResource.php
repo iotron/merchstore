@@ -5,23 +5,20 @@ namespace App\Filament\Resources\Attribute;
 use App\Filament\Resources\Attribute\AttributeGroupResource\Pages;
 use App\Filament\Resources\Attribute\AttributeGroupResource\RelationManagers;
 use App\Models\Attribute\AttributeGroup;
-use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Table;
 use Filament\Tables;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Table;
 
 class AttributeGroupResource extends Resource
 {
     protected static ?string $model = AttributeGroup::class;
     protected static ?string $navigationGroup = 'Filters';
+    protected static ?string $slug = 'attribute-groups';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
