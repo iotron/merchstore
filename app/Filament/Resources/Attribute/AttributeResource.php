@@ -50,15 +50,15 @@ class AttributeResource extends Resource
 
                         TextInput::make('position')
                             ->placeholder(__('Enter Position'))
-                            ->mask(
-                                fn (TextInput\Mask $mask) => $mask
-                                    ->numeric()
-                                    ->decimalPlaces(0)
-                                    ->decimalSeparator('.')
-                                    ->minValue(1)
-                                    ->maxValue(999999)
-                                    ->thousandsSeparator(',')
-                            )
+//                            ->mask(
+//                                fn (TextInput\Mask $mask) => $mask
+//                                    ->numeric()
+//                                    ->decimalPlaces(0)
+//                                    ->decimalSeparator('.')
+//                                    ->minValue(1)
+//                                    ->maxValue(999999)
+//                                    ->thousandsSeparator(',')
+//                            )
                             ->required()
                             ->columnSpan(1)
                             ->label(__('Position')),

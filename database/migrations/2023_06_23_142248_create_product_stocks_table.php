@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('init_quantity');
             $table->unsignedInteger('sold_quantity')->default(0);
-            $table->integer('in_stock_quantity')->storedAs('init_quantity - sold_quantity')->nullable();
-            $table->boolean('in_stock')->default(true);
+            $table->integer('in_stock_quantity')->storedAs('CAST(init_quantity AS SIGNED) - CAST(sold_quantity AS SIGNED)');
+            $table->boolean('in_stock')->storedAs('IF(in_stock_quantity > 0, true, false)')->index();
             $table->unsignedInteger('priority')->default(1);
             $table->foreignId('product_id')->constrained('products')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

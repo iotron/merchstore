@@ -40,15 +40,15 @@ class AttributeGroupResource extends Resource
                         ->required(),
                     TextInput::make('position')
                         ->placeholder(__('Enter Position'))
-                        ->mask(
-                            fn (TextInput\Mask $mask) => $mask
-                                ->numeric()
-                                ->decimalPlaces(0)
-                                ->decimalSeparator('.')
-                                ->minValue(1)
-                                ->maxValue(999999)
-                                ->thousandsSeparator(',')
-                        )
+//                        ->mask(
+////                            fn (TextInput\Mask $mask) => $mask
+////                                ->numeric()
+////                                ->decimalPlaces(0)
+////                                ->decimalSeparator('.')
+////                                ->minValue(1)
+////                                ->maxValue(999999)
+////                                ->thousandsSeparator(',')
+//                        )
                         ->required()
                         ->label(__('Position')),
 
@@ -71,9 +71,9 @@ class AttributeGroupResource extends Resource
                 TextColumn::make('code')->label('Code'),
 
 
-                BadgeColumn::make('type')
+                TextColumn::make('type')
                     ->label('Type')
-                    ->enum(AttributeGroup::TYPE_OPTIONS)
+                    ->badge()
                     ->colors([
                         'secondary',
                         'primary' => AttributeGroup::FILTERABLE,
