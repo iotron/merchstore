@@ -7,6 +7,7 @@ use App\Helpers\Money\Money;
 use App\Models\Product\Product;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -35,6 +36,9 @@ class ListProducts extends ListRecords
     {
         return $table
             ->columns([
+                SpatieMediaLibraryImageColumn::make('thumb')
+                    ->circular()
+                    ->collection('productDisplay'),
                 TextColumn::make('id')->label('ID')->sortable()->searchable()->toggleable()->toggledHiddenByDefault(),
                 TextColumn::make('sku')->label('Sku')->searchable(),
                 TextColumn::make('type')->label('Type')->sortable()->toggleable(),
@@ -45,9 +49,14 @@ class ListProducts extends ListRecords
                 })->sortable()->toggleable()->toggledHiddenByDefault(),
                 TextColumn::make('quantity')->label('Quantity')->toggleable(),
 
-                BadgeColumn::make('status')->label('Status')->sortable()->enum(
-                    Product::StatusOptions
-                )->colors([
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->sortable()
+                    ->badge()
+                    ->formatStateUsing(function ($state){
+                        return ucfirst($state);
+                    })
+                    ->colors([
                     'primary',
                     'danger' => 'draft',
                     'warning' => 'review',
