@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
-//            $table->string('image_path', 400)->nullable();
             $table->string('url', 100)->unique();
             $table->boolean('status')->default(true);
             $table->boolean('is_visible_on_front')->default(true);
@@ -23,9 +22,6 @@ return new class extends Migration
             $table->json('meta_data')->nullable();
             $table->text('desc')->nullable();
 
-//            $table->json('hsn_4')->nullable();
-//            $table->json('hsn_8')->nullable();
-//            $table->json('gst')->nullable();
 
             $table->foreignId('parent_id')->nullable()->constrained('categories')->cascadeOnUpdate()->nullOnDelete();
             $table->timestamps();

@@ -1,0 +1,163 @@
+[
+    {
+        "name": "Printables",
+        "slug": "printables",
+        "children": [
+            {
+                "name": "Posters",
+                "children": [
+                    { "name": "300GSM" },
+                    { "name": "Framed" },
+                    { "name": "Vinyl" },
+                    { "name": "Manga Panel" },
+                    { "name": "Transparent" },
+                    { "name": "3D" }
+                ]
+            },
+            {
+                "name": "Stickers",
+                "children": [
+                    { "name": "Paper" },
+                    { "name": "Vinyl" },
+                    { "name": "3D" },
+                    { "name": "Transparent" }
+                ]
+            },
+            {
+                "name": "Bookmarks",
+                "children": [
+                    { "name": "Single Sided" },
+                    { "name": "Double Sided" },
+                    { "name": "Transparent" }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Apparel",
+        "slug": "apparel",
+        "children": [
+            {
+                "name": "Unisex",
+                "children": [
+                    { "name": "Round Neck Tee" },
+                    { "name": "Oversized Tee" },
+                    { "name": "Polo Tee" },
+                    { "name": "Tank Top" },
+                    { "name": "Shorts" }
+                ]
+            },
+            {
+                "name": "Women",
+                "children": [
+                    { "name": "Round Neck Tee" },
+                    { "name": "Oversized Tee" },
+                    { "name": "Polo Tee" },
+                    { "name": "Shorts" },
+                    { "name": "Crop Top" },
+                    { "name": "Long Top" },
+                    { "name": "Bodysuit" }
+                ]
+            },
+            {
+                "name": "Kids",
+                "children": [
+                    { "name": "Round Neck Tee" },
+                    { "name": "Oversized Tee" },
+                    { "name": "Polo Tee" },
+                    { "name": "Tank Top" },
+                    { "name": "Shorts" }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Accessories",
+        "slug": "accessories",
+        "children": [
+            {
+                "name": "Pendants",
+                "children": [
+                    { "name": "Glass" },
+                    { "name": "Metal" },
+                    { "name": "Wooden" },
+                    { "name": "Manga Panel" },
+                    { "name": "Transparent" },
+                    { "name": "3D" }
+                ]
+            },
+            {
+                "name": "Finger Rings",
+                "children": [
+                    { "name": "Adjustable" },
+                    { "name": "Non Adjustable" }
+                ]
+            },
+            { "name": "Head Band" },
+            {
+                "name": "Bracelet",
+                "children": [
+                    { "name": "Leather" },
+                    { "name": "Alloy" }
+                ]
+            },
+            {
+                "name": "Bag",
+                "children": [
+                    { "name": "Pouch" },
+                    { "name": "Tote" },
+                    { "name": "Backpack" }
+                ]
+            },
+            {
+                "name": "Keychains",
+                "children": [
+                    { "name": "3D PVC" },
+                    { "name": "2D PVC" },
+                    { "name": "Small PVC" },
+                    { "name": "Metal" },
+                    { "name": "Metal Fidget" },
+                    { "name": "Glass" },
+                    { "name": "Wooden" },
+                    { "name": "Katana" }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Figures",
+        "slug": "figures",
+        "children": [
+            { "name": "Action" },
+            { "name": "Small" },
+            { "name": "Small +" },
+            { "name": "Medium" },
+            { "name": "Large" },
+            { "name": "Chibi" },
+            { "name": "Bobbleheads" }
+        ]
+    },
+    {
+        "name": "Cosplay",
+        "slug": "cosplay",
+        "children": [
+            { "name": "Character Dress" },
+            {
+                "name": "Character Accessories",
+                "children": [
+                    { "name": "Earrings" },
+                    { "name": "Finger Rings" },
+                    { "name": "Pendants" },
+                    { "name": "Head Bands" },
+                    { "name": "Hand Gloves" },
+                    { "name": "Scarf" },
+                    { "name": "Cap" },
+                    { "name": "Bracelet" },
+                    { "name": "Body Jewellery" },
+                    { "name": "Bags" }
+                ]
+            },
+            { "name": "Character Weapons" }
+        ]
+    }
+]

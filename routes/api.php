@@ -19,3 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('products')->group(base_path('routes/ver/products.php'));
+Route::prefix('categories')->group(base_path('routes/ver/categories.php'));

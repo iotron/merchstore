@@ -1,0 +1,525 @@
+[
+    {
+        "code": "color",
+        "type": "select",
+        "admin_name": "Color",
+        "desc": "product color",
+        "is_configurable": 1,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": [
+            {
+                "admin_name": "Multi Color",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Red",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Orange",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Yellow",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Green",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Turquoise",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Blue",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Purple",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Pink",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Brown",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Black",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Grey",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "White",
+                "swatch_type": null
+            }
+        ]
+    },
+    {
+        "code": "size",
+        "type": "select",
+        "admin_name": "Size",
+        "desc": "product size",
+        "is_configurable": 1,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": [
+            {
+                "admin_name": "XS",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "S",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "M",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "L",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "XL",
+                "swatch_type": null
+            }
+        ]
+    },
+    {
+        "code": "material",
+        "type": "select",
+        "admin_name": "Material",
+        "desc": "product material",
+        "is_configurable": 1,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": [
+            {
+                "admin_name": "Paper",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Yupo paper",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Chart Paper",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Black Paper",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Matt Paper",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Handmade paper",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Ivory Sheet",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Oil Sheet",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "GSM Sheet",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Board Canvas",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Stretched Canvas",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Mount Board",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Tile",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Feather",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Bottle",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Wood",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "MDF",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Clay",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Fiber",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Ceramic",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Cloth - wool, cotton, silk",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Stone",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Plates",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Mugs",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Glass",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Shoes",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Terracotta",
+                "swatch_type": null
+            }
+        ]
+    },
+    {
+        "code": "medium",
+        "type": "select",
+        "admin_name": "Medium",
+        "desc": "product medium",
+        "is_configurable": 1,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": [
+            {
+                "admin_name": "Ink",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Pigment Pen",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Color Pen",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Ball point",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Pens",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Soft Pastel",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "oil Pastel",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Watercolor",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Gouache",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Acrylic",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Oil",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Mix Media",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Resin",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Alcohol",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Charcoal",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Graphite",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Pencil",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Color pencil",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Clay",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Glass Color",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Crayons",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Digital",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Marker",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Alcohol Based Marker",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "White Charcoal",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Poster Color",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Natural Stone Color",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Macrame Thread",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Nail",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Jute",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Fine Liner",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Knife",
+                "swatch_type": null
+            }
+        ]
+    },
+    {
+        "code": "orientation",
+        "type": "select",
+        "admin_name": "Orientation",
+        "desc": "orientation of the product",
+        "is_configurable": 1,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": [
+            {
+                "admin_name": "Landscape",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Portrait",
+                "swatch_type": null
+            },
+            {
+                "admin_name": "Square",
+                "swatch_type": null
+            }
+        ]
+    },
+    {
+        "code": "sku",
+        "type": "text",
+        "admin_name": "SKU",
+        "desc": "Stock Keeping Unit (SKU) ID",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["unique"],
+        "options": []
+    },
+    {
+        "code": "name",
+        "type": "text",
+        "admin_name": "name",
+        "desc": "product name",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": []
+    },
+    {
+        "code": "url_key",
+        "type": "text",
+        "admin_name": "URL Key",
+        "desc": "product url",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["unique"],
+        "options": []
+    },
+    {
+        "code": "visible_individually",
+        "type": "boolean",
+        "admin_name": "Visible",
+        "desc": "toggle product visibility",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 0,
+        "validation": null,
+        "options": []
+    },
+    {
+        "code": "return_window",
+        "type": "integer",
+        "admin_name": "Return Window",
+        "desc": "product can be returned within this time",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 0,
+        "validation": [],
+        "options": []
+    },
+    {
+        "code": "short_description",
+        "type": "textarea",
+        "admin_name": "Short Description",
+        "desc": "product short description",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": []
+    },
+    {
+        "code": "description",
+        "type": "richtext",
+        "admin_name": "Description",
+        "desc": "product long description",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": null,
+        "options": []
+    },
+    {
+        "code": "price",
+        "type": "number",
+        "admin_name": "Price",
+        "desc": "product price",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["integer"],
+        "options": []
+    },
+    {
+        "code": "special_price",
+        "type": "number",
+        "admin_name": "Special Price",
+        "desc": "product special price",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["integer"],
+        "options": []
+    },
+    {
+        "code": "length",
+        "type": "text",
+        "admin_name": "Length",
+        "desc": "length in cm",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["decimal"],
+        "options": []
+    },
+    {
+        "code": "width",
+        "type": "text",
+        "admin_name": "Width",
+        "desc": "width in cm",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["decimal"],
+        "options": []
+    },
+    {
+        "code": "height",
+        "type": "text",
+        "admin_name": "Height",
+        "desc": "height in cm",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["decimal"],
+        "options": []
+    },
+    {
+        "code": "weight",
+        "type": "text",
+        "admin_name": "Weight",
+        "desc": "weight in kg",
+        "is_configurable": 0,
+        "is_visible": 1,
+        "required": 1,
+        "validation": ["decimal"],
+        "options": []
+    }
+]

@@ -1,0 +1,49 @@
+[
+    {
+        "name": "General",
+        "type": "static",
+        "code" :"GEN",
+        "attributes": [
+            "sku",
+            "name",
+            "url_key",
+            "visible_individually",
+            "return_window"
+        ]
+    },
+
+    {
+        "name": "Description",
+        "type": "static",
+        "code" :"DESC",
+        "attributes": ["short_description", "description"]
+    },
+
+    {
+        "name": "Price",
+        "type": "static",
+        "code" :"PR",
+        "attributes": ["price", "special_price"]
+    },
+
+    {
+        "name": "Shipping",
+        "type": "static",
+        "code" : "SP",
+        "attributes": ["length", "width", "height", "weight"]
+    },
+
+    {
+        "name": "Default Features (Color, Size, Material, Medium)",
+        "type": "filterable",
+        "code" :"CSMMD",
+        "attributes": ["color", "size", "material", "medium"]
+    },
+
+    {
+        "name": "Artwork Features (Color, Size, Material, Medium, Orientation)",
+        "type": "filterable",
+        "code" :"CSMMDO",
+        "attributes": ["color", "size", "material", "medium", "orientation"]
+    }
+]
