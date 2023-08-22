@@ -28,7 +28,7 @@ class ProductResource extends ProductIndexResource
             'featured' => $this->featured,
             'status' => $this->status,
             'visible_individually' => $this->visible_individually,
-            'base_price' => $this->base_price,
+            'base_price' => $this->base_price->formatted(),
             'hsn_code' => $this->hsn_code,
             'tax_percent' => $this->tax_percent,
             'tax_amount' => $this->tax_amount,

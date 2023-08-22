@@ -21,7 +21,7 @@ class ProductIndexResource extends JsonResource
         'quantity' => $this->quantity,
         'popularity' => $this->popularity,
         'view_count' => $this->view_count,
-        'price' => $this->price,
+        'price' => $this->price->formatted(),
 
         'sku' => $this->sku,
         'type' => $this->type,
