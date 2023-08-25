@@ -18,5 +18,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Auth
+Route::prefix('/')->group(base_path('routes/ver/auth/customer.php'));
+
 Route::prefix('products')->group(base_path('routes/ver/products.php'));
 Route::prefix('categories')->group(base_path('routes/ver/categories.php'));

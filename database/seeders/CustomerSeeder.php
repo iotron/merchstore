@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Customer\Customer;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class CustomerSeeder extends Seeder
 {
@@ -13,6 +14,17 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $demoCustomer = Customer::create([
+            'name' => 'Demo Customer',
+            'email' => 'customer@example.com',
+            'contact' => '1234567890',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'contact_verified_at' => now()
+        ]);
+
+
         Customer::factory(20)
             ->create()
             ->each(function (Customer $customer){

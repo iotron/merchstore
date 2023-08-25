@@ -49,6 +49,11 @@ class Customer extends Authenticatable implements MustVerifyEmail
     }
 
 
+    public function socials()
+    {
+        return $this->hasMany(CustomerSocial::class, 'customer_id', 'id');
+    }
+
 
     /**
      * @return MorphMany
