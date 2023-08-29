@@ -5,6 +5,7 @@ namespace App\Models\Product;
 use App\Helpers\FilterHelper\Filterable;
 use App\Helpers\Money\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
+use App\Models\Attribute\AttributeOption;
 use App\Models\Category\Category;
 use App\Models\Promotion\SaleProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -71,6 +72,11 @@ class Product extends Model implements HasMedia
     ];
 
 
+    /**
+     * Relation Based On Other Class/Services
+     * @return void
+     */
+
     // Spatie Media Library Conversion
     public function registerMediaCollections(): void
     {
@@ -106,24 +112,6 @@ class Product extends Model implements HasMedia
     }
 
 
-    public function flat(): HasOne
-    {
-        return $this->hasOne(ProductFlat::class, 'product_id', 'id');
-    }
-
-
-    public function categories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class, Product::PRODUCT_CATEGORY_TABLE)->withPivot('base_category');
-    }
-
-    /**
-     * Get the product variants that owns the product.
-     */
-    public function variants(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Product::class, 'parent_id');
-    }
 
 
     /**
@@ -141,9 +129,20 @@ class Product extends Model implements HasMedia
 
 
 
+
+
+    public function filterOptions(): BelongsToMany
+    {
+        return $this->belongsToMany(AttributeOption::class,'product_filter_options');
+    }
+
+
+
+
+
     /**
      * STOCK MANAGEMENT
-     * All the stocks that belong to the product. For stock history/CRUD.
+     * in_stock stocks that belong to the product. For calculating in_stock/available stocks.
      */
 
     public function allStocks(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -151,12 +150,8 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductStock::class, 'product_id');
     }
 
-    /**
-     * STOCK MANAGEMENT
-     * in_stock stocks that belong to the product. For calculating in_stock/available stocks.
-     */
 
-    public function availableStocks()
+    public function availableStocks(): HasMany
     {
         return $this->allStocks()->where('in_stock', true)->orderBy('priority');
     }
@@ -183,6 +178,32 @@ class Product extends Model implements HasMedia
         return $this->hasMany(SaleProduct::class, 'product_id');
     }
 
+
+
+
+    /**
+     * Common Relations
+     */
+
+
+    public function flat(): HasOne
+    {
+        return $this->hasOne(ProductFlat::class, 'product_id', 'id');
+    }
+
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, Product::PRODUCT_CATEGORY_TABLE)->withPivot('base_category');
+    }
+
+    /**
+     * Get the product variants that owns the product.
+     */
+    public function variants(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Product::class, 'parent_id');
+    }
 
 
 }
