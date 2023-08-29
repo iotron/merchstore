@@ -4,6 +4,7 @@ namespace App\Helpers\Cart\Contracts;
 
 use App\Models\Customer\Customer;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Collection;
 
 interface CartServiceContract
 {
@@ -17,6 +18,34 @@ interface CartServiceContract
     public function setError(string $msg):void;
 
     public function getErrors():array;
+
+
+    public function getProduct();
+
+//    public function setCouponStatus(bool $status):void;
+//    public function getCouponStatus(): bool;
+//
+//    public function addCoupon(string $code): void;
+//
+//    public function removeCoupon(string $code): bool;
+
+
+    //public function addBulk(array $tickets): void;
+
+    public function add(int $ticketID, int $quantity): void;
+
+    public function update(int $ticketID, int $quantity): void;
+
+    public function delete(int $ticketID): void;
+
+    public function empty(): void;
+    public function isEmpty(): bool;
+
+    public function getTotalQuantity(): int;
+
+    public function products():Collection;
+
+    public function checkStock(): void;
 
 
 

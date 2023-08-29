@@ -15,6 +15,8 @@ abstract class CartService implements CartServiceContract
     protected bool $changed = false;
     protected array $errors = [];
     protected ?string $couponCode = null;
+    public int $totalQuantity = 0;
+    protected bool $validCoupon=false;
 
     public function __construct(Customer|Authenticatable $customer, ?string $couponCode = null)
     {
@@ -49,11 +51,6 @@ abstract class CartService implements CartServiceContract
         return $this->errors;
     }
 
-    public function empty(): void
-    {
-        $this->customer->cart()->detach();
-    }
-
     public function isEmpty(): bool
     {
         return $this->customer->cart->sum('pivot.quantity') === 0;
@@ -70,6 +67,36 @@ abstract class CartService implements CartServiceContract
             }
         }
         return $this->customer->cart;
+    }
+
+    public function getProduct()
+    {
+        if ($this->products()->count())
+        {
+            return $this->products()->first()->event;
+        }
+        return null;
+
+    }
+
+    public function getTotalQuantity(): int
+    {
+        $this->totalQuantity = $this->products()->sum('pivot.quantity');
+        return $this->totalQuantity;
+    }
+
+    public function checkStock(): void
+    {
+        $this->customer->cart->each(function ($product) {
+
+            $quantity = $product->minStock($product->pivot->quantity);
+            $this->changed = $quantity != $product->pivot->quantity;
+            if ($this->changed) {
+                $product->pivot->update([
+                    'quantity' => $quantity,
+                ]);
+            }
+        });
     }
 
 
@@ -100,6 +127,32 @@ abstract class CartService implements CartServiceContract
         ]);
     }
 
+
+    public function delete(int $itemID): void
+    {
+
+        if ($this->products()->contains('id',$itemID))
+        {
+            $this->customer->cart()->detach($itemID);
+
+        }else{
+            $this->errors[] = 'ticket not found!';
+        }
+    }
+
+    public function empty(): void
+    {
+        $this->customer->cart()->detach();
+    }
+
+
+    public function reset()
+    {
+        $this->empty();
+        if (session()->has('coupon')) {
+            session()->forget('coupon');
+        }
+    }
 
 
 }
