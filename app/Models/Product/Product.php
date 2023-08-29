@@ -2,7 +2,7 @@
 
 namespace App\Models\Product;
 
-use App\Helpers\FilterHelper\Filterable;
+
 use App\Helpers\Money\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
 use App\Models\Attribute\AttributeOption;
@@ -21,7 +21,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia,Filterable;
+    use HasFactory,InteractsWithMedia;
 
     protected ?ProductTypeSupportContract $typeInstance=null;
 
