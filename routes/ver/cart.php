@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('cart', CartController::class, [
     'parameters' => [
-        'cart' => 'product'
+        'cart' => 'products'
     ]
 ]);
 

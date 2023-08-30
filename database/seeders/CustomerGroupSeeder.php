@@ -14,15 +14,28 @@ class CustomerGroupSeeder extends Seeder
     public function run(): void
     {
 
-        $regularCustomerGroup = CustomerGroup::create([
+//        $regularCustomerGroup = CustomerGroup::create([
+//            'name' => 'Regular',
+//            'status' => true,
+//        ]);
+//
+//        $exclusiveCustomerGroup = CustomerGroup::create([
+//            'name' => 'Exclusive',
+//            'status' => true,
+//        ]);
+
+
+
+        $regularCustomerGroup = CustomerGroup::factory()->create([
             'name' => 'Regular',
             'status' => true,
         ]);
 
-        $exclusiveCustomerGroup = CustomerGroup::create([
+        $exclusiveCustomerGroup = CustomerGroup::factory()->create([
             'name' => 'Exclusive',
             'status' => true,
         ]);
+
 
 
     }

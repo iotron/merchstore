@@ -29,7 +29,7 @@ class CartController extends Controller
 
     public function store(CartStoreRequest $request, Cart $cart): JsonResponse
     {
-        $cart->addBulk($request->product);
+        $cart->addBulk($request->products);
         $metaData = $cart->getMeta();
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
@@ -43,7 +43,7 @@ class CartController extends Controller
     {
         if ($cart->products()->count())
         {
-            if (!$cart->products()->contains('product_id',$product->id))
+            if ($cart->products()->contains('product_id',$product->id))
             {
                 return response()->json(['success' => false, 'message' => 'another product present with product id '], 403);
             }
