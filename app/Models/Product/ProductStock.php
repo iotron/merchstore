@@ -22,15 +22,30 @@ class ProductStock extends Model
 //        ProductStock::observe(ProductStockObserver::class);
     }
 
+    //    public function address()
+//    {
+//        return $this->belongsTo(Address::class, 'vendor_address_id', 'addressable_id', 'vendor');
+//    }
+
+
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
 
-//    public function address()
-//    {
-//        return $this->belongsTo(Address::class, 'vendor_address_id', 'addressable_id', 'vendor');
-//    }
+    /**
+     * @return bool
+     */
+    public function inStock(): bool
+    {
+        return $this->in_stock_quantity > 0;
+    }
+
+
+    public function minStock(int $count)
+    {
+        return min($this->in_stock_quantity, $count);
+    }
 
 
 

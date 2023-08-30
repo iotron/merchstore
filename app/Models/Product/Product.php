@@ -142,28 +142,39 @@ class Product extends Model implements HasMedia
 
     /**
      * STOCK MANAGEMENT
-     * in_stock stocks that belong to the product. For calculating in_stock/available stocks.
+     * in_stock stocks that belong to the product stock. For calculating in_stock/available stocks.
      */
 
-    public function allStocks(): \Illuminate\Database\Eloquent\Relations\HasMany
+
+    public function stocks(): HasMany
     {
         return $this->hasMany(ProductStock::class, 'product_id');
     }
 
-
     public function availableStocks(): HasMany
     {
-        return $this->allStocks()->where('in_stock', true)->orderBy('priority');
+        return $this->stocks()->where('in_stock', true)->orderBy('priority');
     }
+
+    public function minStock($count)
+    {
+        return $this->availableStocks()->min('in_stock_quantity') ?? 0;
+    }
+
+
+//    public function allStocks(): \Illuminate\Database\Eloquent\Relations\HasMany
+//    {
+//        return $this->hasMany(ProductStock::class, 'product_id');
+//    }
+
+
+
 
     public function stockCount()
     {
         return $this->getTypeInstance()->totalQuantity();
     }
-    public function minStock($count)
-    {
-        return min($this->quantity, $count);
-    }
+
 
 
 
