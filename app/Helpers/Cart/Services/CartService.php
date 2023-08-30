@@ -104,7 +104,6 @@ abstract class CartService implements CartServiceContract
      * Cart CURD Methods
      */
 
-
     public function add(int $itemID, int $quantity): void
     {
 
@@ -118,6 +117,7 @@ abstract class CartService implements CartServiceContract
             // Fresh Add in Cart
             $this->customer->cart()->attach($itemID,['quantity' => $quantity]);
         }
+
     }
 
     public function update(int $itemID, int $quantity): void
@@ -136,7 +136,7 @@ abstract class CartService implements CartServiceContract
             $this->customer->cart()->detach($itemID);
 
         }else{
-            $this->errors[] = 'ticket not found!';
+            $this->errors[] = 'product not found!';
         }
     }
 
@@ -153,6 +153,30 @@ abstract class CartService implements CartServiceContract
             session()->forget('coupon');
         }
     }
+
+
+    // Bulk Operation
+
+    public function addBulk(array $products): void
+    {
+        $this->customer->cart()->syncWithoutDetaching($this->getStorePayload($products));
+    }
+    protected function getStorePayload(array $items): array
+    {
+        return collect($items)->keyBy('id')->map(function ($item){
+            return [ 'quantity' => $item['quantity'] + $this->getCurrentQuantity($item['id']) ];
+        })->toArray();
+    }
+
+    protected function getCurrentQuantity($itemID): int
+    {
+        if ($product = $this->products()->where('id',$itemID)->first())
+        {
+            return $product->pivot->quantity;
+        }
+        return 0;
+    }
+
 
 
 }
