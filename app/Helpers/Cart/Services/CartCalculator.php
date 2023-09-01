@@ -2,11 +2,12 @@
 
 namespace App\Helpers\Cart\Services;
 
+use App\Helpers\Cart\Contracts\CartCalculatorContract;
 use App\Helpers\Cart\Contracts\CartServiceContract;
 use App\Helpers\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 
-class CartCalculator
+class CartCalculator implements CartCalculatorContract
 {
 
 
@@ -18,6 +19,9 @@ class CartCalculator
     {
         $this->cartService = $cartService;
         $this->couponService = new CartCouponService($cartService);
+        if (!is_null($this->cartService->getCouponCode())) {
+            $this->couponService->validated($this->cartService->getCouponCode());
+        }
     }
 
     public function getCouponModel(): ?Model

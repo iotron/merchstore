@@ -180,26 +180,50 @@ abstract class CartService implements CartServiceContract
 
     // COUPON (VOUCHER CODE) HANDLES
 
-    public function addCoupon(mixed $coupon)
+
+
+    public function setCouponStatus(bool $status):void
     {
-        $couponService = new CartCouponService($this);
-        $couponService->validated($coupon);
-
-        if (!$couponService->isValid())
-        {
-            $this->errors[] = 'coupon code not applicable';
-        }
-
+        $this->validCoupon = $status;
     }
-
-    public function removeCoupon(mixed $coupon)
+    public function getCouponStatus(): bool
     {
-        dd($coupon);
+        return $this->validCoupon;
     }
 
 
+     /**
+      * @param string $code
+      * @return void
+      */
+     public function addCoupon(string $code): void
+     {
+         $couponService = new CartCouponService($this);
+         $couponService->validated($code);
 
+         if (!$couponService->isValid())
+         {
+             $this->errors[] = 'coupon code not applicable';
+         }
+     }
 
-
-
-}
+     /**
+      * @param string $code
+      * @return bool
+      */
+     public function removeCoupon(string $code): bool
+     {
+         if (!is_null($this->couponCode) && $this->couponCode == $code)
+         {
+             $couponService = new CartCouponService($this);
+             $this->validCoupon = false;
+             session()->forget('coupon');
+             $this->couponCode = null;
+             $couponService->destroy();
+             return true;
+         }else{
+             $this->errors[] = 'no coupon code found for remove';
+             return false;
+         }
+     }
+ }

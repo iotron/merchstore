@@ -25,12 +25,12 @@ interface CartServiceContract
 //    public function setCouponStatus(bool $status):void;
 //    public function getCouponStatus(): bool;
 //
-//    public function addCoupon(string $code): void;
-//
-//    public function removeCoupon(string $code): bool;
+    public function addCoupon(string $code): void;
+
+    public function removeCoupon(string $code): bool;
 
 
-    //public function addBulk(array $tickets): void;
+    public function addBulk(array $product): void;
 
     public function add(int $ticketID, int $quantity): void;
 
