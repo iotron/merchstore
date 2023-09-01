@@ -5,13 +5,18 @@ namespace App\Filament\Resources\Promotion\VoucherResource\Pages;
 use App\Filament\Resources\Promotion\VoucherResource;
 use App\Helpers\Money\Money;
 use App\Helpers\Promotion\Voucher\VoucherHelper;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -29,8 +34,8 @@ class EditVoucher extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 
@@ -57,10 +62,11 @@ class EditVoucher extends EditRecord
 
 
 
-
-
-
-
+    public function form(Form $form): Form
+    {
+        return parent::form($form)
+            ->schema($this->getFormSchema());
+    }
 
 
     protected function getFormSchema(): array
@@ -120,14 +126,10 @@ class EditVoucher extends EditRecord
 
                     TextInput::make('discount_amount')
                         ->label('Discount Amount')
-                        ->mask(
-                            fn (TextInput\Mask $mask) => $mask->numeric()
-                                ->decimalPlaces(2)
-                                ->decimalSeparator('.')
-                                ->minValue(1)
-                                ->maxValue(99999999)
-                                ->thousandsSeparator(',')
-                        )
+                        ->inputMode('decimal')
+                        ->integer()
+                        ->minValue(1)
+                        ->maxValue(999999999)
                         ->required()
                         ->afterStateHydrated(function (TextInput $component,$state){
                             if($state instanceof Money)
@@ -138,13 +140,14 @@ class EditVoucher extends EditRecord
                         })
                         ->placeholder('Enter Discount')
                         ->hint(__('eg: 45020 = '.Money::format(45020)))
-                        ->afterStateUpdated(function (\Filament\Forms\Set $set, $state){
-                            $set('formatted_discount',Money::format($state));
-                        })
                         ->lazy(),
 
-                    TextInput::make('formatted_discount')->label(__('Discount (Formatted)'))->disabled(),
-
+                    Placeholder::make('formatted_discount')
+                        ->live()
+                        ->label(__('Discount (Formatted)'))
+                        ->content(function (Get $get){
+                            return Money::format($get('discount_amount') ?? 0);
+                        }),
 
 
 

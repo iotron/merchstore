@@ -64,6 +64,13 @@ class CreateSale extends CreateRecord
 
 
 
+    public function form(Form $form): Form
+    {
+        return parent::form($form)
+            ->schema($this->getFormSchema());
+    }
+
+
     protected function getFormSchema(): array
     {
         return [

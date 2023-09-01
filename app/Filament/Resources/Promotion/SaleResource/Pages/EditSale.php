@@ -59,6 +59,15 @@ class EditSale extends EditRecord
 
 
 
+    public function form(Form $form): Form
+    {
+        return parent::form($form)
+            ->schema($this->getFormSchema());
+    }
+
+
+
+
     public function getConditionField(array $attribute = [])
     {
         if (! empty($attribute)) {

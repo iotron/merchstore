@@ -12,12 +12,14 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateVoucher extends CreateRecord
 {
     protected static string $resource = VoucherResource::class;
+    protected static bool $canCreateAnother = false;
     private VoucherHelper $voucherHelper;
     public $conditions;
 
@@ -34,9 +36,11 @@ class CreateVoucher extends CreateRecord
 
 
 
-
-
-
+    public function form(Form $form): Form
+    {
+        return parent::form($form)
+            ->schema($this->getFormSchema());
+    }
 
 
     protected function getFormSchema(): array
@@ -95,14 +99,14 @@ class CreateVoucher extends CreateRecord
                 ->schema([
                     TextInput::make('discount_amount')
                         ->label('Discount Amount')
-                        ->mask(
-                            fn (TextInput\Mask $mask) => $mask->numeric()
-                                ->decimalPlaces(2)
-                                ->decimalSeparator('.')
-                                ->minValue(1)
-                                ->maxValue(99999999)
-                                ->thousandsSeparator(',')
-                        )
+//                        ->mask(
+//                            fn (TextInput\Mask $mask) => $mask->numeric()
+//                                ->decimalPlaces(2)
+//                                ->decimalSeparator('.')
+//                                ->minValue(1)
+//                                ->maxValue(99999999)
+//                                ->thousandsSeparator(',')
+//                        )
                         ->required()
                         ->placeholder('Enter Discount')
                         ->hint(__('eg: 45020 = '.Money::format(45020)))
