@@ -6,6 +6,7 @@ use App\Helpers\Cart\Cart;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\CartStoreRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
+use App\Http\Requests\Cart\Voucher\VoucherRequest;
 use App\Http\Resources\Cart\CartResource;
 use App\Models\Product\Product;
 use Illuminate\Http\JsonResponse;
@@ -23,13 +24,14 @@ class CartController extends Controller
 
     public function index(Request $request, Cart $cart): CartResource
     {
+//        $cart->empty();
         return new CartResource($cart->getMeta());
     }
 
 
     public function store(CartStoreRequest $request, Cart $cart): JsonResponse
     {
-        $cart->addBulk($request->products);
+        $cart->addBulk($request->product);
         $metaData = $cart->getMeta();
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
@@ -80,6 +82,32 @@ class CartController extends Controller
             return response()->json(['success' => true, 'message' => $product->name . ' removed!', 'data' => new CartResource($cart->getMeta())], 200);
         }
     }
+
+
+    // Voucher Coupon
+
+    public function applyCouponCode(VoucherRequest $request, Cart $cart): \Illuminate\Http\JsonResponse
+    {
+        $cart->addCoupon($request->coupon);
+
+        if ($cart->getErrors()) {
+            return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
+        } else {
+            return response()->json(['success' => true, 'message' => 'coupon applied successfully','data' => new CartResource($cart->getMeta())], 200);
+        }
+    }
+
+    public function removeCouponCode(VoucherRequest $request, Cart $cart): \Illuminate\Http\JsonResponse
+    {
+        $cart->removeCoupon($request->coupon);
+        if ($cart->getErrors()) {
+            return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
+        } else {
+            return response()->json(['success' => true, 'message' => 'coupon remove successfully','data' => new CartResource($cart->getMeta())], 200);
+        }
+    }
+
+
 
 
 

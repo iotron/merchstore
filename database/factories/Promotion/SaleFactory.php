@@ -23,7 +23,7 @@ class SaleFactory extends Factory
             'ends_till' =>  now()->addDays(20),
             'status' => fake()->boolean,
             'condition_type' => 1,
-            'end_other_rules' => 1,
+            'end_other_rules' => fake()->boolean,
             'action_type' => fake()->randomElement( ['by_percent','by_fixed']),
             'discount_amount' => fake()->numberBetween(2000,6000),
             'sort_order' => 1,

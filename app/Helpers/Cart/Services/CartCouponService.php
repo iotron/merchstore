@@ -28,4 +28,9 @@ class CartCouponService
         return $this->isValid;
     }
 
+    public function validated(mixed $coupon):void
+    {
+        dd($coupon);
+    }
+
 }

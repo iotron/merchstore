@@ -178,5 +178,28 @@ abstract class CartService implements CartServiceContract
     }
 
 
+    // COUPON (VOUCHER CODE) HANDLES
+
+    public function addCoupon(mixed $coupon)
+    {
+        $couponService = new CartCouponService($this);
+        $couponService->validated($coupon);
+
+        if (!$couponService->isValid())
+        {
+            $this->errors[] = 'coupon code not applicable';
+        }
+
+    }
+
+    public function removeCoupon(mixed $coupon)
+    {
+        dd($coupon);
+    }
+
+
+
+
+
 
 }

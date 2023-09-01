@@ -28,7 +28,7 @@ class VoucherFactory extends Factory
             'coupon_usage_limit' => fake()->numberBetween(5,6),
             'times_used' => 0,
             'condition_type' => 1,
-            'end_other_rules' => 1,
+            'end_other_rules' => fake()->boolean,
             'action_type' => 'by_percent',
 
             'discount_amount' => fake()->numberBetween(2000,6000),

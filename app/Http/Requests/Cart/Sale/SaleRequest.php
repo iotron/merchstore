@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Cart;
+namespace App\Http\Requests\Cart\Sale;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CartStoreRequest extends FormRequest
+class SaleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,9 +22,6 @@ class CartStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product' => 'required|array',
-            'product.*.id' => 'required|numeric|exists:products,id',
-            'product.*.quantity' => 'numeric|min:1',
         ];
     }
 }
