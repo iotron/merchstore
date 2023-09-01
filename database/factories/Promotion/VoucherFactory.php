@@ -19,7 +19,7 @@ class VoucherFactory extends Factory
         return [
             'name' => fake()->word,
             'description' => fake()->sentence,
-            'starts_from' => now(),
+            'starts_from' => now()->subDays(fake()->numberBetween(5,15)),
             'ends_till' =>  now()->addDays(20),
             'status' => fake()->boolean,
 

@@ -18,7 +18,7 @@ class SaleFactory extends Factory
     {
         return [
             'name' => fake()->word,
-            'description' => fake()->paragraph,
+            'description' => fake()->sentence,
             'starts_from' => now(),
             'ends_till' =>  now()->addDays(20),
             'status' => fake()->boolean,

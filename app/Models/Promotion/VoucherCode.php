@@ -5,6 +5,8 @@ namespace App\Models\Promotion;
 use App\Models\Customer\Customer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class VoucherCode extends Model
 {
@@ -21,12 +23,12 @@ class VoucherCode extends Model
     ];
 
 
-    public function voucher()
+    public function voucher(): BelongsTo
     {
         return $this->belongsTo(Voucher::class);
     }
 
-    public function usages()
+    public function usages(): BelongsToMany
     {
         return $this->belongsToMany(Customer::class, 'voucher_code_usages')->using(CouponUsage::class)->withPivot('times_used');
     }
