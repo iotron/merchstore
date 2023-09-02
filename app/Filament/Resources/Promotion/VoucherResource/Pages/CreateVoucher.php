@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Promotion\VoucherResource\Pages;
 use App\Filament\Resources\Promotion\VoucherResource;
 use App\Helpers\Money\Money;
 use App\Helpers\Promotion\Voucher\VoucherHelper;
+use App\Models\Promotion\Voucher;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
@@ -127,27 +128,22 @@ class CreateVoucher extends CreateRecord
 
             Fieldset::make('Action Information')
                 ->schema([
-                    Select::make('action_type')->options([
-                        'by_percent' => 'Percentage of Product Price',
-                        'by_fixed' => 'Fixed Amount',
-                        'cart_fixed' => 'Fixed Amount to Whole Cart',
-                        'buy_x_get_y' => 'Buy X Get Y Free',
-                    ])->required(),
+                    Select::make('action_type')
+                        ->options(Voucher::ACTION_TYPES)
+                        ->required(),
 
-                    Select::make('apply_to_shipping')->options([
-                        0 => 'No',
-                        1 => 'Yes',
-                    ])->default(0)->disabled(),
+                    Select::make('apply_to_shipping')
+                        ->options(Voucher::APPLY_TO_SHIPPING_OPTIONS)
+                        ->default(0)
+                        ->disabled(),
 
-                    Select::make('free_shipping')->options([
-                        0 => 'No',
-                        1 => 'Yes',
-                    ])->required(),
+                    Select::make('free_shipping')
+                        ->options(Voucher::FREE_SHIPPING_OPTIONS)
+                        ->required(),
 
-                    Select::make('end_other_rules')->options([
-                        0 => 'No',
-                        1 => 'Yes',
-                    ])->required(),
+                    Select::make('end_other_rules')
+                        ->options(Voucher::END_OTHER_RULE_OPTION)
+                        ->required(),
 
                 ])->columns(2),
 
@@ -161,10 +157,9 @@ class CreateVoucher extends CreateRecord
                 ->schema([
 
                     Select::make('condition_type')
-                        ->options([
-                            1 => 'Match All Conditions',
-                            0 => 'Match Any Condition',
-                        ])->required()
+                        ->options(Voucher::CONDITION_TYPE)
+                        ->required()
+                        ->placeholder(__('select a condition type'))
                         ->label('Apply By'),
 
                     Repeater::make('conditions')

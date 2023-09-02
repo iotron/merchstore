@@ -13,6 +13,48 @@ class Voucher extends Model
 {
     use HasFactory;
 
+    public const MATCH_ALL = 1;
+    public const MATCH_ANY = 0;
+
+    public const CONDITION_TYPE = [
+        self::MATCH_ALL => 'Match All Conditions',
+        self::MATCH_ANY => 'Match Any Condition',
+    ];
+
+    public const ACTION_BY_PERCENTAGE = 'by_percent';
+    public const ACTION_BY_FIXED = 'by_fixed';
+    public const ACTION_CART_FIXED = 'cart_fixed';
+    public const ACTION_BY_X_GET_Y = 'buy_x_get_y';
+
+    public const ACTION_TYPES = [
+        self::ACTION_BY_PERCENTAGE => 'Percentage of Product Price',
+        self::ACTION_BY_FIXED => 'Fixed Amount',
+        self::ACTION_CART_FIXED => 'Fixed Amount to Whole Cart',
+        self::ACTION_BY_X_GET_Y => 'Buy X Get Y Free',
+    ];
+
+    public const SHIPPING_TRUE = 1;
+    public const SHIPPING_FALSE = 0;
+    public const APPLY_TO_SHIPPING_OPTIONS = [
+        self::SHIPPING_FALSE => 'No',
+        self::SHIPPING_TRUE => 'Yes'
+    ];
+
+    public const FREE_SHIPPING_OPTIONS = [
+        self::SHIPPING_FALSE => 'No',
+        self::SHIPPING_TRUE => 'Yes'
+    ];
+
+    public const END_OTHER_RULE_TRUE = 1;
+    public const END_OTHER_RULE_FALSE = 0;
+
+    public const END_OTHER_RULE_OPTION = [
+        self::END_OTHER_RULE_FALSE => 'No',
+        self::END_OTHER_RULE_TRUE => 'Yes'
+    ];
+
+
+
 
     protected $fillable = [
         'name',
