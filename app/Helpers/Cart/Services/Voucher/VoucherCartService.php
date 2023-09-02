@@ -12,12 +12,14 @@ class VoucherCartService
     private Voucher $voucher;
     private array $conditions = [];
     private CartServiceContract $cartService;
+    private VoucherConditionValidator $conditionValidator;
 
     public function __construct(Voucher $voucher,CartServiceContract $cartService)
     {
         $this->voucher = $voucher;
         $this->conditions = $this->voucher->conditions;
         $this->cartService = $cartService;
+        $this->conditionValidator = new VoucherConditionValidator();
     }
 
     public function validate():bool
@@ -74,7 +76,7 @@ class VoucherCartService
 
     public function checkCondition(array $condition):bool
     {
-        return true;
+        return $this->conditionValidator->validate($condition);
     }
 
 
