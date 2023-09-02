@@ -32,11 +32,11 @@ interface CartServiceContract
 
     public function addBulk(array $product): void;
 
-    public function add(int $ticketID, int $quantity): void;
+    public function add(int $itemID, int $quantity): void;
 
-    public function update(int $ticketID, int $quantity): void;
+    public function update(int $itemID, int $quantity): void;
 
-    public function delete(int $ticketID): void;
+    public function delete(int $itemID): void;
 
     public function empty(): void;
     public function isEmpty(): bool;

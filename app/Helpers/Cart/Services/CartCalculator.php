@@ -62,11 +62,15 @@ class CartCalculator implements CartCalculatorContract
 
     protected function cartItemResolver(): void
     {
+
         foreach ($this->cartService->products() as $product) {
             // Calculate SubTotal Each Product
             $subTotal = $product->base_price->multiplyOnce($product->pivot->quantity);
-            // Calculate Discount Each Product
-            $totalDiscount = ($this->couponService->isValid() && !is_null($this->couponService->getModel())) ? $this->couponService->getModel()->discount_amount->multiplyOnce($product->pivot->quantity) : new Money(0);
+
+            // Calculate Discount From Voucher For Each Product
+            $totalDiscount = ($this->couponService->isValid() && !is_null($this->couponService->getModel())) ?
+                $this->couponService->getModel()->voucher->discount_amount->multiplyOnce($product->pivot->quantity) :
+                new Money(0);
             // Calculate Tax Each Product
             $totalTax = ($product->tax_percent > 0) ? $product->tax_amount->multiplyOnce($product->pivot->quantity) : new Money(0);
             // Calculate Net Total Each Product

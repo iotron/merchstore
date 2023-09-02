@@ -73,7 +73,7 @@ abstract class CartService implements CartServiceContract
     {
         if ($this->products()->count())
         {
-            return $this->products()->first()->event;
+            return $this->products()->first();
         }
         return null;
 

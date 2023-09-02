@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Customer\Customer;
+use App\Models\Customer\CustomerGroup;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -15,18 +16,28 @@ class CustomerSeeder extends Seeder
     public function run(): void
     {
 
+        $customerGroups = CustomerGroup::where('status',true)->get();
+
         $demoCustomer = Customer::create([
             'name' => 'Demo Customer',
             'email' => 'customer@example.com',
             'contact' => '1234567890',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
-            'contact_verified_at' => now()
+            'contact_verified_at' => now(),
+            'customer_group_id' => $customerGroups->random()->id
         ]);
 
 
+
+
+
         Customer::factory(20)
-            ->create()
+            ->create([
+
+                // Add Customer to Customer Group
+                'customer_group_id' => $customerGroups->random()->id
+            ])
             ->each(function (Customer $customer){
 
                 // Create Customer Address

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer\CustomerGroup;
 use App\Models\Promotion\Voucher;
 use App\Models\Promotion\VoucherCode;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -14,10 +15,14 @@ class VoucherSeeder extends Seeder
      */
     public function run(): void
     {
+        $customerGroups = CustomerGroup::where('status',true)->get();
         Voucher::factory(10)
             ->create()
-            ->each(function ($voucher){
+            ->each(function ($voucher) use($customerGroups) {
+                // Add Customer Group
+                $voucher->customer_groups()->attach($customerGroups->random());
 
+                // Create Coupons
                 $coupons = VoucherCode::factory(5)->create([
                    'starts_from' => $voucher->starts_from,
                    'ends_till'  => $voucher->ends_till,
