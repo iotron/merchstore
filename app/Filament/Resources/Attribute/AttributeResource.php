@@ -115,7 +115,7 @@ class AttributeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code'),
-                Tables\Columns\TextColumn::make('admin_name')->label(__('Name')),
+                Tables\Columns\TextColumn::make('display_name')->label(__('Name')),
                 Tables\Columns\TextColumn::make('type'),
                 //                Tables\Columns\TextColumn::make('position'),
                 Tables\Columns\BooleanColumn::make('is_filterable')->label(__('Filterable'))->toggleable(),
