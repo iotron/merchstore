@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AllStocksRelationManager extends RelationManager
 {
-    protected static string $relationship = 'allStocks';
+    protected static string $relationship = 'stocks';
 
     protected static ?string $recordTitleAttribute = 'in_stock_quantity';
     protected static ?string $label = 'Stock';

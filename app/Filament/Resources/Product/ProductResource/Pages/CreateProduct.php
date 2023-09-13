@@ -9,6 +9,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Resources\Pages\Page;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
@@ -17,9 +18,10 @@ use Livewire\Component as Livewire;
 
 class CreateProduct extends Page
 {
+    use InteractsWithFormActions;
 
     protected static string $resource = ProductResource::class;
-    public $data;
+    public ?array $data = [];
     public ?string $type = null;
     public int $step = 1;
     public bool $isContinue = false;
@@ -86,7 +88,10 @@ class CreateProduct extends Page
                         })
                         ->required(),
                     TextInput::make('name')->required()->helperText('product name to be displayed.'),
-                    TextInput::make('sku')->label('SKU')->required()->unique()->helperText('Stock Keeping Unit (SKU) is the unique id that will be assigned to your product.'),
+                    TextInput::make('sku')->label('SKU')
+                        ->required()
+                        ->unique(table: Product::class)
+                        ->helperText('Stock Keeping Unit (SKU) is the unique id that will be assigned to your product.'),
 
                     Select::make('attribute_group_id')
                         ->label('Attribute Group')
@@ -135,7 +140,8 @@ class CreateProduct extends Page
     {
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        return redirect()->route('filament.resources.product.edit', $product);
+        return redirect()->route('filament.admin.resources.product.edit', ['record' => $product->id]);
+
     }
 
 
