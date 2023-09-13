@@ -21,11 +21,6 @@ class CategoryIndexResource extends JsonResource
             'is_visible_on_front' => $this->is_visible_on_front,
             'view_count' => $this->view_count,
             'order' => $this->order,
-           // 'meta_data' => $this->meta_data,
-           // 'desc' => $this->desc,
-           // 'parent_id' => $this->parent_id,
-            'created_at' => $this->created_at,
-            //'updated_at' => $this->updated_at,
             'children' => CategoryIndexResource::collection($this->whenLoaded('children')),
         ];
     }
