@@ -5,6 +5,7 @@ namespace Database\Factories\Product;
 use App\Models\Product\Product;
 use App\Models\Product\ProductFlat;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product\Product>
@@ -19,10 +20,10 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'sku' => fake()->unique()->word,
+            'sku' => $this->faker->unique()->word,
             'type' => Product::SIMPLE,
-            'name' => $productName = fake()->unique()->word,
-            'url' => $productName . '_' . fake()->unique()->word,
+            'name' => $productName = $this->faker->unique()->word,
+            'url' => Str::slug($productName),
             'status' => Product::PUBLISHED,
             'base_price' => $basePrice = fake()->numberBetween(1000, 30000),
             'price' => $basePrice,

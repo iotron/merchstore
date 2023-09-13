@@ -24,7 +24,7 @@ class AttributeSeeder extends Seeder
             //Create Attribute
             $attribute = Attribute::updateOrCreate([
                 'code' => $data->code,
-                'admin_name' => $data->admin_name,
+                'display_name' => $data->admin_name,
                 'type' => $data->type,
                 'desc' => $data->desc,
                 'is_configurable' => $data->is_configurable,

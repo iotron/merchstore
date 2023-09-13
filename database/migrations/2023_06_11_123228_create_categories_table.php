@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
-            $table->string('url', 100)->unique();
+            $table->string('url', 100)->nullable();
             $table->boolean('status')->default(true);
             $table->boolean('is_visible_on_front')->default(true);
             $table->unsignedBigInteger('view_count')->default(10);
