@@ -39,7 +39,7 @@ class AttributeResource extends Resource
                             ->columnSpan(2)
                             ->maxLength(255),
 
-                        TextInput::make('admin_name')
+                        TextInput::make('display_name')
                             ->label(__('Name'))
                             ->placeholder(__('Enter Name'))
                             ->required()
