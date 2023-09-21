@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Product\ProductResource\Pages;
 
 use App\Filament\Resources\Product\ProductResource;
-use App\Models\Attribute\AttributeGroup;
+use App\Models\Filter\FilterGroup;
 use App\Models\Product\Product;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Section;
@@ -64,7 +64,7 @@ class CreateProduct extends Page
      */
     private function getAttributeDetails(int $id): array
     {
-        $group = AttributeGroup::where('id', $id)->with('attributes.options')->first();
+        $group = FilterGroup::where('id', $id)->with('attributes.options')->first();
         return $group->attributes->map(function ($item, $key) {
             $optionBag = $item->options->mapWithKeys(function ($item, $key) {
                 return [$item['admin_name'] => $item['admin_name']];
@@ -95,7 +95,7 @@ class CreateProduct extends Page
 
                     Select::make('attribute_group_id')
                         ->label('Attribute Group')
-                        ->options(AttributeGroup::where('type', AttributeGroup::FILTERABLE)->pluck('admin_name', 'id'))->required()->helperText('attributes family adds a group of attributes to your product. (eg. color, size, material, medium)
+                        ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('admin_name', 'id'))->required()->helperText('attributes family adds a group of attributes to your product. (eg. color, size, material, medium)
                             choose the family according to your product type.'),
                 ]),
             Section::make('Attribute Details')

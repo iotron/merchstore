@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Attribute\Attribute;
-use App\Models\Attribute\AttributeGroup;
+use App\Models\Filter\Filter;
+use App\Models\Filter\FilterGroup;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -22,7 +22,7 @@ class AttributeSeeder extends Seeder
         // Fetch Record From AttributeBag
         foreach ($attributeBag as $key => $data) {
             //Create Attribute
-            $attribute = Attribute::updateOrCreate([
+            $attribute = Filter::updateOrCreate([
                 'code' => $data->code,
                 'display_name' => $data->admin_name,
                 'type' => $data->type,
@@ -44,7 +44,7 @@ class AttributeSeeder extends Seeder
         }
         foreach ($groupBag as $key => $data) {
             //Create Group
-            $attributeGroup = AttributeGroup::updateOrCreate([
+            $attributeGroup = FilterGroup::updateOrCreate([
                 'admin_name' => $data->name,
                 'type' => $data->type,
                 'code' => $data->code,

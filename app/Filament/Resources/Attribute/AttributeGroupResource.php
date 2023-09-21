@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Attribute;
 
 use App\Filament\Resources\Attribute\AttributeGroupResource\Pages;
 use App\Filament\Resources\Attribute\AttributeGroupResource\RelationManagers;
-use App\Models\Attribute\AttributeGroup;
+use App\Models\Filter\FilterGroup;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
@@ -16,7 +16,7 @@ use Filament\Tables\Table;
 
 class AttributeGroupResource extends Resource
 {
-    protected static ?string $model = AttributeGroup::class;
+    protected static ?string $model = FilterGroup::class;
     protected static ?string $navigationGroup = 'Filters';
     protected static ?string $slug = 'attribute-groups';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -54,7 +54,7 @@ class AttributeGroupResource extends Resource
                         ->label(__('Choose Type'))
                         ->columnSpan(2)
                         ->nullable()
-                        ->options(AttributeGroup::TYPE_OPTIONS)->inline(),
+                        ->options(FilterGroup::TYPE_OPTIONS)->inline(),
 
                 ])->columns(2),
             ]);
@@ -73,8 +73,8 @@ class AttributeGroupResource extends Resource
                     ->badge()
                     ->colors([
                         'secondary',
-                        'primary' => AttributeGroup::FILTERABLE,
-                        'success' => AttributeGroup::STATIC,
+                        'primary' => FilterGroup::FILTERABLE,
+                        'success' => FilterGroup::STATIC,
 
                     ]),
 

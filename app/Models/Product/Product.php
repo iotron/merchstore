@@ -5,8 +5,8 @@ namespace App\Models\Product;
 
 use App\Helpers\Money\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
-use App\Models\Attribute\AttributeOption;
 use App\Models\Category\Category;
+use App\Models\Filter\FilterOption;
 use App\Models\Promotion\SaleProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -133,7 +133,7 @@ class Product extends Model implements HasMedia
 
     public function filterOptions(): BelongsToMany
     {
-        return $this->belongsToMany(AttributeOption::class,'product_filter_options');
+        return $this->belongsToMany(FilterOption::class,'product_filter_options');
     }
 
 

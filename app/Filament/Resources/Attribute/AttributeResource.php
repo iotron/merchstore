@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Attribute;
 
 use App\Filament\Resources\Attribute\AttributeResource\Pages;
 use App\Filament\Resources\Attribute\AttributeResource\RelationManagers;
-use App\Models\Attribute\Attribute;
+use App\Models\Filter\Filter;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,7 +16,7 @@ use Filament\Tables\Table;
 
 class AttributeResource extends Resource
 {
-    protected static ?string $model = Attribute::class;
+    protected static ?string $model = Filter::class;
     protected static ?string $navigationGroup = 'Filters';
     protected static ?string $slug = 'attributes';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
