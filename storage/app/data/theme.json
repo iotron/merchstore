@@ -1,0 +1,213 @@
+[
+    {
+        "name": "Kodomomuke Anime",
+        "url": "kodomomuke-anime",
+        "children": [
+            { "name": "Beyblade", "url": "beyblade" },
+            { "name": "Digimon", "url": "digimon" },
+            { "name": "Doraemon", "url": "doraemon" },
+            { "name": "Pokémon", "url": "pokemon" }
+        ]
+    },
+    {
+        "name": "Shounen Anime",
+        "url": "shounen-anime",
+        "children": [
+            { "name": "Bleach", "url": "bleach" },
+            { "name": "Black Clover", "url": "black-clover" },
+            { "name": "Chainsaw Man", "url": "chainsaw-man" },
+            { "name": "Death Note", "url": "death-note" },
+            {
+                "name": "Demon Slayer: Kimetsu no Yaiba",
+                "url": "demon-slayer-kimetsu-no-yaiba"
+            },
+            { "name": "Dragon Ball Z", "url": "dragon-ball-z" },
+            {
+                "name": "Fullmetal Alchemist: Brotherhood",
+                "url": "fullmetal-alchemist-brotherhood"
+            },
+            { "name": "Gintama", "url": "gintama" },
+            {
+                "name": "Hunter X Hunter (2011)",
+                "url": "hunter-x-hunter-2011"
+            },
+            { "name": "Haikyu!!", "url": "haikyu" },
+            { "name": "Samurai Champloo", "url": "samurai-champloo" },
+            {
+                "name": "JoJo's Bizarre Adventure",
+                "url": "jojos-bizarre-adventure"
+            },
+            { "name": "Jujutsu Kaisen", "url": "jujutsu-kaisen" },
+            { "name": "My Hero Academia", "url": "my-hero-academia" },
+            {
+                "name": "Great Teacher Onizuka",
+                "url": "great-teacher-onizuka"
+            },
+            {
+                "name": "The Disastrous Life Of Saiki K.",
+                "url": "the-disastrous-life-of-saiki-k"
+            },
+            {
+                "name": "Naruto & Naruto Shippuden",
+                "url": "naruto-naruto-shippuden"
+            },
+            { "name": "Spy X Family", "url": "spy-x-family" },
+            { "name": "One Piece", "url": "one-piece" },
+            { "name": "Attack On Titan", "url": "attack-on-titan" },
+            { "name": "One Punch Man", "url": "one-punch-man" },
+            { "name": "Tokyo Revengers", "url": "tokyo-revengers" },
+            { "name": "Noragami", "url": "noragami" },
+            { "name": "Hyouka", "url": "hyouka" },
+            { "name": "Beck", "url": "beck" },
+            { "name": "Kuroko's Basketball", "url": "kurokos-basketball" }
+        ]
+    },
+    {
+        "name": "Shoujo Anime",
+        "url": "shoujo-anime",
+        "children": [
+            { "name": "Fruits Basket", "url": "fruits-basket" },
+            {
+                "name": "Ouran High School Host Club",
+                "url": "ouran-high-school-host-club"
+            },
+            { "name": "Sailor Moon", "url": "sailor-moon" },
+            {
+                "name": "Ore Monogatari!! (My Love Story!!)",
+                "url": "ore-monogatari-my-love-story"
+            }
+        ]
+    },
+    {
+        "name": "Seinen Anime",
+        "url": "seinen-anime",
+        "children": [
+            { "name": "Bungo Stray Dogs", "url": "bungo-stray-dogs" },
+            {
+                "name": "Mushoku Tensei: Jobless Reincarnation",
+                "url": "mushoku-tensei-jobless-reincarnation"
+            },
+            { "name": "Monster", "url": "monster" },
+            { "name": "Ghost In The Shell", "url": "ghost-in-the-shell" },
+            { "name": "Fate/Zero", "url": "fate-zero" },
+            { "name": "Parasyte -The Maxim", "url": "parasyte-the-maxim" },
+            { "name": "Vinland Saga", "url": "vinland-saga" },
+            { "name": "Berserk", "url": "berserk" },
+            { "name": "Tokyo Ghoul", "url": "tokyo-ghoul" },
+            { "name": "Hellsing Ultimate", "url": "hellsing-ultimate" }
+        ]
+    },
+    {
+        "name": "Harem Anime",
+        "url": "harem-anime",
+        "children": [
+            { "name": "High School DXD", "url": "high-school-dxd" },
+            { "name": "To Love Ru", "url": "to-love-ru" },
+            { "name": "Amagami SS", "url": "amagami-ss" },
+            { "name": "Ranma 1/2", "url": "ranma-1-2" }
+        ]
+    },
+    {
+        "name": "Ecchi Anime",
+        "url": "ecchi-anime",
+        "children": [
+            { "name": "Kill La Kill", "url": "kill-la-kill" },
+            {
+                "name": "Food Wars: Shokugeki No Souma",
+                "url": "food-wars-shokugeki-no-souma"
+            },
+            { "name": "No Game No Life", "url": "no-game-no-life" },
+            { "name": "Devilman Crybaby", "url": "devilman-crybaby" }
+        ]
+    },
+    {
+        "name": "Marvel Superheroes",
+        "url": "marvel-superheroes",
+        "children": [
+            { "name": "Spiderman", "url": "spiderman" },
+            { "name": "Ironman", "url": "ironman" },
+            { "name": "Captain America", "url": "captain-america" },
+            { "name": "Hulk", "url": "hulk" },
+            { "name": "Black Panther", "url": "black-panther" },
+            { "name": "Black Widow", "url": "black-widow" },
+            { "name": "Scarlet Witch", "url": "scarlet-witch" },
+            { "name": "Thor", "url": "thor" },
+            { "name": "Dr. Strange", "url": "dr-strange" },
+            { "name": "Thanos", "url": "thanos" },
+            { "name": "Wolverine", "url": "wolverine" },
+            { "name": "Deadpool", "url": "deadpool" }
+        ]
+    },
+    {
+        "name": "DC Comics Superheroes",
+        "url": "dc-comics-superheroes",
+        "children": [
+            { "name": "Superman", "url": "superman" },
+            { "name": "Batman", "url": "batman" },
+            { "name": "Flash", "url": "flash" },
+            { "name": "Catwoman", "url": "catwoman" },
+            { "name": "Wonder Woman", "url": "wonder-woman" },
+            { "name": "Aquaman", "url": "aquaman" },
+            { "name": "Shazam", "url": "shazam" },
+            { "name": "Joker", "url": "joker" }
+        ]
+    },
+    {
+        "name": "Movies",
+        "url": "movies",
+        "children": [
+            { "name": "Harry Potter", "url": "harry-potter" },
+            { "name": "Star Wars", "url": "star-wars" },
+            { "name": "Disney", "url": "disney" }
+        ]
+    },
+    {
+        "name": "Webseries",
+        "url": "webseries",
+        "children": [
+            {
+                "name": "Game of Thrones (2011–2019)",
+                "url": "game-of-thrones"
+            },
+            { "name": "Stranger Things (2016)", "url": "stranger-things" },
+            {
+                "name": "The Walking Dead (2010 to 2022)",
+                "url": "the-walking-dead"
+            },
+            { "name": "Money Heist (2017–2021)", "url": "money-heist" },
+            { "name": "Mirzapur (2011–2019)", "url": "mirzapur" },
+            { "name": "The Squid Game (2021)", "url": "the-squid-game" },
+            { "name": "Vikings (2013–2020)", "url": "vikings" },
+            { "name": "Breaking Bad (2008–2013)", "url": "breaking-bad" }
+        ]
+    },
+    {
+        "name": "KPOP",
+        "url": "kpop",
+        "children": [
+            { "name": "BTS", "url": "bts" },
+            { "name": "BlackPink", "url": "blackpink" },
+            { "name": "EXO", "url": "exo" },
+            { "name": "Twice", "url": "twice" },
+            { "name": "Seventeen", "url": "seventeen" }
+        ]
+    },
+    {
+        "name": "Childhood",
+        "url": "childhood",
+        "children": [
+            { "name": "Scooby Doo", "url": "scooby-doo" },
+            { "name": "Johnny Bravo", "url": "johnny-bravo" },
+            { "name": "Bob The Builder", "url": "bob-the-builder" },
+            { "name": "Ben 10", "url": "ben-10" },
+            { "name": "The Powerpuff Girls", "url": "the-powerpuff-girls" },
+            { "name": "Dexter’s Laboratory", "url": "dexters-laboratory" },
+            { "name": "Rick and Morty", "url": "rick-and-morty" },
+            { "name": "Samurai Jack", "url": "samurai-jack" },
+            {
+                "name": "Courage The Cowardly Dog",
+                "url": "courage-the-cowardly-dog"
+            }
+        ]
+    }
+]
