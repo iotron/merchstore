@@ -23,6 +23,7 @@ Route::prefix('/')->group(base_path('routes/ver/auth/customer.php'));
 
 Route::prefix('products')->group(base_path('routes/ver/products.php'));
 Route::prefix('categories')->group(base_path('routes/ver/categories.php'));
+Route::prefix('themes')->group(base_path('routes/ver/themes.php'));
 
 // Cart
 Route::middleware(['auth:customer'])->group(base_path('routes/ver/cart.php'));
