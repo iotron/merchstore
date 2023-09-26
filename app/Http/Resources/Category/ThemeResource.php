@@ -14,10 +14,11 @@ class ThemeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request,[
-            // 'id' => $this->id,
-            // 'name' => $this->name,
-            // 'url' => $this->url,
-        ]);
+        return [
+            'name' => $this->name,
+            'url' => $this->url,
+            'parent_id' => $this->parent_id,
+            'childern' => ThemeResource::collection($this->whenLoaded('children'))
+        ];
     }
 }
