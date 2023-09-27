@@ -22,7 +22,7 @@ class FilterOption extends Model
 
     public function attribute(): BelongsTo
     {
-        return $this->belongsTo(Attribute::class, 'attribute_id', 'id');
+        return $this->belongsTo(Filter::class, 'attribute_id', 'id');
     }
 
 

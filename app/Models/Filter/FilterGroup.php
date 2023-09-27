@@ -28,7 +28,7 @@ class FilterGroup extends Model
 
     public function attributes()
     {
-        return $this->belongsToMany(Attribute::class, 'attribute_group_mappings');
+        return $this->belongsToMany(Filter::class,'attribute_group_mappings', 'attribute_group_id', 'attribute_id');
     }
 
     public function product()

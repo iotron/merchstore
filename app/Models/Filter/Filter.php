@@ -32,12 +32,12 @@ class Filter extends Model
 
     public function options()
     {
-        return $this->hasMany(AttributeOption::class, 'attribute_id', 'id');
+        return $this->hasMany(FilterOption::class, 'attribute_id', 'id');
     }
 
     public function groups()
     {
-        return $this->belongsToMany(AttributeGroup::class, 'attribute_group_mappings');
+        return $this->belongsToMany(FilterGroup::class, 'attribute_group_mappings', 'attribute_group_id', 'attribute_id');
     }
 
     public function scopeConfigurable($query)
