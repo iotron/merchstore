@@ -3,6 +3,7 @@
 namespace App\Helpers\Cart\Services\Voucher;
 
 use App\Helpers\Cart\Contracts\CartServiceContract;
+use App\Models\Product\Product;
 use App\Models\Promotion\Voucher;
 
 class VoucherCartService
@@ -28,6 +29,7 @@ class VoucherCartService
             return true;
         }
         $validConditionCount = 0;
+
 
 
         foreach ($this->conditions as $condition)
@@ -76,6 +78,26 @@ class VoucherCartService
 
     public function checkCondition(array $condition):bool
     {
+
+        $this->cartService->products()->each(function (Product $product) use($condition) {
+
+            $attributeValue = $this->getAttributeValue($condition, $product);
+            if (empty($attributeValue))
+            {
+                $this->cartService->setError($condition['attribute']."'s value not resolved");
+            }
+
+            if ($this->validateAttribute($condition,$attributeValue,$product))
+            {
+
+            }
+
+
+        });
+
+
+
+
         return $this->conditionValidator->validate($condition);
     }
 
