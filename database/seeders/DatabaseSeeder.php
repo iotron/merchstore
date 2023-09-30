@@ -17,9 +17,9 @@ class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             CustomerGroupSeeder::class,
             CustomerSeeder::class,
-            AttributeSeeder::class,
+           // AttributeSeeder::class,
             CategorySeeder::class,
-            ProductSeeder::class,
+          //  ProductSeeder::class,
             SaleSeeder::class,
             VoucherSeeder::class,
             ThemeSeeder::class
