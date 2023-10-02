@@ -166,7 +166,7 @@ class EditProduct extends EditRecord
                 TiptapEditor::make('description')
                     ->label(__('Long Description'))
                     ->hint('Max - 2000')
-                    ->maxLength(2000)
+                    //->maxLength(2000)
                     ->output(TiptapOutput::Html)
                     ->required(),
 

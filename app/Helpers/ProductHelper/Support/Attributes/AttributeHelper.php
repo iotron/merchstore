@@ -2,9 +2,11 @@
 
 namespace App\Helpers\ProductHelper\Support\Attributes;
 
-use App\Models\Attribute\AttributeGroup;
+//use App\Models\Attribute\AttributeGroup;
+use App\Models\Filter\FilterGroup;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+
 
 class AttributeHelper
 {
@@ -16,7 +18,7 @@ class AttributeHelper
      */
     public function getProductAttributes($id): array
     {
-        $groups = AttributeGroup::where('id', $id)
+        $groups = FilterGroup::where('id', $id)
             ->with('attributes.options')->get();
 
         return $groups->map(function ($group, $key) {
