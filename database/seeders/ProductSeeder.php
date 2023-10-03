@@ -55,17 +55,10 @@ class ProductSeeder extends Seeder
                     $filterGroup = FilterGroup::with('filters','filters.options')->firstWhere('id',$product->filter_group_id);
 
                     $filterGroup->filters->map(function ($filter) use($product) {
-
-                        $filter->options->map(function ($item) use($product) {
-                            $product->filterOptions()->attach($item->id);
-                        });
-
+                        $product->filterOptions()->attach($filter->options->first->id);
                     });
 
-
-
-
-
+                    
                 });
 
 
