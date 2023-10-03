@@ -18,12 +18,10 @@ class ProductFlat extends Model
         'height',
         'length',
         'weight',
-        'filter_attributes',
     ];
 
     protected $casts = [
         'meta_data' => 'array',
-        'filter_attributes' => 'array',
     ];
 
 

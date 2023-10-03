@@ -23,7 +23,6 @@ class ProductFlatFactory extends Factory
             'width' => 324,
             'length' => 233,
             'weight' => 232,
-            'filter_attributes' => []
         ];
     }
 }

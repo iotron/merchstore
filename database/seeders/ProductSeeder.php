@@ -21,39 +21,10 @@ class ProductSeeder extends Seeder
         $parentCategories = Category::with('children')->whereHas('children')->parents()->where('status', true)->get();
         // Create Product + Product Flat
 
-        $filterGroup = FilterGroup::with('filters','filters.options')->whereIn('id',[5,6])->get();
-
-        $parentCategories->each(function(Category $category) use($filterGroup){
-
-            $filterGroupId = $filterGroup->shuffle()->all()[0]->id;
-            $selectedFilterGroup = $filterGroup->firstWhere('id',$filterGroupId);
-            $filterOptions = $selectedFilterGroup->filters->map(function (Filter $filter){
-
-                $optionBag[$filter['code']] = $filter->options->take(3)->mapWithKeys(function ($item, $key) use($filter){
-                    return [$item['admin_name'] => $item['admin_name']];
-
-                })->toArray();
-                return $optionBag;
-
-            })->toArray();
-
-
-            $filter_attributes = [];
-
-            foreach ($filterOptions as $option)
-            {
-                foreach ($option as $key => $value)
-                {
-                    $filter_attributes[$key] = array_values($value);
-                }
-            }
-
-
+        $parentCategories->each(function(Category $category) {
             Product::factory()->count(10)
-                ->hasFlat(1,[
-                    'filter_attributes' => $filter_attributes
-                ])
-                ->create(['filter_group_id' => $filterGroupId])
+                ->hasFlat(1)
+                ->create()
                 ->each(function (Product $product) use($category){
                     // Add Category (Parent)
                     $product->categories()->attach($category->id,['base_category' => true]);
@@ -78,6 +49,20 @@ class ProductSeeder extends Seeder
                         'init_quantity' => fake()->numberBetween(200, 600),
                         'sold_quantity' => 0,
                     ]);
+
+
+                    // Attach Filter Options
+                    $filterGroup = FilterGroup::with('filters','filters.options')->firstWhere('id',$product->filter_group_id);
+
+                    $filterGroup->filters->map(function ($filter) use($product) {
+
+                        $filter->options->map(function ($item) use($product) {
+                            $product->filterOptions()->attach($item->id);
+                        });
+
+                    });
+
+
 
 
 
