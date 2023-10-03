@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attribute_groups', function (Blueprint $table) {
+        Schema::create('filter_groups', function (Blueprint $table) {
             $table->id();
             $table->string('admin_name');
             $table->string('code')->unique();
@@ -20,13 +20,11 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('attribute_group_mappings', function (Blueprint $table) {
-            $table->primary(['attribute_id', 'attribute_group_id']);
-            $table->foreignId('attribute_id')->constrained('attributes')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('attribute_group_id')->constrained('attribute_groups')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('filter_group_mappings', function (Blueprint $table) {
+            $table->primary(['filter_id', 'filter_group_id']);
+            $table->foreignId('filter_id')->constrained('filters')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('filter_group_id')->constrained('filter_groups')->onUpdate('cascade')->onDelete('cascade');
         });
-
-
     }
 
     /**
@@ -34,7 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attribute_groups');
-        Schema::dropIfExists('attribute_groups_mappings');
+        Schema::dropIfExists('filter_groups');
+        Schema::dropIfExists('filter_group_mappings');
     }
 };

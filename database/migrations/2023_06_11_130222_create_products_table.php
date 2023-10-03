@@ -43,8 +43,7 @@ return new class extends Migration
             $table->float('price', 10, 2, true)->default(0.00);
 
 
-
-            $table->foreignId('attribute_group_id')->nullable()->constrained('attribute_groups')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('filter_group_id')->nullable()->constrained('filter_groups')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('parent_id')->nullable()->constrained('products')->onUpdate('cascade')->onDelete('cascade');
 
             // For Cart

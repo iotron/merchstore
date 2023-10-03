@@ -4,6 +4,8 @@ namespace App\Models\Filter;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Filter extends Model
 {
@@ -12,38 +14,50 @@ class Filter extends Model
 
     protected $fillable = [
         'code',
-        'admin_name',
+        'display_name',
         'type',
-        'position',
+        'desc',
         'validation',
+        'position',
         'is_filterable',
         'is_configurable',
-        'is_visible_on_front',
-        'is_required',
         'is_user_defined',
+        'is_required',
+        'is_visible_on_front',
     ];
+
 
     protected $casts = [
         'validation' => 'array',
+        'is_filterable' => 'boolean',
+        'is_configurable' => 'boolean',
+        'is_user_defined' => 'boolean',
+        'is_required' => 'boolean',
+        'is_visible_on_front' => 'boolean'
     ];
 
 
 
 
-    public function options()
+    public function options(): HasMany
     {
-        return $this->hasMany(FilterOption::class, 'attribute_id', 'id');
+        return $this->hasMany(FilterOption::class, 'filter_id', 'id');
     }
 
-    public function groups()
+    public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(FilterGroup::class, 'attribute_group_mappings', 'attribute_group_id', 'attribute_id');
+        return $this->belongsToMany(FilterGroup::class, 'filter_group_mappings', 'filter_group_id', 'filter_id');
     }
 
     public function scopeConfigurable($query)
     {
         return $query->where('is_configurable', true)->orderBy('position');
     }
+
+
+
+
+
 
 
 

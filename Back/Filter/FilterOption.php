@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Filter;
+namespace Back\Models\Filter;
 
 use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,10 +20,9 @@ class FilterOption extends Model
     ];
 
 
-
-    public function filter(): BelongsTo
+    public function attribute(): BelongsTo
     {
-        return $this->belongsTo(Filter::class, 'filter_id', 'id');
+        return $this->belongsTo(Filter::class, 'attribute_id', 'id');
     }
 
 
@@ -31,7 +30,6 @@ class FilterOption extends Model
     {
         return $this->belongsToMany(Product::class,'product_filter_options');
     }
-
 
 
 }

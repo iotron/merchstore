@@ -60,7 +60,7 @@ class Product extends Model implements HasMedia
         'status',
         'base_price',
         'price',
-        'attribute_group_id',
+        'filter_group_id',
         'parent_id',
         'min_range',
         'max_range'

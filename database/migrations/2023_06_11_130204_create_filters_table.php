@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attributes', function (Blueprint $table) {
+        Schema::create('filters', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
             $table->string('display_name'); // change to display_name from admin_name
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attributes');
+        Schema::dropIfExists('filters');
     }
 };

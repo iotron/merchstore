@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_filter_options', function (Blueprint $table) {
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('attribute_option_id')->constrained('attribute_options')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('filter_option_id')->constrained('filter_options')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 

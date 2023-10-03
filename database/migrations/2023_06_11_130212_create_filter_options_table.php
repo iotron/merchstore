@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attribute_options', function (Blueprint $table) {
+        Schema::create('filter_options', function (Blueprint $table) {
             $table->id();
             $table->string('admin_name');
             $table->string('swatch_value')->nullable();
             $table->unsignedBigInteger('position')->nullable();
-            $table->foreignId('attribute_id')->nullable()->constrained('attributes')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('filter_id')->nullable()->constrained('filters')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attribute_options');
+        Schema::dropIfExists('filter_options');
     }
 };
