@@ -25,7 +25,6 @@ class CreateProduct extends Page
     public ?string $type = null;
     public int $step = 1;
     public bool $isContinue = false;
-    public array|object $attributeBag = [];
     protected static string $view = 'filament.custom.default.resources.product.pages.product-create';
 
     /**
@@ -54,7 +53,7 @@ class CreateProduct extends Page
      */
     protected function configSchema(): array
     {
-        return (empty($this->data['attribute_group_id'])) ? [] : $this->getAttributeDetails($this->data['attribute_group_id']);
+        return (empty($this->data['filter_group_id'])) ? [] : $this->getFilterDetails($this->data['filter_group_id']);
     }
 
 
@@ -62,10 +61,12 @@ class CreateProduct extends Page
      * @param int $id
      * @return array
      */
-    private function getAttributeDetails(int $id): array
+    private function getFilterDetails(int $id): array
     {
-        $group = FilterGroup::where('id', $id)->with('attributes.options')->first();
-        return $group->attributes->map(function ($item, $key) {
+        $group = FilterGroup::where('id', $id)->with('filters.options')->first();
+
+
+        return $group->filters->map(function ($item, $key) {
             $optionBag = $item->options->mapWithKeys(function ($item, $key) {
                 return [$item['admin_name'] => $item['admin_name']];
             })->toArray();
@@ -93,16 +94,16 @@ class CreateProduct extends Page
                         ->unique(table: Product::class)
                         ->helperText('Stock Keeping Unit (SKU) is the unique id that will be assigned to your product.'),
 
-                    Select::make('attribute_group_id')
-                        ->label('Attribute Group')
-                        ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('admin_name', 'id'))->required()->helperText('attributes family adds a group of attributes to your product. (eg. color, size, material, medium)
+                    Select::make('filter_group_id')
+                        ->label('Filter Group')
+                        ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('admin_name', 'id'))->required()->helperText('filters family adds a group of attributes to your product. (eg. color, size, material, medium)
                             choose the family according to your product type.'),
                 ]),
-            Section::make('Attribute Details')
+            Section::make('Filter Details')
                 ->description('Description')
                 ->columns(2)
                 ->schema($this->configSchema())
-                ->schema($this->configSchema())->visible(fn (Livewire $livewire): bool => $livewire->type == 'configurable'),
+                ->visible(fn (Livewire $livewire): bool => $livewire->type == 'configurable'),
         ];
     }
 

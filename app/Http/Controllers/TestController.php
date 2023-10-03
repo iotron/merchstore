@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Promotion\Sales\ProductSaleHelper;
 use App\Models\Category\Category;
+use App\Models\Filter\Filter;
+use App\Models\Filter\FilterGroup;
 use App\Models\Product\Product;
 use App\Models\Promotion\Sale;
 use Illuminate\Http\Request;
@@ -17,8 +19,30 @@ class TestController extends Controller
     {
 
 
-        $saleProducts = new ProductSaleHelper();
-        $saleProducts->reindexSaleableProducts();
+        $filterGroup = FilterGroup::with('filters','filters.options')->whereIn('id',[5,6])->get();
+        $filterGroupId = $filterGroup->shuffle()->all()[0]->id;
+        $selectedFilterGroup = $filterGroup->firstWhere('id',$filterGroupId);
+
+
+
+
+        dd($bag);
+
+
+        dd(
+            $filterGroupId,
+            $filterOptions
+        );
+
+
+
+
+
+
+
+
+//        $saleProducts = new ProductSaleHelper();
+//        $saleProducts->reindexSaleableProducts();
 
 
     }
