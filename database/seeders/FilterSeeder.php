@@ -16,12 +16,13 @@ class FilterSeeder extends Seeder
      */
     public function run(): void
     {
+
         $groupBag = $this->getFromStorage('data/attribute-group.json');
-        $filterBag = $this->getFromStorage('data/attribute.json');
-        $finalfilters = new Collection();
-        // Fetch Record From filterBag
-        foreach ($filterBag as $key => $data) {
-            //Create filter
+        $attributeBag = $this->getFromStorage('data/attribute.json');
+        $finalAttributes = new Collection();
+        // Fetch Record From AttributeBag
+        foreach ($attributeBag as $key => $data) {
+            //Create Attribute
             $filter = Filter::updateOrCreate([
                 'code' => $data->code,
                 'display_name' => $data->admin_name,
@@ -33,7 +34,7 @@ class FilterSeeder extends Seeder
                 'is_visible_on_front' => $data->is_visible,
                 'is_user_defined' => false,
             ]);
-            $finalfilters->push($filter);
+            $finalAttributes->push($filter);
             // Create Options
             foreach ($data->options as $value) {
                 $filter->options()->updateOrCreate([
@@ -50,10 +51,11 @@ class FilterSeeder extends Seeder
                 'code' => $data->code,
                 'position' => $key,
             ]);
-            $filters = $finalfilters->whereIn('code', $data->filters)->pluck('id');
-            // Attach filter
+            $filters = $finalAttributes->whereIn('code', $data->attributes)->pluck('id');
+//            // Attach attribute
             $filterGroup->filters()->attach($filters);
         }
+
     }
 
 

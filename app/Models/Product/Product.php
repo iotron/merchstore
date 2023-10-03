@@ -6,6 +6,7 @@ namespace App\Models\Product;
 use App\Helpers\Money\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
 use App\Models\Category\Category;
+use App\Models\Filter\FilterGroup;
 use App\Models\Filter\FilterOption;
 use App\Models\Promotion\SaleProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -128,6 +129,11 @@ class Product extends Model implements HasMedia
     }
 
 
+
+    public function filterGroup()
+    {
+        return $this->belongsTo(FilterGroup::class,'filter_group_id','id');
+    }
 
 
 
