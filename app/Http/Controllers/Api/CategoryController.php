@@ -16,7 +16,7 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::where('status', true)->with('children', 'children.children')->parents()->get();
+        $categories = Category::where('status', true)->with('children', 'children.children', 'media')->parents()->get();
 
        return CategoryIndexResource::collection($categories);
     }

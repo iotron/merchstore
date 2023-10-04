@@ -22,6 +22,9 @@ class CategoryIndexResource extends JsonResource
             'view_count' => $this->view_count,
             'order' => $this->order,
             'children' => CategoryIndexResource::collection($this->whenLoaded('children')),
+            'categoryGallary' => [
+                'srcset' => $this->getFirstMedia('categoryGallary') ? $this->getFirstMedia('categoryGallary')->getSrcset('optimized') : null,
+            ],
         ];
     }
 }
