@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ThemeResource extends Resource
 {
     protected static ?string $model = Theme::class;
-
+    protected static ?string $slug = 'themes';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

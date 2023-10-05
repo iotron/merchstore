@@ -10,6 +10,7 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use FilamentTiptapEditor\TiptapEditor;
 
@@ -110,7 +111,10 @@ class CategoryResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                //
+                SelectFilter::make('Category')
+                    ->relationship('parent', 'name'),
+                SelectFilter::make('status')
+                    ->options([true=>'True', false=>'False'])
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
