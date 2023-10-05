@@ -6,6 +6,7 @@ use App\Filament\Resources\Category\CategoryResource\Pages;
 use App\Filament\Resources\Category\CategoryResource\RelationManagers;
 use App\Models\Category\Category;
 use Filament\Forms;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -32,7 +33,15 @@ class CategoryResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('order')->inlineLabel()->integer()->minValue(0)->maxValue(999999),
                     ])->columns(3),
-
+                
+                Forms\Components\Section::make('Media')
+                        ->schema([
+                            SpatieMediaLibraryFileUpload::make('categoryGallary')
+                                ->multiple()
+                                ->collection('categoryGallary')
+                                ->columnSpan(3)
+                                ->reorderable()
+                        ])->columns(3),
 
                 Forms\Components\Section::make('General Info')
                     ->schema([
@@ -58,7 +67,7 @@ class CategoryResource extends Resource
                         TiptapEditor::make('desc')
                             ->columnSpanFull()
                             ->hint(__('Max: 30,000'))
-                            ->maxLength(30000),
+                            ->maxContentWidth(30000),
 
                     ])->columns(3),
 

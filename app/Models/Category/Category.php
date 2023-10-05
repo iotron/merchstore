@@ -11,10 +11,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Category extends Model
+class Category extends Model implements HasMedia
 {
-    use HasFactory,HasChildren;
+    use HasFactory,HasChildren, InteractsWithMedia;
 
 
     protected $fillable = [
@@ -38,6 +42,29 @@ class Category extends Model
 //        'hsn_8' => AsCollection::class,
 //        'gst' => AsCollection::class,
     ];
+
+    // Spatie Media Library Conversion
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('categoryGallery')
+        ->useFallbackUrl(asset('display.webp'))
+        ->useFallbackUrl(asset('display.webp'), 'thumb_1')
+        ->useFallbackUrl(asset('display.webp'), 'thumb_2')
+        ->useFallbackUrl(asset('display.webp'), 'thumb_3');
+    }
+
+    public function registerMediaConversions(Media $media = null): void
+    {
+        if ($media && $media->extension === Manipulations::FORMAT_GIF) {
+            return;
+        }
+
+        $this->addMediaConversion('optimized')
+        ->format(Manipulations::FORMAT_WEBP)
+            ->withResponsiveImages()
+            // uncomment in production
+            ->nonQueued();
+    }
 
     public function getRouteKeyName(): string
     {
