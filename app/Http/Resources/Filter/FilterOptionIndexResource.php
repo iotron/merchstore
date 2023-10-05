@@ -15,7 +15,8 @@ class FilterOptionIndexResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'admin_name' => $this->admin_name,
+            'admin_name' => $this->filter->display_name,
+            'value' => $this->admin_name,
         ];
     }
 }
