@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Filament\Resources\Category\CategoryResource\Pages;
+namespace App\Filament\Resources\Category\ThemeResource\Pages;
 
-use App\Filament\Resources\Category\CategoryResource;
+use App\Filament\Resources\Category\ThemeResource;
+use Filament\Actions;
 use Filament\Actions\EditAction;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewCategory extends ViewRecord
+class ViewThemes extends ViewRecord
 {
-    protected static string $resource = CategoryResource::class;
+    protected static string $resource = ThemeResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -44,31 +44,17 @@ class ViewCategory extends ViewRecord
                             ->copyMessage('Copied!')
                             ->copyMessageDuration(1500),
                     ]),
-                    Section::make('Variable')
-                        ->columns([
-                            'default' => 2,
-                            'md' => 3,
-                        ])
-                        ->schema([
-                            IconEntry::make('status')
-                                ->boolean(),
-                            IconEntry::make('is_visible_on_front')
-                                ->boolean(),
-                            TextEntry::make('view_count')->label('View Count'),
-                            TextEntry::make('order')->label('Order'),
-                        ]),
-
-                    Section::make('Date')
-                        ->columns([
-                            'default' => 2,
-                            'md' => 3,
-                        ])
-                        ->schema([
-                            TextEntry::make('created_at')
-                                ->dateTime(),
-                            TextEntry::make('updated_at')
-                                ->dateTime(),
-                        ])
+                Section::make('Date')
+                ->columns([
+                    'default' => 2,
+                    'md' => 3,
+                ])
+                    ->schema([
+                        TextEntry::make('created_at')
+                        ->dateTime(),
+                        TextEntry::make('updated_at')
+                        ->dateTime(),
+                    ])
 
             ]);
     }

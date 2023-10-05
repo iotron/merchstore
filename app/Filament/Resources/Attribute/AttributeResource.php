@@ -118,15 +118,25 @@ class AttributeResource extends Resource
                 Tables\Columns\TextColumn::make('display_name')->label(__('Name')),
                 Tables\Columns\TextColumn::make('type'),
                 //                Tables\Columns\TextColumn::make('position'),
-                Tables\Columns\BooleanColumn::make('is_filterable')->label(__('Filterable'))->toggleable(),
-                Tables\Columns\BooleanColumn::make('is_configurable')->label(__('Configurable'))->toggleable(),
-                Tables\Columns\BooleanColumn::make('is_user_defined')->label(__('User Define'))->toggleable(),
-                Tables\Columns\BooleanColumn::make('is_required')->label(__('Required'))->toggleable(),
-                Tables\Columns\BooleanColumn::make('is_visible_on_front')->label(__('Visibility'))->toggleable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime(),
+            Tables\Columns\IconColumn::make('is_filterable')->label(__('Filterable'))
+                        ->boolean()
+                        ->toggleable(),
+            Tables\Columns\IconColumn::make('is_configurable')->label(__('Configurable'))
+                        ->boolean()
+                        ->toggleable(),
+            Tables\Columns\IconColumn::make('is_user_defined')->label(__('User Define'))
+                        ->boolean()
+                        ->toggleable(),
+            Tables\Columns\IconColumn::make('is_required')->label(__('Required'))
+                        ->boolean()
+                        ->toggleable(),
+            Tables\Columns\IconColumn::make('is_visible_on_front')->label(__('Visibility'))
+                        ->boolean()
+                        ->toggleable(),
+            Tables\Columns\TextColumn::make('created_at')
+                        ->dateTime(),
+            Tables\Columns\TextColumn::make('updated_at')
+                        ->dateTime(),
             ])
             ->filters([
                 //

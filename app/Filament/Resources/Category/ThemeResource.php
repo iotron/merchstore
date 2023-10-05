@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Category;
 
 use App\Filament\Resources\Category\ThemeResource\Pages;
-use App\Filament\Resources\Category\ThemeResource\RelationManagers;
 use App\Models\Category\Theme;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -83,6 +82,7 @@ class ThemeResource extends Resource
             'index' => Pages\ListThemes::route('/'),
             'create' => Pages\CreateTheme::route('/create'),
             'edit' => Pages\EditTheme::route('/{record}/edit'),
+            'view' => Pages\ViewThemes::route('/{record}'),
         ];
     }    
 }
