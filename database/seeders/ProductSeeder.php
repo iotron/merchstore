@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category\Category;
+use App\Models\Category\Theme;
 use App\Models\Filter\Filter;
 use App\Models\Filter\FilterGroup;
 use App\Models\Product\Product;
@@ -18,14 +19,15 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $parentCategories = Category::with('children')->whereHas('children')->parents()->where('status', true)->get();
         // Create Product + Product Flat
+        $parentCategories = Category::with('children')->whereHas('children')->parents()->where('status', true)->get();
+        $parentThemes = Theme::with('children')->whereHas('children')->parents()->get();
 
-        $parentCategories->each(function(Category $category) {
+        $parentCategories->each(function(Category $category) use($parentThemes) {
             Product::factory()->count(10)
                 ->hasFlat(1)
                 ->create()
-                ->each(function (Product $product) use($category){
+                ->each(function (Product $product) use($category, $parentThemes){
                     // Add Category (Parent)
                     $product->categories()->attach($category->id,['base_category' => true]);
                     // Add Category (Children)
@@ -33,6 +35,12 @@ class ProductSeeder extends Seeder
                     {
                         $product->categories()->attach($category->children->random(2));
                     }
+
+                    // adding parent theme
+                    $product->themes()->attach($parentThemes->random());
+                    // adding children themes
+                    $themes = $parentThemes->pluck('children')->flatten()->random(2);
+                    $product->themes()->attach($themes);
 
                     // Add Stock
                     $stock = $product->stocks()->create([

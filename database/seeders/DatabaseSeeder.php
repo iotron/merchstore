@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
           //  AttributeSeeder::class,
             FilterSeeder::class,
+            ThemeSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
             SaleSeeder::class,
             VoucherSeeder::class,
-            ThemeSeeder::class
         ]);
     }
 }

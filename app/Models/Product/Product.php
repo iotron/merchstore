@@ -6,6 +6,7 @@ namespace App\Models\Product;
 use App\Helpers\Money\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
 use App\Models\Category\Category;
+use App\Models\Category\Theme;
 use App\Models\Filter\FilterGroup;
 use App\Models\Filter\FilterOption;
 use App\Models\Promotion\SaleProduct;
@@ -26,7 +27,9 @@ class Product extends Model implements HasMedia
 
     protected ?ProductTypeSupportContract $typeInstance=null;
 
+    // Pivot tables with product
     public const PRODUCT_CATEGORY_TABLE='product_categories';
+    public const PRODUCT_THEME_TABLE = 'product_themes';
 
     // product type
     public const SIMPLE = 'simple';
@@ -213,6 +216,11 @@ class Product extends Model implements HasMedia
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, Product::PRODUCT_CATEGORY_TABLE)->withPivot('base_category');
+    }
+
+    public function themes():BelongsToMany
+    {
+        return $this->belongsToMany(Theme::class, Product::PRODUCT_THEME_TABLE)->withPivot('base_theme');
     }
 
     /**
