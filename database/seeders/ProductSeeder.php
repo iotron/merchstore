@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
     {
         // Create Product + Product Flat
         $parentCategories = Category::with('children')->whereHas('children')->parents()->where('status', true)->get();
-        $parentThemes = Theme::with('children')->whereHas('children')->parents()->get();
+        $parentThemes = Theme::Parents()->with('children')->get();
 
         $parentCategories->each(function(Category $category) use($parentThemes) {
             Product::factory()->count(10)
@@ -36,10 +36,13 @@ class ProductSeeder extends Seeder
                         $product->categories()->attach($category->children->random(2));
                     }
 
+
+
                     // adding parent theme
-                    $product->themes()->attach($parentThemes->random());
+                    $selectedParentTheme = $parentThemes->random();
+                    $product->themes()->attach($selectedParentTheme);
                     // adding children themes
-                    $themes = $parentThemes->pluck('children')->flatten()->random(2);
+                    $themes = $selectedParentTheme->children->random(2);
                     $product->themes()->attach($themes);
 
                     // Add Stock
