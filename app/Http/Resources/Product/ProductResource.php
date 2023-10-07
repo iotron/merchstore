@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Product;
 
+use App\Http\Resources\Category\ThemeResource;
 use App\Http\Resources\Filter\FilterOptionIndexResource;
 use App\Http\Resources\Filter\FilterOptionResource;
 use App\Http\Resources\MediaResource;
@@ -39,7 +40,14 @@ class ProductResource extends ProductIndexResource
             'flat' => new ProductFlatResource($this->whenLoaded('flat')),
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d-m-Y'),
-            'filter_options' => FilterOptionIndexResource::collection($this->whenLoaded('filterOptions'))
+            'filter_options' => FilterOptionIndexResource::collection($this->whenLoaded('filterOptions')),
+            'themes' => $this->themes->map(function ($theme) {
+                return [
+                    'name' => $this->name,
+                    'url' => $this->url,
+                    'parent_id'=>$this->parent_id
+                ];
+            })
         ]);
     }
 }
