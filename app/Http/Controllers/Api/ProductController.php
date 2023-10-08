@@ -51,7 +51,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load('flat','media','filterOptions','filterOptions.filter', 'themes');
+        $product->load('flat','media','filterOptions','filterOptions.filter', 'themes', 'feedbacks');
         return ProductResource::make($product);
     }
 
