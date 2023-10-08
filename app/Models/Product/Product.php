@@ -231,5 +231,10 @@ class Product extends Model implements HasMedia
         return $this->hasMany(Product::class, 'parent_id');
     }
 
+    public function feedbacks(): HasMany
+    {
+        return $this->hasMany(ProductFeedback::class, 'product_id');
+    }
+
 
 }

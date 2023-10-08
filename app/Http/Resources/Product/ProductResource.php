@@ -41,13 +41,8 @@ class ProductResource extends ProductIndexResource
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d-m-Y'),
             'filter_options' => FilterOptionIndexResource::collection($this->whenLoaded('filterOptions')),
-            'themes' => $this->themes->map(function ($theme) {
-                return [
-                    'name' => $this->name,
-                    'url' => $this->url,
-                    'parent_id'=>$this->parent_id
-                ];
-            })
+            'themes' => ThemeResource::collection($this->whenLoaded('themes')),
+            'feedbacks' => ProductFeedbackResource::collection($this->whenLoaded('feedbacks'))
         ]);
     }
 }
