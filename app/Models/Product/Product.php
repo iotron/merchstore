@@ -223,6 +223,10 @@ class Product extends Model implements HasMedia
         return $this->belongsToMany(Theme::class, Product::PRODUCT_THEME_TABLE)->withPivot('base_theme');
     }
 
+    public function parentThemes()
+    {
+        return $this->belongsToMany(Theme::class, Product::PRODUCT_THEME_TABLE)->where('parent_id', null);
+    }
     /**
      * Get the product variants that owns the product.
      */

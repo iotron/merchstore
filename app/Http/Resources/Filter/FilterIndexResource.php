@@ -5,7 +5,7 @@ namespace App\Http\Resources\Filter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FilterOptionIndexResource extends JsonResource
+class FilterIndexResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,9 +14,10 @@ class FilterOptionIndexResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            //'admin_name' => $this->filter->display_name,
-            'value' => $this->admin_name,
-        ];
+        return ['code' => $this->code,
+        'display_name' => $this->display_name,
+       // 'options' => $this->options,
+        'options' => FilterOptionIndexResource::collection($this->options),
+    ];
     }
 }
