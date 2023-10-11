@@ -25,22 +25,24 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 
-        $query = Product::with('flat','media')->where('status', Product::PUBLISHED);
+        $query = Product::with('flat', 'media')->where('status', Product::PUBLISHED)
+            ->with('filterOptions');
 
-    //    if ($request->query('filter'))
-    //    {
-    //        $query->filter($request->query('filter'),['price','view']);
-    //    }
+        //    if ($request->query('filter'))
+        //    {
+        //        $query->filter($request->query('filter'),['price','view']);
+        //    }
 
-    //    if ($request->query('sort'))
-    //    {
-    //        $query->sort($request->query('sort'));
-    //    }else{
-    //        $query->latest();
-    //    }
+        //    if ($request->query('sort'))
+        //    {
+        //        $query->sort($request->query('sort'));
+        //    }else{
+        //        $query->latest();
+        //    }
 
 
-        $products= $query->simplePaginate(12);
+        $products = $query->paginate(12);
+        // dd($products);
         return ProductIndexResource::collection($products);
     }
 
@@ -51,7 +53,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load('flat','media','filterOptions','filterOptions.filter', 'themes', 'feedbacks');
+        $product->load('flat', 'media', 'filterOptions', 'filterOptions.filter', 'themes', 'feedbacks');
         return ProductResource::make($product);
     }
 
