@@ -5,10 +5,14 @@ namespace App\Filament\Resources\Category\CategoryResource\Pages;
 use App\Filament\Resources\Category\CategoryResource;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class ViewCategory extends ViewRecord
 {
@@ -68,8 +72,20 @@ class ViewCategory extends ViewRecord
                                 ->dateTime(),
                             TextEntry::make('updated_at')
                                 ->dateTime(),
+                        ]),
+                    
+                    Section::make('Banners')
+                        ->columns([
+                            'default' => 2,
+                            'md' => 3
                         ])
-
+                        ->schema([
+                            RepeatableEntry::make('banners')
+                                ->schema([
+                                    TextEntry::make('link'),
+                                    SpatieMediaLibraryImageEntry::make('banner')
+                                ])
+                        ])
             ]);
     }
 }

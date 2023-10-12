@@ -4,21 +4,35 @@ namespace App\Models\Category;
 
 use App\Models\Product\Product;
 use App\Models\Traits\HasChildren;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Theme extends Model
+class Theme extends Model implements HasMedia
 {
-    use HasFactory, HasChildren;
+    use HasFactory, HasChildren, InteractsWithMedia;
 
     protected $fillable = [
             'name',
             'url',
             'parent_id',
+            'banners'
     ];
+
+    protected $casts = [
+        'banners' => AsArrayObject::class
+    ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('banners')
+        ->useFallbackUrl(asset('display.webp'));
+    }
 
 
     public function children(): HasMany

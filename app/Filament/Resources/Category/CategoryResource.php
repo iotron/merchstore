@@ -87,6 +87,19 @@ class CategoryResource extends Resource
                             ])->columns(2)->columnSpanFull(),
                     ]),
 
+                Forms\Components\Section::make('Banners')
+                    ->schema([
+                        Forms\Components\Repeater::make('banners')
+                            ->schema([
+                                Forms\Components\TextInput::make('link')
+                                    ->url(),
+                                SpatieMediaLibraryFileUpload::make('banner')
+                                    ->multiple()
+                                    ->collection('banners')
+                                    ->columnSpan(3)
+                            ])
+                    ])
+
             ]);
     }
 

@@ -32,6 +32,7 @@ class Category extends Model implements HasMedia
         'order',
         'desc',
         'meta_data',
+        'banners'
 //        'hsn_4',
 //        'hsn_8',
 //        'gst',
@@ -41,6 +42,7 @@ class Category extends Model implements HasMedia
         'meta_data' => AsArrayObject::class,
 //        'hsn_8' => AsCollection::class,
 //        'gst' => AsCollection::class,
+        'banners' => AsArrayObject::class
     ];
 
     // Spatie Media Library Conversion
@@ -51,6 +53,9 @@ class Category extends Model implements HasMedia
         ->useFallbackUrl(asset('display.webp'), 'thumb_1')
         ->useFallbackUrl(asset('display.webp'), 'thumb_2')
         ->useFallbackUrl(asset('display.webp'), 'thumb_3');
+
+        $this->addMediaCollection('banners')
+        ->useFallbackUrl(asset('display.webp'));
     }
 
     public function registerMediaConversions(Media $media = null): void

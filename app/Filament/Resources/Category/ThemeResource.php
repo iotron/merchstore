@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Category;
 use App\Filament\Resources\Category\ThemeResource\Pages;
 use App\Models\Category\Theme;
 use Filament\Forms;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,23 +24,40 @@ class ThemeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->columnSpan(2)
-                    ->hint(__('Max: 100'))
-                    ->maxLength(100),
+            Forms\Components\Section::make('Req')
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->columnSpan(2)
+                        ->hint(__('Max: 100'))
+                        ->maxLength(100),
+    
+                    Forms\Components\Select::make('parent_id')
+                        ->relationship('parent', 'name')
+                        ->nullable()
+                        ->columnSpan(1)
+                        ->label(__('Choose Parent Theme')),
+    
+                    Forms\Components\TextInput::make('url')
+                        ->required()
+                        ->columnSpan(3)
+                        ->hint(__('Max: 100'))
+                        ->maxLength(100),
+                    
+                ]),
 
-                Forms\Components\Select::make('parent_id')
-                    ->relationship('parent', 'name')
-                    ->nullable()
-                    ->columnSpan(1)
-                    ->label(__('Choose Parent Theme')),
-
-                Forms\Components\TextInput::make('url')
-                    ->required()
-                    ->columnSpan(3)
-                    ->hint(__('Max: 100'))
-                    ->maxLength(100),
+            Forms\Components\Section::make('Banners')
+                ->schema([
+                    Forms\Components\Repeater::make('banners')
+                        ->schema([
+                            Forms\Components\TextInput::make('link')
+                                ->url(),
+                            SpatieMediaLibraryFileUpload::make('banner')
+                                ->multiple()
+                                ->collection('banners')
+                                ->columnSpan(3)
+                        ])
+                ])
             ]);
     }
 
