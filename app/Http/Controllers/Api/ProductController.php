@@ -9,6 +9,8 @@ use App\Http\Resources\Product\ProductResource;
 use App\Models\Product\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\Category\CategoryResource;
+use App\Http\Resources\Category\ThemeResource;
 use App\Http\Resources\Filter\FilterIndexResource;
 use App\Models\Category\Category;
 use App\Models\Category\Theme;
@@ -107,9 +109,9 @@ class ProductController extends Controller
         $products = $query->get();
         return ProductIndexResource::collection($products)
             ->additional([
-                'categories' => $category->children,
+                'categories' => CategoryResource::collection($category->children),
                 'filters' => FilterIndexResource::collection($filters),
-                'themes' => $themes
+                'themes' => ThemeResource::collection($themes)
             ]);
     }
 
@@ -142,9 +144,9 @@ class ProductController extends Controller
         $products = $query->get();
 
         return ProductIndexResource::collection($products)->additional([
-            'categories' => $categories,
+            'categories' => CategoryResource::collection($categories),
             'filters' => FilterIndexResource::collection($filters),
-            'themes' => $theme->children
+            'themes' => ThemeResource::collection($theme->children)
         ]);
         ;
     }
