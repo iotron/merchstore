@@ -29,18 +29,19 @@ class ProductController extends Controller
         $query = Product::where('status', Product::PUBLISHED);
         // finding all the filters before pagination
         $filterGroupIds = $query->pluck('filter_group_id')->unique()->toArray();
-        $filterGroups =  FilterGroup::whereIn('id', $filterGroupIds)->with('filters.options')->get();
-// Remove duplicates from the filters relationship and flattens structure
-$filters = $filterGroups->flatMap(function ($filterGroup) {
-    return $filterGroup->filters;
-})->unique('id');
 
-// get product themes
-$themes = $query
-    ->with('themes')
-    ->get()
-    ->pluck('themes')
-    ->flatten();
+        $filterGroups = FilterGroup::whereIn('id', $filterGroupIds)->with('filters.options')->get();
+        // Remove duplicates from the filters relationship and flattens structure
+        $filters = $filterGroups->flatMap(function ($filterGroup) {
+            return $filterGroup->filters;
+        })->unique('id');
+
+        // get product themes
+        $themes = $query
+            ->with('themes')
+            ->get()
+            ->pluck('themes')
+            ->flatten();
 
         // additional information
         $query->with('media');
@@ -60,8 +61,10 @@ $themes = $query
         $products = $query->paginate(12);
         // dd($products);
         return ProductIndexResource::collection($products)
-        ->additional(['filters' => FilterIndexResource::collection($filters),
-    'themes' => $themes]);
+            ->additional([
+                'filters' => FilterIndexResource::collection($filters),
+                'themes' => $themes
+            ]);
     }
 
 
@@ -75,46 +78,75 @@ $themes = $query
         return ProductResource::make($product);
     }
 
-    public function showProductsByCategory(Category $category) {
+    public function showProductsByCategory(Category $category)
+    {
 
         $category->load('children');
-          // base query
-          $query = Product::where('status', Product::PUBLISHED)->whereHas('categories', function ($query) use ($category) {
+        // base query
+        $query = Product::where('status', Product::PUBLISHED)->whereHas('categories', function ($query) use ($category) {
             $query->where('categories.id', $category->id);
         });
-          // finding all the filters before pagination
-          $filterGroupIds = $query->pluck('filter_group_id')->unique()->toArray();
-          $filterGroups =  FilterGroup::whereIn('id', $filterGroupIds)->with('filters.options')->get();
-  // Remove duplicates from the filters relationship and flattens structure
-  $filters = $filterGroups->flatMap(function ($filterGroup) {
-      return $filterGroup->filters;
-  })->unique('id');
+        // finding all the filters before pagination
+        $filterGroupIds = $query->pluck('filter_group_id')->unique()->toArray();
+        $filterGroups = FilterGroup::whereIn('id', $filterGroupIds)->with('filters.options')->get();
+        // Remove duplicates from the filters relationship and flattens structure
+        $filters = $filterGroups->flatMap(function ($filterGroup) {
+            return $filterGroup->filters;
+        })->unique('id');
 
 
-// get product themes
-$themes = $query
-->with('themes')
-->get()
-->pluck('themes')
-->flatten();
+        // get product themes
+        $themes = $query
+            ->with('themes')
+            ->get()
+            ->pluck('themes')
+            ->flatten();
 
-    // additional information
-    $query->with('media');
+        // additional information
+        $query->with('media');
         $products = $query->get();
         return ProductIndexResource::collection($products)
-        ->additional(['categories' => $category->children,
-        'filters' => FilterIndexResource::collection($filters),
-        'themes' => $themes ]);
+            ->additional([
+                'categories' => $category->children,
+                'filters' => FilterIndexResource::collection($filters),
+                'themes' => $themes
+            ]);
     }
 
-    public function showProductsByTheme(Theme $theme) {
+    public function showProductsByTheme(Theme $theme)
+    {
 
         $theme->load('children');
-        $products = Product::where('status', Product::PUBLISHED)
-        ->whereHas('themes', function ($query) use ($theme) {
-            $query->where('themes.id', $theme->id);
-        })->get();
-        return ProductIndexResource::collection($products);
+        $query = Product::where('status', Product::PUBLISHED)
+            ->whereHas('themes', function ($query) use ($theme) {
+                $query->where('themes.id', $theme->id);
+            });
+        // finding all the filters before pagination
+        $filterGroupIds = $query->pluck('filter_group_id')->unique()->toArray();
+        $filterGroups = FilterGroup::whereIn('id', $filterGroupIds)->with('filters.options')->get();
+        // Remove duplicates from the filters relationship and flattens structure
+        $filters = $filterGroups->flatMap(function ($filterGroup) {
+            return $filterGroup->filters;
+        })->unique('id');
+
+
+        // get product categories
+        $categories = $query
+            ->with('categories')
+            ->get()
+            ->pluck('categories')
+            ->flatten();
+
+        // additional information
+        $query->with('media');
+        $products = $query->get();
+
+        return ProductIndexResource::collection($products)->additional([
+            'categories' => $categories,
+            'filters' => FilterIndexResource::collection($filters),
+            'themes' => $theme->children
+        ]);
+        ;
     }
 
 }
