@@ -106,7 +106,7 @@ class ProductController extends Controller
 
         // additional information
         $query->with('media');
-        $products = $query->get();
+        $products = $query->paginate();
         return ProductIndexResource::collection($products)
             ->additional([
                 'categories' => CategoryResource::collection($category->children),
@@ -141,7 +141,7 @@ class ProductController extends Controller
 
         // additional information
         $query->with('media');
-        $products = $query->get();
+        $products = $query->paginate();
 
         return ProductIndexResource::collection($products)->additional([
             'categories' => CategoryResource::collection($categories),
