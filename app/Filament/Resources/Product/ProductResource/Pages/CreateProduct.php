@@ -70,7 +70,8 @@ class CreateProduct extends Page
             $optionBag = $item->options->mapWithKeys(function ($item, $key) {
                 return [$item['admin_name'] => $item['admin_name']];
             })->toArray();
-            return Select::make('filter_attributes.'.$item->admin_name)->options($optionBag)->multiple()->required();
+
+            return Select::make('filter_attributes.'.$item->display_name)->options($optionBag)->multiple()->required();
         })->toArray();
     }
 
@@ -118,7 +119,7 @@ class CreateProduct extends Page
 
         if ($formData['type'] == Product::SIMPLE)
         {
-            return $this->createSimple($formData);
+            $this->createSimple($formData);
         }elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 1)
         {
             $this->type = $formData['type'];
@@ -127,7 +128,7 @@ class CreateProduct extends Page
 
         }elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 2)
         {
-            return $this->createConfigurable($formData);
+             $this->createConfigurable($formData);
         }else{
             $this->notify('danger','undefined product type selected');
             $this->halt();
@@ -137,21 +138,21 @@ class CreateProduct extends Page
     }
 
 
-    public function createSimple(array $data):RedirectResponse|Redirector
+    public function createSimple(array $data)
     {
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        return redirect()->route('filament.admin.resources.product.edit', ['record' => $product->id]);
-
+        $this->redirect(ProductResource::getUrl('edit',['record' => $product->id]));
     }
 
 
-    public function createConfigurable(array $data):RedirectResponse|Redirector
+    public function createConfigurable(array $data)
     {
 
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        return redirect()->route('filament.resources.product.edit', $product);
+        //return redirect()->route('filament.resources.product.edit', $product);
+        $this->redirect(ProductResource::getUrl('edit',['record' => $product->id]));
     }
 
 

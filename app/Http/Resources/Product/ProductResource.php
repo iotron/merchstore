@@ -6,6 +6,7 @@ use App\Http\Resources\Category\ThemeResource;
 use App\Http\Resources\Filter\FilterOptionIndexResource;
 use App\Http\Resources\Filter\FilterOptionResource;
 use App\Http\Resources\MediaResource;
+use App\Models\Filter\FilterOption;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -40,9 +41,22 @@ class ProductResource extends ProductIndexResource
             'flat' => new ProductFlatResource($this->whenLoaded('flat')),
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d-m-Y'),
-            'filter_options' => FilterOptionIndexResource::collection($this->whenLoaded('filterOptions')),
+            //'filter_options' => FilterOptionIndexResource::collection($this->whenLoaded('filterOptions')),
+            'filter_options' => $this->getFilterOptions(),
             'themes' => ThemeResource::collection($this->whenLoaded('themes')),
             'feedbacks' => ProductFeedbackResource::collection($this->whenLoaded('feedbacks'))
         ]);
     }
+
+    public function getFilterOptions(): array
+    {
+        $bag = [];
+        foreach ($this->filterOptions as $option)
+        {
+            $bag[$option->filter->display_name] []= $option->admin_name;
+        }
+        return $bag;
+    }
+
+
 }

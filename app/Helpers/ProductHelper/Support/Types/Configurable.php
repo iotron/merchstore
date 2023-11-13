@@ -34,7 +34,7 @@ class Configurable extends AbstractSupportProductSupport
         $dataBag = [];
         foreach ($allFilterable as $key => $permutation) {
             $dataBag[$key]['name'] = $product->sku;
-            $dataBag[$key]['url_key'] = Str::slug($product->sku.'-variant-'.implode('-', $permutation)).'-'.now();
+            $dataBag[$key]['url'] = Str::slug($product->sku.'-variant-'.implode('-', $permutation)).'-'.now();
             $dataBag[$key]['sku'] = $product->sku.'-variant-'.implode('-', $permutation);
             $dataBag[$key]['attribute_group_id'] = $product->attribute_group_id;
             $dataBag[$key]['type'] = 'simple';
