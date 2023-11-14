@@ -75,23 +75,28 @@ class ProductController extends Controller implements CanBeFilterableContract, C
     {
         return [
             [
-                'name' => 'Popularity',
-                'value' => 'views',
+                'name' => 'latest',
+                'value' => 'id',
                 'direction' => 'desc'
             ],
             [
-                'name' => 'Latest',
+                'name' => 'popularity',
+                'value' => 'view_count',
+                'direction' => 'desc'
+            ],
+            [
+                'name' => 'latest',
                 'value' => 'created_at',
                 'direction' => 'desc'
             ],
             [
-                'name' => 'a2z',
-                'value' => 'name',
+                'name' => 'pricelow2high',
+                'value' => 'price',
                 'direction' => 'asc'
             ],
             [
-                'name' => 'z2a',
-                'value' => 'name',
+                'name' => 'pricehigh2low',
+                'value' => 'price',
                 'direction' => 'desc'
             ]
         ];
@@ -121,67 +126,6 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
 
 
-    /**
-     * Display a listing of the products with filters.
-     */
-    public function index(Request $request)
-    {
-        // base query
-        $query = Product::where('status', Product::PUBLISHED);
-        // finding all the filters before pagination
-        $filterGroupIds = $query->pluck('filter_group_id')->unique()->toArray();
-
-        $filterGroups = FilterGroup::whereIn('id', $filterGroupIds)->with('filters.options')->get();
-        // Remove duplicates from the filters relationship and flattens structure
-        $filters = $filterGroups->flatMap(function ($filterGroup) {
-            return $filterGroup->filters;
-        })->unique('id');
-
-        // get product themes
-        $themes = $query
-            ->with('themes')
-            ->get()
-            ->pluck('themes')
-            ->flatten();
-
-        // additional information
-        $query->with('media');
-
-
-        // If Request has Filter
-        if (isset($request->filter)) {
-            $query->withScopes($this->getFilterScopes());
-        }
-
-        $currentSort = $this->getCurrentSort($request);
-
-        // If Request Has Sort
-        if (isset($request->sort)) {
-            if (!empty($currentSort)) {
-
-                // Apply Sort
-                if ($currentSort['direction']) {
-                    $query->orderBy($currentSort['value'], $currentSort['direction']);
-                } else {
-                    $query->orderBy($currentSort['value'], 'desc');
-                }
-            }
-        } else {
-            $query->orderBy($currentSort['value'], $currentSort['direction']);
-        }
-
-
-
-        $products = $query->paginate(12);
-        // dd($products);
-        return ProductIndexResource::collection($products)
-            ->additional([
-                'filters' => FilterIndexResource::collection($filters),
-                'themes' => $themes
-            ]);
-    }
-
-
 
     /**
      * Display the specified resource.
@@ -192,7 +136,7 @@ class ProductController extends Controller implements CanBeFilterableContract, C
         return ProductResource::make($product);
     }
 
-    public function showProductsByCategory(Category $category)
+    public function showProductsByCategory(Category $category,Request $request)
     {
 
         $category->load('children');
@@ -218,6 +162,39 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
         // additional information
         $query->with('media');
+
+
+
+
+
+
+        // If Request has Filter
+        if (isset($request->filter)) {
+            $query->withScopes($this->getFilterScopes());
+        }
+
+        $currentSort = $this->getCurrentSort($request);
+
+
+        // If Request Has Sort
+        if (isset($request->sort)) {
+            if (!empty($currentSort)) {
+
+                // Apply Sort
+                if ($currentSort['direction']) {
+                    $query->orderBy($currentSort['value'], $currentSort['direction']);
+                } else {
+                    $query->orderBy($currentSort['value'], 'desc');
+                }
+            }
+        } else {
+            $query->orderBy($currentSort['value'], $currentSort['direction']);
+        }
+
+
+
+
+
         $products = $query->paginate();
         return ProductIndexResource::collection($products)
             ->additional([
@@ -253,6 +230,37 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
         // additional information
         $query->with('media');
+
+
+
+        // If Request has Filter
+        if (isset($request->filter)) {
+            $query->withScopes($this->getFilterScopes());
+        }
+
+        $currentSort = $this->getCurrentSort($request);
+
+
+        // If Request Has Sort
+        if (isset($request->sort)) {
+            if (!empty($currentSort)) {
+
+                // Apply Sort
+                if ($currentSort['direction']) {
+                    $query->orderBy($currentSort['value'], $currentSort['direction']);
+                } else {
+                    $query->orderBy($currentSort['value'], 'desc');
+                }
+            }
+        } else {
+            $query->orderBy($currentSort['value'], $currentSort['direction']);
+        }
+
+
+
+
+
+
         $products = $query->paginate();
 
         return ProductIndexResource::collection($products)->additional([
