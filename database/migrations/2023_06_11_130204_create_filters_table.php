@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('filters', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('display_name'); // change to display_name from admin_name
+            $table->string('display_name'); // change to display_name from display_name
             $table->string('type');
             $table->string('desc');
             $table->json('validation')->nullable();

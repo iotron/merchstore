@@ -18,34 +18,37 @@ class TestController extends Controller
     public function index()
     {
 
+        $rawProductData = Product::factory()->raw(['type' => Product::CONFIGURABLE]);
+        $typeInstance = app(config('project.product_types.'.$rawProductData['type'].'.class'));
+        $rawProductData['filter_attributes'] = $this->getFilterDetails($rawProductData['filter_group_id']);
+        // Create Configurable Product
+        $product = $typeInstance->create($rawProductData);
 
-        $filterGroup = FilterGroup::with('filters','filters.options')->whereIn('id',[5,6])->get();
-        $filterGroupId = $filterGroup->shuffle()->all()[0]->id;
-        $selectedFilterGroup = $filterGroup->firstWhere('id',$filterGroupId);
-
-
-
-
-        dd($bag);
-
-
-        dd(
-            $filterGroupId,
-            $filterOptions
-        );
-
-
-
-
-
-
-
-
-//        $saleProducts = new ProductSaleHelper();
-//        $saleProducts->reindexSaleableProducts();
-
+        dd($product,$product->flat);
 
     }
+
+
+
+
+
+    private function getFilterDetails(int $id): array
+    {
+        $group = FilterGroup::where('id', $id)->with('filters.options')->first();
+        $bag=[];
+        foreach ($group->filters as $filter)
+        {
+            $options = $filter->options->random(random_int(1,3))->pluck('admin_name','id')->toArray();
+            $bag [$filter->display_name] = $options;
+        }
+        return $bag;
+
+    }
+
+
+
+
+
 
 
     /**

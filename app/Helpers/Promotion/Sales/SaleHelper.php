@@ -86,8 +86,8 @@ class SaleHelper extends PromotionManager
                 'key' => Str::lower($key),
                 'type' => $attr->type,
                 'operator' => $this->getOperator(Str::lower($attr->type)),
-                'label' => trans(Str::ucfirst($attr->admin_name)),
-                'options' => $attr->options->pluck('admin_name', 'id')->toArray(),
+                'label' => trans(Str::ucfirst($attr->display_name)),
+                'options' => $attr->options->pluck('display_name', 'id')->toArray(),
             ];
         }
 

@@ -54,7 +54,7 @@ class ProductResource extends ProductIndexResource
         $bag = [];
         foreach ($this->filterOptions as $option)
         {
-            $bag[$option->filter->display_name] []= $option->admin_name;
+            $bag[$option->filter->display_name] []= $option->display_name;
         }
         return $bag;
     }

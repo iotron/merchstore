@@ -68,7 +68,7 @@ class CreateProduct extends Page
 
         return $group->filters->map(function ($item, $key) {
             $optionBag = $item->options->mapWithKeys(function ($item, $key) {
-                return [$item['admin_name'] => $item['admin_name']];
+                return [$item['display_name'] => $item['display_name']];
             })->toArray();
 
             return Select::make('filter_attributes.'.$item->display_name)->options($optionBag)->multiple()->required();
@@ -97,7 +97,7 @@ class CreateProduct extends Page
 
                     Select::make('filter_group_id')
                         ->label('Filter Group')
-                        ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('admin_name', 'id'))->required()->helperText('filters family adds a group of attributes to your product. (eg. color, size, material, medium)
+                        ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('display_name', 'id'))->required()->helperText('filters family adds a group of attributes to your product. (eg. color, size, material, medium)
                             choose the family according to your product type.'),
                 ]),
             Section::make('Filter Details')

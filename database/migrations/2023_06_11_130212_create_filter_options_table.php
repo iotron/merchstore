@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('filter_options', function (Blueprint $table) {
             $table->id();
-            $table->string('admin_name');
+            $table->string('code')->unique();
+            $table->string('display_name');
             $table->string('swatch_value')->nullable();
             $table->unsignedBigInteger('position')->nullable();
             $table->foreignId('filter_id')->nullable()->constrained('filters')->onUpdate('cascade')->onDelete('set null');

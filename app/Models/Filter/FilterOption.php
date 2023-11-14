@@ -14,7 +14,7 @@ class FilterOption extends Model
 
 
     protected $fillable = [
-        'admin_name',
+        'display_name',
         'swatch_value',
         'position',
     ];

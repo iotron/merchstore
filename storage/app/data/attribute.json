@@ -1,8 +1,8 @@
 [
     {
-        "code": "color",
+
         "type": "select",
-        "admin_name": "Color",
+        "display_name": "Color",
         "desc": "product color",
         "is_configurable": 1,
         "is_visible": 1,
@@ -10,63 +10,63 @@
         "validation": null,
         "options": [
             {
-                "admin_name": "Multi Color",
+                "display_name": "Multi Color",
                 "swatch_type": null
             },
             {
-                "admin_name": "Red",
+                "display_name": "Red",
                 "swatch_type": null
             },
             {
-                "admin_name": "Orange",
+                "display_name": "Orange",
                 "swatch_type": null
             },
             {
-                "admin_name": "Yellow",
+                "display_name": "Yellow",
                 "swatch_type": null
             },
             {
-                "admin_name": "Green",
+                "display_name": "Green",
                 "swatch_type": null
             },
             {
-                "admin_name": "Turquoise",
+                "display_name": "Turquoise",
                 "swatch_type": null
             },
             {
-                "admin_name": "Blue",
+                "display_name": "Blue",
                 "swatch_type": null
             },
             {
-                "admin_name": "Purple",
+                "display_name": "Purple",
                 "swatch_type": null
             },
             {
-                "admin_name": "Pink",
+                "display_name": "Pink",
                 "swatch_type": null
             },
             {
-                "admin_name": "Brown",
+                "display_name": "Brown",
                 "swatch_type": null
             },
             {
-                "admin_name": "Black",
+                "display_name": "Black",
                 "swatch_type": null
             },
             {
-                "admin_name": "Grey",
+                "display_name": "Grey",
                 "swatch_type": null
             },
             {
-                "admin_name": "White",
+                "display_name": "White",
                 "swatch_type": null
             }
         ]
     },
     {
-        "code": "size",
+
         "type": "select",
-        "admin_name": "Size",
+        "display_name": "Size",
         "desc": "product size",
         "is_configurable": 1,
         "is_visible": 1,
@@ -74,31 +74,31 @@
         "validation": null,
         "options": [
             {
-                "admin_name": "XS",
+                "display_name": "XS",
                 "swatch_type": null
             },
             {
-                "admin_name": "S",
+                "display_name": "S",
                 "swatch_type": null
             },
             {
-                "admin_name": "M",
+                "display_name": "M",
                 "swatch_type": null
             },
             {
-                "admin_name": "L",
+                "display_name": "L",
                 "swatch_type": null
             },
             {
-                "admin_name": "XL",
+                "display_name": "XL",
                 "swatch_type": null
             }
         ]
     },
     {
-        "code": "material",
+
         "type": "select",
-        "admin_name": "Material",
+        "display_name": "Material",
         "desc": "product material",
         "is_configurable": 1,
         "is_visible": 1,
@@ -106,119 +106,119 @@
         "validation": null,
         "options": [
             {
-                "admin_name": "Paper",
+                "display_name": "Paper",
                 "swatch_type": null
             },
             {
-                "admin_name": "Yupo paper",
+                "display_name": "Yupo paper",
                 "swatch_type": null
             },
             {
-                "admin_name": "Chart Paper",
+                "display_name": "Chart Paper",
                 "swatch_type": null
             },
             {
-                "admin_name": "Black Paper",
+                "display_name": "Black Paper",
                 "swatch_type": null
             },
             {
-                "admin_name": "Matt Paper",
+                "display_name": "Matt Paper",
                 "swatch_type": null
             },
             {
-                "admin_name": "Handmade paper",
+                "display_name": "Handmade paper",
                 "swatch_type": null
             },
             {
-                "admin_name": "Ivory Sheet",
+                "display_name": "Ivory Sheet",
                 "swatch_type": null
             },
             {
-                "admin_name": "Oil Sheet",
+                "display_name": "Oil Sheet",
                 "swatch_type": null
             },
             {
-                "admin_name": "GSM Sheet",
+                "display_name": "GSM Sheet",
                 "swatch_type": null
             },
             {
-                "admin_name": "Board Canvas",
+                "display_name": "Board Canvas",
                 "swatch_type": null
             },
             {
-                "admin_name": "Stretched Canvas",
+                "display_name": "Stretched Canvas",
                 "swatch_type": null
             },
             {
-                "admin_name": "Mount Board",
+                "display_name": "Mount Board",
                 "swatch_type": null
             },
             {
-                "admin_name": "Tile",
+                "display_name": "Tile",
                 "swatch_type": null
             },
             {
-                "admin_name": "Feather",
+                "display_name": "Feather",
                 "swatch_type": null
             },
             {
-                "admin_name": "Bottle",
+                "display_name": "Bottle",
                 "swatch_type": null
             },
             {
-                "admin_name": "Wood",
+                "display_name": "Wood",
                 "swatch_type": null
             },
             {
-                "admin_name": "MDF",
+                "display_name": "MDF",
                 "swatch_type": null
             },
             {
-                "admin_name": "Clay",
+                "display_name": "Clay",
                 "swatch_type": null
             },
             {
-                "admin_name": "Fiber",
+                "display_name": "Fiber",
                 "swatch_type": null
             },
             {
-                "admin_name": "Ceramic",
+                "display_name": "Ceramic",
                 "swatch_type": null
             },
             {
-                "admin_name": "Cloth - wool, cotton, silk",
+                "display_name": "Cloth - wool, cotton, silk",
                 "swatch_type": null
             },
             {
-                "admin_name": "Stone",
+                "display_name": "Stone",
                 "swatch_type": null
             },
             {
-                "admin_name": "Plates",
+                "display_name": "Plates",
                 "swatch_type": null
             },
             {
-                "admin_name": "Mugs",
+                "display_name": "Mugs",
                 "swatch_type": null
             },
             {
-                "admin_name": "Glass",
+                "display_name": "Glass",
                 "swatch_type": null
             },
             {
-                "admin_name": "Shoes",
+                "display_name": "Shoes",
                 "swatch_type": null
             },
             {
-                "admin_name": "Terracotta",
+                "display_name": "Terracotta",
                 "swatch_type": null
             }
         ]
     },
     {
-        "code": "medium",
+
         "type": "select",
-        "admin_name": "Medium",
+        "display_name": "Medium",
         "desc": "product medium",
         "is_configurable": 1,
         "is_visible": 1,
@@ -226,139 +226,139 @@
         "validation": null,
         "options": [
             {
-                "admin_name": "Ink",
+                "display_name": "Ink",
                 "swatch_type": null
             },
             {
-                "admin_name": "Pigment Pen",
+                "display_name": "Pigment Pen",
                 "swatch_type": null
             },
             {
-                "admin_name": "Color Pen",
+                "display_name": "Color Pen",
                 "swatch_type": null
             },
             {
-                "admin_name": "Ball point",
+                "display_name": "Ball point",
                 "swatch_type": null
             },
             {
-                "admin_name": "Pens",
+                "display_name": "Pens",
                 "swatch_type": null
             },
             {
-                "admin_name": "Soft Pastel",
+                "display_name": "Soft Pastel",
                 "swatch_type": null
             },
             {
-                "admin_name": "oil Pastel",
+                "display_name": "oil Pastel",
                 "swatch_type": null
             },
             {
-                "admin_name": "Watercolor",
+                "display_name": "Watercolor",
                 "swatch_type": null
             },
             {
-                "admin_name": "Gouache",
+                "display_name": "Gouache",
                 "swatch_type": null
             },
             {
-                "admin_name": "Acrylic",
+                "display_name": "Acrylic",
                 "swatch_type": null
             },
             {
-                "admin_name": "Oil",
+                "display_name": "Oil",
                 "swatch_type": null
             },
             {
-                "admin_name": "Mix Media",
+                "display_name": "Mix Media",
                 "swatch_type": null
             },
             {
-                "admin_name": "Resin",
+                "display_name": "Resin",
                 "swatch_type": null
             },
             {
-                "admin_name": "Alcohol",
+                "display_name": "Alcohol",
                 "swatch_type": null
             },
             {
-                "admin_name": "Charcoal",
+                "display_name": "Charcoal",
                 "swatch_type": null
             },
             {
-                "admin_name": "Graphite",
+                "display_name": "Graphite",
                 "swatch_type": null
             },
             {
-                "admin_name": "Pencil",
+                "display_name": "Pencil",
                 "swatch_type": null
             },
             {
-                "admin_name": "Color pencil",
+                "display_name": "Color pencil",
                 "swatch_type": null
             },
             {
-                "admin_name": "Clay",
+                "display_name": "Clay Medium",
                 "swatch_type": null
             },
             {
-                "admin_name": "Glass Color",
+                "display_name": "Glass Color",
                 "swatch_type": null
             },
             {
-                "admin_name": "Crayons",
+                "display_name": "Crayons",
                 "swatch_type": null
             },
             {
-                "admin_name": "Digital",
+                "display_name": "Digital",
                 "swatch_type": null
             },
             {
-                "admin_name": "Marker",
+                "display_name": "Marker",
                 "swatch_type": null
             },
             {
-                "admin_name": "Alcohol Based Marker",
+                "display_name": "Alcohol Based Marker",
                 "swatch_type": null
             },
             {
-                "admin_name": "White Charcoal",
+                "display_name": "White Charcoal",
                 "swatch_type": null
             },
             {
-                "admin_name": "Poster Color",
+                "display_name": "Poster Color",
                 "swatch_type": null
             },
             {
-                "admin_name": "Natural Stone Color",
+                "display_name": "Natural Stone Color",
                 "swatch_type": null
             },
             {
-                "admin_name": "Macrame Thread",
+                "display_name": "Macrame Thread",
                 "swatch_type": null
             },
             {
-                "admin_name": "Nail",
+                "display_name": "Nail",
                 "swatch_type": null
             },
             {
-                "admin_name": "Jute",
+                "display_name": "Jute",
                 "swatch_type": null
             },
             {
-                "admin_name": "Fine Liner",
+                "display_name": "Fine Liner",
                 "swatch_type": null
             },
             {
-                "admin_name": "Knife",
+                "display_name": "Knife",
                 "swatch_type": null
             }
         ]
     },
     {
-        "code": "orientation",
+
         "type": "select",
-        "admin_name": "Orientation",
+        "display_name": "Orientation",
         "desc": "orientation of the product",
         "is_configurable": 1,
         "is_visible": 1,
@@ -366,23 +366,23 @@
         "validation": null,
         "options": [
             {
-                "admin_name": "Landscape",
+                "display_name": "Landscape",
                 "swatch_type": null
             },
             {
-                "admin_name": "Portrait",
+                "display_name": "Portrait",
                 "swatch_type": null
             },
             {
-                "admin_name": "Square",
+                "display_name": "Square",
                 "swatch_type": null
             }
         ]
     },
     {
-        "code": "sku",
+
         "type": "text",
-        "admin_name": "SKU",
+        "display_name": "SKU",
         "desc": "Stock Keeping Unit (SKU) ID",
         "is_configurable": 0,
         "is_visible": 1,
@@ -391,9 +391,9 @@
         "options": []
     },
     {
-        "code": "name",
+
         "type": "text",
-        "admin_name": "name",
+        "display_name": "name",
         "desc": "product name",
         "is_configurable": 0,
         "is_visible": 1,
@@ -402,9 +402,9 @@
         "options": []
     },
     {
-        "code": "url_key",
+
         "type": "text",
-        "admin_name": "URL Key",
+        "display_name": "URL Key",
         "desc": "product url",
         "is_configurable": 0,
         "is_visible": 1,
@@ -413,9 +413,9 @@
         "options": []
     },
     {
-        "code": "visible_individually",
+
         "type": "boolean",
-        "admin_name": "Visible",
+        "display_name": "Visible",
         "desc": "toggle product visibility",
         "is_configurable": 0,
         "is_visible": 1,
@@ -424,9 +424,9 @@
         "options": []
     },
     {
-        "code": "return_window",
+
         "type": "integer",
-        "admin_name": "Return Window",
+        "display_name": "Return Window",
         "desc": "product can be returned within this time",
         "is_configurable": 0,
         "is_visible": 1,
@@ -435,9 +435,9 @@
         "options": []
     },
     {
-        "code": "short_description",
+
         "type": "textarea",
-        "admin_name": "Short Description",
+        "display_name": "Short Description",
         "desc": "product short description",
         "is_configurable": 0,
         "is_visible": 1,
@@ -446,9 +446,9 @@
         "options": []
     },
     {
-        "code": "description",
+
         "type": "richtext",
-        "admin_name": "Description",
+        "display_name": "Description",
         "desc": "product long description",
         "is_configurable": 0,
         "is_visible": 1,
@@ -457,9 +457,9 @@
         "options": []
     },
     {
-        "code": "price",
+
         "type": "number",
-        "admin_name": "Price",
+        "display_name": "Price",
         "desc": "product price",
         "is_configurable": 0,
         "is_visible": 1,
@@ -468,9 +468,9 @@
         "options": []
     },
     {
-        "code": "special_price",
+
         "type": "number",
-        "admin_name": "Special Price",
+        "display_name": "Special Price",
         "desc": "product special price",
         "is_configurable": 0,
         "is_visible": 1,
@@ -479,9 +479,9 @@
         "options": []
     },
     {
-        "code": "length",
+
         "type": "text",
-        "admin_name": "Length",
+        "display_name": "Length",
         "desc": "length in cm",
         "is_configurable": 0,
         "is_visible": 1,
@@ -490,9 +490,9 @@
         "options": []
     },
     {
-        "code": "width",
+
         "type": "text",
-        "admin_name": "Width",
+        "display_name": "Width",
         "desc": "width in cm",
         "is_configurable": 0,
         "is_visible": 1,
@@ -501,9 +501,9 @@
         "options": []
     },
     {
-        "code": "height",
+      "": "height",
         "type": "text",
-        "admin_name": "Height",
+        "display_name": "Height",
         "desc": "height in cm",
         "is_configurable": 0,
         "is_visible": 1,
@@ -512,9 +512,9 @@
         "options": []
     },
     {
-        "code": "weight",
+      "": "weight",
         "type": "text",
-        "admin_name": "Weight",
+        "display_name": "Weight",
         "desc": "weight in kg",
         "is_configurable": 0,
         "is_visible": 1,

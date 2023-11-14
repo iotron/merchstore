@@ -12,14 +12,14 @@ class OptionsRelationManager extends RelationManager
 {
     protected static string $relationship = 'options';
 
-    protected static ?string $recordTitleAttribute = 'admin_name';
+    protected static ?string $recordTitleAttribute = 'display_name';
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
 
-                TextInput::make('admin_name')
+                TextInput::make('display_name')
                     ->label(__('Name'))
                     ->placeholder(__('Enter Option Name'))
                     ->required()
@@ -53,7 +53,7 @@ class OptionsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('admin_name'),
+                Tables\Columns\TextColumn::make('display_name'),
                 Tables\Columns\TextColumn::make('swatch_value')->formatStateUsing(function ($state){
                     return is_null($state) ? 'undefined' : $state;
                 }),

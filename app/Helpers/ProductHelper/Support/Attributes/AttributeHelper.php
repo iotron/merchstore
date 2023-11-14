@@ -25,10 +25,10 @@ class AttributeHelper
             // Filterable Only
             $attributeBag = $group->attributes->map(function ($item, $key) {
                 $optionBag = $item->options->mapWithKeys(function ($item, $key) {
-                    return [$item['admin_name'] => $item['admin_name']];
+                    return [$item['display_name'] => $item['display_name']];
                 })->toArray();
 
-                return Select::make('filter_attributes.'.$item->admin_name)
+                return Select::make('filter_attributes.'.$item->display_name)
                     ->options($optionBag)
                     ->required($item->is_required)
                     ->helperText($item->desc);

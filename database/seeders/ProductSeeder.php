@@ -27,7 +27,7 @@ class ProductSeeder extends Seeder
         $this->simpleProductSeed($parentCategories,$parentThemes);
 
         // Create Configurable
-        $this->configurableProductSeeding($parentCategories,$parentThemes);
+       // $this->configurableProductSeeding($parentCategories,$parentThemes);
 
 
 
@@ -113,7 +113,7 @@ class ProductSeeder extends Seeder
         $bag=[];
         foreach ($group->filters as $filter)
         {
-            $options = $filter->options->random(random_int(1,3))->pluck('admin_name','id')->toArray();
+            $options = $filter->options->random(random_int(1,3))->pluck('display_name','id')->toArray();
             $bag [$filter->display_name] = $options;
         }
         return $bag;

@@ -15,9 +15,9 @@ class FilterScope implements Scope
      */
     public function apply(Builder $builder, $value): Builder
     {
-        dd($value);
+//        dd($value);
         return $builder->whereHas('filterOptions',function ($query) use($value) {
-            return $query->whereIn('admin_name',explode(',',$value));
+            return $query->whereIn('display_name',explode(',',$value));
         });
     }
 }

@@ -154,8 +154,8 @@ class VoucherHelper extends PromotionManager
                 'key' => Str::lower($key),
                 'type' => $attr->type,
                 'operator' => $this->getOperator(Str::lower($attr->type)),
-                'label' => trans('Product::'.Str::ucfirst($attr->admin_name)),
-                'options' => $attr->options->pluck('admin_name', 'admin_name')->toArray() ?? [],
+                'label' => trans('Product::'.Str::ucfirst($attr->display_name)),
+                'options' => $attr->options->pluck('display_name', 'display_name')->toArray() ?? [],
             ];
         }
 

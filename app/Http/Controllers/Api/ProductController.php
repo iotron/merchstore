@@ -32,7 +32,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ProductController extends Controller implements CanBeFilterableContract, CanBeSortableContract
+class ProductController extends Controller implements  CanBeSortableContract
 {
 
 
@@ -48,26 +48,7 @@ class ProductController extends Controller implements CanBeFilterableContract, C
         return is_null($scope_name) ? $allScopes : $allScopes[$scope_name];
     }
 
-    public function getFilterOptions(): JsonResponse|AnonymousResourceCollection|array
-    {
-        $allFilterOptions = FilterOption::with('filter')->get();
-        $filters = [];
 
-        foreach ($allFilterOptions as $option)
-        {
-            $filters[$option->filter->code] [] = $option->admin_name;
-        }
-
-        $sorts = $this->getSortingOptions();
-
-        return response()->json([
-            'status' => true,
-            'data' => [
-                'filters' => $filters,
-                'sorts' => $sorts
-            ]
-        ], 200);
-    }
 
     public function getSortingOptions(): array
     {
@@ -163,6 +144,7 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
         // additional information
         $query->with('media');
+
 
 
 

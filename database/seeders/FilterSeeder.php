@@ -8,6 +8,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class FilterSeeder extends Seeder
 {
@@ -24,8 +25,8 @@ class FilterSeeder extends Seeder
         foreach ($attributeBag as $key => $data) {
             //Create Attribute
             $filter = Filter::updateOrCreate([
-                'code' => $data->code,
-                'display_name' => $data->admin_name,
+                'display_name' => $display = $data->display_name,
+                'code' => Str::slug($display),
                 'type' => $data->type,
                 'desc' => $data->desc,
                 'is_configurable' => $data->is_configurable,
@@ -38,7 +39,8 @@ class FilterSeeder extends Seeder
             // Create Options
             foreach ($data->options as $value) {
                 $filter->options()->updateOrCreate([
-                    'admin_name' => $value->admin_name,
+                    'display_name' => $display = $value->display_name,
+                    'code' => Str::slug($display),
                     'swatch_value' => $value->swatch_type,
                 ]);
             }
