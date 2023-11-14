@@ -74,11 +74,7 @@ class ProductController extends Controller implements CanBeFilterableContract, C
     public function getSortingOptions(): array
     {
         return [
-            [
-                'name' => 'latest',
-                'value' => 'id',
-                'direction' => 'desc'
-            ],
+           
             [
                 'name' => 'popularity',
                 'value' => 'view_count',
