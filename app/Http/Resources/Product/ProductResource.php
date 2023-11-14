@@ -38,7 +38,7 @@ class ProductResource extends ProductIndexResource
             'tax_amount' => $this->tax_amount,
             'min_range' => $this->min_range,
             'max_range' => $this->max_range,
-            'in_stock' => $this->availableStocks()->count(),
+            'in_stock' => (bool) $this->availableStocks()->count(),
             'flat' => new ProductFlatResource($this->whenLoaded('flat')),
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d-m-Y'),

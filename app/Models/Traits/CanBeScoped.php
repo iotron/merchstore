@@ -8,7 +8,7 @@ trait CanBeScoped
 
     public function scopeWithScopes(Builder $builder, $scopes = []): Builder
     {
-        return (new Scoper(request()->filter))->apply($builder, $scopes);
+        return (new Scoper(request()))->apply($builder, $scopes);
     }
 
 

@@ -20,10 +20,12 @@ use App\Models\Category\Theme;
 use App\Models\Filter\FilterGroup;
 use App\Scoping\Scopes\CategoryScope;
 use App\Scoping\Scopes\ColorScope;
+use App\Scoping\Scopes\FilterScope;
 use App\Scoping\Scopes\MaterialScope;
 use App\Scoping\Scopes\MediumScope;
 use App\Scoping\Scopes\OrientationScope;
 use App\Scoping\Scopes\SizeScope;
+use App\Scoping\Scopes\ThemeScope;
 use App\Scoping\Scopes\TypeScope;
 use App\Scoping\Scopes\ViewScope;
 use Illuminate\Http\JsonResponse;
@@ -36,18 +38,14 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
 
 
-    public function getFilterScopes(): array
+    public function getFilterScopes(?string $scope_name=null): array
     {
-        return [
-            'view' => new ViewScope(),
-            'type' => new TypeScope(),
-            'color' => new ColorScope(),
-            'size' => new SizeScope(),
-            'material' => new MaterialScope(),
-            'orientation' => new OrientationScope(),
-            'medium' => new MediumScope(),
-            'category' => new CategoryScope(),
+        $allScopes =  [
+            'filters' => new FilterScope(),
+            'themes' => new ThemeScope(),
+            'categories' => new CategoryScope(),
         ];
+        return is_null($scope_name) ? $allScopes : $allScopes[$scope_name];
     }
 
     public function getFilterOptions(): JsonResponse|AnonymousResourceCollection|array
@@ -119,7 +117,14 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
 
 
-
+    protected function scopes()
+    {
+        return [
+            'filters' => new FilterScope(),
+            'themes' => new ThemeScope(),
+            'categories' => new CategoryScope(),
+        ];
+    }
 
 
 
@@ -161,13 +166,16 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
 
 
+        $query->withScopes($this->scopes());
+
+        //
 
 
-
-        // If Request has Filter
-        if (isset($request->filter)) {
-            $query->withScopes($this->getFilterScopes());
-        }
+//
+//        // If Request has Filter
+//        if (isset($request->filter)) {
+//            $query->withScopes($this->getFilterScopes());
+//        }
 
         $currentSort = $this->getCurrentSort($request);
 
@@ -226,7 +234,6 @@ class ProductController extends Controller implements CanBeFilterableContract, C
 
         // additional information
         $query->with('media');
-
 
 
         // If Request has Filter

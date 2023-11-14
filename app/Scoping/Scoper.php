@@ -11,24 +11,21 @@ use Illuminate\Support\Collection;
 class Scoper
 {
     protected Request $request;
-    protected array $filters=[];
 
-    public function __construct(?array $requestFilter=[])
+    public function __construct(Request $request)
     {
-
-        $this->filters = $requestFilter ?? [];
-
+        $this->request = $request;
     }
 
     public function apply(Builder $builder, array $scopes): Builder
     {
 
         foreach ($this->limitScopes($scopes) as $key => $scope) {
-            if (! $scope instanceof Scope) {
+            if (!$scope instanceof Scope) {
                 continue;
             }
 
-            $scope->apply($builder, $this->filters[$key]);
+            $scope->apply($builder, $this->request->get($key));
         }
         //}
 
@@ -44,7 +41,7 @@ class Scoper
     {
         return Arr::only(
             $scopes,
-            array_keys($this->filters)
+            array_keys($this->request->all())
         );
     }
 

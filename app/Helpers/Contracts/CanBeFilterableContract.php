@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 interface CanBeFilterableContract
 {
 
-    public function getFilterScopes():array;
+    public function getFilterScopes(?string $scope_name=null):array;
 
     public function getFilterOptions(): JsonResponse|AnonymousResourceCollection|array;
 
