@@ -74,7 +74,7 @@ class ProductController extends Controller implements CanBeFilterableContract, C
     public function getSortingOptions(): array
     {
         return [
-           
+
             [
                 'name' => 'popularity',
                 'value' => 'view_count',
@@ -135,10 +135,10 @@ class ProductController extends Controller implements CanBeFilterableContract, C
     public function showProductsByCategory(Category $category,Request $request)
     {
 
-        $category->load('children');
+        $category->load('children','media');
         // base query
         $query = Product::where('status', Product::PUBLISHED)->whereHas('categories', function ($query) use ($category) {
-            $query->where('categories.id', $category->id);
+            $query->with('media')->where('categories.id', $category->id);
         });
         // finding all the filters before pagination
         $filterGroupIds = $query->pluck('filter_group_id')->unique()->toArray();
