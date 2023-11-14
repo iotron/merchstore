@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Product\ProductResource\Pages;
 
 use App\Filament\Resources\Product\ProductResource;
 use App\Helpers\Money\Money;
+use App\Models\Product\Product;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -11,6 +12,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ListProducts extends ListRecords
@@ -68,7 +70,8 @@ class ListProducts extends ListRecords
                     ->since()->toggleable()->toggledHiddenByDefault(),
             ])
             ->filters([
-                //
+                SelectFilter::make('type')
+                    ->options(Product::TYPE_OPTION),
             ])
             ->actions([
                 ViewAction::make(),

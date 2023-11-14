@@ -19,10 +19,24 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Product + Product Flat
+
         $parentCategories = Category::with('children')->whereHas('children')->parents()->where('status', true)->get();
         $parentThemes = Theme::Parents()->with('children')->get();
 
+        // Create Simple
+        $this->simpleProductSeed($parentCategories,$parentThemes);
+
+        // Create Configurable
+        $this->configurableProductSeeding($parentCategories,$parentThemes);
+
+
+
+    }
+
+
+    public function simpleProductSeed($parentCategories,$parentThemes)
+    {
+        // Create Product + Product Flat
         $parentCategories->each(function(Category $category) use($parentThemes) {
             Product::factory()->count(10)
                 ->hasFlat(1)
@@ -73,7 +87,38 @@ class ProductSeeder extends Seeder
 
 
         });
+    }
 
+
+
+    public function configurableProductSeeding($parentCategories,$parentThemes)
+    {
+
+        $parentCategories->each(function(Category $category) use($parentThemes) {
+            $rawProductData = Product::factory()->raw(['type' => Product::CONFIGURABLE]);
+            $typeInstance = app(config('project.product_types.'.$rawProductData['type'].'.class'));
+            $rawProductData['filter_attributes'] = $this->getFilterDetails($rawProductData['filter_group_id']);
+            // Create Configurable Product
+            $product = $typeInstance->create($rawProductData);
+        });
 
     }
+
+
+
+
+    private function getFilterDetails(int $id): array
+    {
+        $group = FilterGroup::where('id', $id)->with('filters.options')->first();
+        $bag=[];
+        foreach ($group->filters as $filter)
+        {
+            $options = $filter->options->random(random_int(1,3))->pluck('admin_name','id')->toArray();
+            $bag [$filter->display_name] = $options;
+        }
+        return $bag;
+
+    }
+
+
 }

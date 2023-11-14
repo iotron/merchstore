@@ -148,10 +148,8 @@ class CreateProduct extends Page
 
     public function createConfigurable(array $data)
     {
-
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        //return redirect()->route('filament.resources.product.edit', $product);
         $this->redirect(ProductResource::getUrl('edit',['record' => $product->id]));
     }
 

@@ -10,15 +10,21 @@ class Configurable extends AbstractSupportProductSupport
 {
 
 
+    protected function getCleanProductData(array $data)
+    {
+        unset($data['filter_attributes']);
+        return $data;
+    }
 
     public function create(array $data): bool|Product
     {
+        $cleanData = $this->getCleanProductData($data);
         // Create Parent Product
-        $product = parent::create($data);
+        $product = parent::create($cleanData);
         // Create Product Flat
         $productFlat = $product->flat()->create([
-            'sku' => $data['sku'],
-            'filter_attributes' => $data['filter_attributes'],
+//            'sku' => $data['sku'],
+//            'filter_attributes' => $data['filter_attributes'],
         ]);
 
         // If Multiple Attributes Present
@@ -36,15 +42,26 @@ class Configurable extends AbstractSupportProductSupport
             $dataBag[$key]['name'] = $product->sku;
             $dataBag[$key]['url'] = Str::slug($product->sku.'-variant-'.implode('-', $permutation)).'-'.now();
             $dataBag[$key]['sku'] = $product->sku.'-variant-'.implode('-', $permutation);
-            $dataBag[$key]['attribute_group_id'] = $product->attribute_group_id;
+            $dataBag[$key]['filter_group_id'] = $product->filter_group_id;
             $dataBag[$key]['type'] = 'simple';
 //            $dataBag[$key]['vendor_id'] = $product->vendor_id;
-            $dataBag[$key]['product_id'] = $product->id;
-            $dataBag[$key]['filter_attributes'] = $permutation;
+  //          $dataBag[$key]['product_id'] = $product->id;
+        //    $dataBag[$key]['filter_attributes'] = $permutation;
         }
+        // Create Variants Products
         $variants = $product->variants()->createMany($dataBag);
+
         $variants->each(function ($item, $key) use ($dataBag) {
-            $item->flat()->create($dataBag[$key]);
+//            dd($dataBag[$key]);
+            // update
+            $item->flat()->create();
+//            dd($dataBag[$key]['filter_attributes']);
+            // attach filterOptions  ('filter_attributes') must hold ids
+            //$item->filterOptions()->attach($filter->options->first->id);
+
+
+            // old
+            //$item->flat()->create($dataBag[$key]);
         });
 
         return $product;
