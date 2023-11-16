@@ -9,6 +9,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Resources\Pages\Page;
 use Illuminate\Http\RedirectResponse;
@@ -97,13 +98,16 @@ class CreateProduct extends Page
 
                     Select::make('filter_group_id')
                         ->label('Filter Group')
-                        ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('display_name', 'id'))->required()->helperText('filters family adds a group of attributes to your product. (eg. color, size, material, medium)
+                        ->lazy()
+                        ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('admin_name', 'id'))->required()->helperText('filters family adds a group of attributes to your product. (eg. color, size, material, medium)
                             choose the family according to your product type.'),
                 ]),
             Section::make('Filter Details')
                 ->description('Description')
                 ->columns(2)
-                ->schema($this->configSchema())
+                ->schema(function (Get $get){
+                    return is_null($get('filter_group_id')) ? [] : $this->configSchema();
+                })
                 ->visible(fn (Livewire $livewire): bool => $livewire->type == 'configurable'),
         ];
     }
