@@ -29,10 +29,10 @@ class StripeOrder implements OrderBuilderContract
 
 
     /**
-     * @param Model $model
+     * @param ?Model $model
      * @return $this
      */
-    public function model(Model $model): static
+    public function model(?Model $model): static
     {
         $this->subjectModel = $model;
         return $this;

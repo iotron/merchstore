@@ -25,7 +25,7 @@ class OrderStoreRequest extends FormRequest
 
             'payment_method_id' => 'int|required',
             'delivery_address_id' => 'int|required',
-            'shipping_method_id' => 'int|required',
+//            'shipping_method_id' => 'int|required',
 //            'coupon'            => 'string',
         ];
     }

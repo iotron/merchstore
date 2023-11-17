@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 interface OrderBuilderContract
 {
 
-    public function model(Model $model): static;
+    public function model(?Model $model): static;
     public function items(array $items_array):static;
 
     public function receipt(string $receipt): static;

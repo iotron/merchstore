@@ -41,11 +41,14 @@ class OrderBuilder implements OrderBuilderContract
     }
 
 
-    public function model(Model $model): static
+    public function model(?Model $model): static
     {
-        throw_unless(isset($model->id),get_class($model).' missing column id');
-        throw_unless(isset($model->name),get_class($model).' missing column name');
-        throw_unless(isset($model->url),get_class($model).' missing column url');
+       if (!is_null($model))
+       {
+           throw_unless(isset($model->id),get_class($model).' missing column id');
+           throw_unless(isset($model->name),get_class($model).' missing column name');
+           throw_unless(isset($model->url),get_class($model).' missing column url');
+       }
 
         $this->subjectModel = $model;
         return $this;
@@ -90,7 +93,7 @@ class OrderBuilder implements OrderBuilderContract
     public function cartMeta(array $cart_meta): static
     {
         throw_unless($this->keyExist($cart_meta,'total'),'missing total in cart meta');
-        throw_unless($this->keyExist($cart_meta,'tickets'),'missing tickets in cart meta');
+        throw_unless($this->keyExist($cart_meta,'products'),'missing products in cart meta');
         throw_unless($this->keyExist($cart_meta,'coupon'),'missing coupon in cart meta');
         throw_unless($this->keyExist($cart_meta,'quantity'),'missing quantity in cart meta');
         throw_unless($this->keyExist($cart_meta,'subtotal'),'missing subtotal in cart meta');
@@ -105,24 +108,35 @@ class OrderBuilder implements OrderBuilderContract
     protected function prepareOrderBuilderForProvider()
     {
         $providerName = !is_null($this->paymentService) ? $this->paymentService->getProviderName() : 'razorpay';
-
         $orderClass = self::AVAILABLE_ORDER_CLASSES[$providerName];
         $this->orderClass = new $orderClass($this->paymentService);
-
     }
 
     public function getArray():array
     {
         $this->prepareOrderBuilderForProvider();
+        $prepareOrderClass = $this->orderClass;
+        $prepareOrderClass->items($this->items)->cartMeta($this->cartMeta);
+        if ($this->receipt)
+        {
+            $prepareOrderClass->receipt($this->receipt);
+        }
+        if ($this->subjectModel)
+        {
+            $prepareOrderClass->model($this->subjectModel);
+        }
 
-        return $this->orderClass
-            ->receipt($this->receipt)
-            ->model($this->subjectModel)
-            ->items($this->items)
-            ->cartMeta($this->cartMeta)
-            ->bookingName($this->bookingName)
-            ->bookingEmail($this->bookingEmail)
-            ->bookingContact($this->bookingContact)
+        if ($this->bookingName)
+        {
+            $prepareOrderClass->bookingName($this->bookingName)->bookingEmail($this->bookingEmail);
+        }
+
+        if ($this->bookingContact)
+        {
+            $prepareOrderClass ->bookingContact($this->bookingContact);
+        }
+
+        return $prepareOrderClass
             ->getArray();
     }
 
