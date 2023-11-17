@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('in_stock')->storedAs('IF(in_stock_quantity > 0, true, false)')->index();
             $table->unsignedInteger('priority')->default(1);
             $table->foreignId('product_id')->constrained('products')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('address_id')->nullable()->constrained('addresses')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
     }

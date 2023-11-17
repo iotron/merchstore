@@ -125,16 +125,18 @@ class CartCouponService implements CartCouponServiceContract
         {
 
 
+            // Validate Rules And Conditions
+            // Currently Condition Not Validate
+//            $voucherService = new VoucherCartService($this->couponModel->voucher,$this->cartService);
+//            dd($voucherService->validate());
+//            if ($voucherService->validate())
+//            {
+//                return true;
+//            }
 
-            //return true;
 
-            $voucherService = new VoucherCartService($this->couponModel->voucher,$this->cartService);
-
-            dd($voucherService->validate());
-
-            if ($voucherService->validate())
-            {
-            }
+            // return validate
+            return true;
 
         }
 

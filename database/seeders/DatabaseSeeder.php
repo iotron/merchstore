@@ -12,19 +12,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
+        $this->call(array_merge($this->getProductionSeeders(),$this->getLocalSeeders()));
+    }
+
+
+
+
+    protected function getProductionSeeders(): array
+    {
+        return [
             UserSeeder::class,
             CountrySeeder::class,
             CustomerGroupSeeder::class,
-            CustomerSeeder::class,
-          //  AttributeSeeder::class,
             FilterSeeder::class,
-            ThemeSeeder::class,
             CategorySeeder::class,
+        ];
+    }
+
+
+    protected function getLocalSeeders(): array
+    {
+        return [
+            CustomerSeeder::class,
+            ThemeSeeder::class,
             ProductSeeder::class,
             SaleSeeder::class,
             VoucherSeeder::class,
             ProductFeedbackSeeder::class
-        ]);
+        ];
     }
+
+
 }

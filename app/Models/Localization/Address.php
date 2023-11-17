@@ -3,6 +3,7 @@
 namespace App\Models\Localization;
 
 use App\Models\Customer\Customer;
+use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,6 +64,19 @@ class Address extends Model
     {
         return $this->belongsTo(Customer::class, 'id', 'addressable_id');
     }
+
+
+
+//    public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+//    {
+//        return $this->belongsToMany(Product::class, 'product_stocks')->withPivot('quantity');
+//    }
+
+//    public function orderProducts()
+//    {
+//        return $this->hasMany(OrderProduct::class);
+//    }
+
 
 
 
