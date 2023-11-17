@@ -16,11 +16,11 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnUpdate()->nullOnDelete();
             $table->integer('quantity')->unsigned();
-            $table->integer('base_amount');  // subtotal  base_price
-            $table->integer('discount_amount');  // subtotal discount
-            $table->integer('tax_amount');      // subtotal tax
-            $table->integer('total_amount');      // subtotal final price
-            $table->boolean('has_tax')->storedAs('IF(tax_amount > 0, true, false)');
+            $table->integer('amount');  // subtotal  base_price
+            $table->integer('discount');  // subtotal discount
+            $table->integer('tax');      // subtotal tax
+            $table->integer('total');      // subtotal final price
+            $table->boolean('has_tax')->storedAs('IF(tax > 0, true, false)');
 
             $table->timestamps();
         });

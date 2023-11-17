@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_receipt')->unique();
+            $table->string('uuid')->unique();
             $table->integer('amount');
             $table->integer('subtotal'); // subtotal  base_price
-            $table->integer('discount_amount'); // subtotal discount
-            $table->integer('tax_amount'); // subtotal tax
+            $table->integer('discount'); // subtotal discount
+            $table->integer('tax'); // subtotal tax
             $table->integer('total'); // subtotal final price
             $table->integer('quantity'); // total quantity
             $table->string('voucher')->nullable();

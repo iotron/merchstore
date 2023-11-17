@@ -4,6 +4,7 @@ namespace App\Models\Payment;
 
 use App\Helpers\Money\MoneyCast;
 use App\Models\Customer\Customer;
+use App\Models\Order\Order;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -64,7 +65,10 @@ class Payment extends Model
         return $this->belongsTo(Customer::class,'customer_id','id');
     }
 
-
+    public function order()
+    {
+        return $this->belongsTo(Order::class,'order_id','id');
+    }
 
 
     public function provider(): BelongsTo

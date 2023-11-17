@@ -4,9 +4,11 @@ namespace App\Services\OrderService;
 
 use App\Helpers\Cart\Cart;
 use App\Models\Customer\Customer;
+use App\Models\Localization\Address;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
+use App\Models\Product\Product;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\PaymentService\Supports\Order\OrderBuilder;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -35,11 +37,12 @@ class OrderCreationService
         $this->provider = $this->paymentService->provider()->getClass();
     }
 
-    public function checkout()
+    public function checkout(Address $billing_address)
     {
         if ($this->cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $this->cart->getErrors()], 403);
         }
+
         // Prepare An Order Array
         $orderBuilder = new OrderBuilder($this->paymentService);
         $orderArray = $orderBuilder
@@ -53,18 +56,33 @@ class OrderCreationService
             ->getArray();
 
 
+
         // Create New Order Via Payment Provider Based On Order Array
         $newOrder = $this->paymentService->provider()->order()->create($orderArray);
 
         // Create An Pending Payment Based On Provider New Order Data
         $payment = $this->createAnPendingPayment($newOrder);
-
-
-        // Next Start From here...
         // Create An Pending Order Based On Newly Created Payment
-        $this->order = $this->createAnPendingOrder($payment);
+        $this->order = $this->createAnPendingOrder($payment,$billing_address);
+        // Finish Pending Payment Process And Update Payment With Booking ID
+        $payment->order_id = $this->order->id;
+        $payment->save();
 
-        dd($this->order);
+
+
+        // Attaching Products To Order
+        $this->attachProductsToOrder();
+
+        // Clean Up Cart
+        $this->cart->reset();
+
+        // return Application Checkout link Route
+        return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
+            'success' => true,
+            'message' => 'order placed successfully',
+            'redirect' => route('payment.visit', ['payment' => $payment->receipt]),
+        ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $payment];
+
 
 
     }
@@ -76,10 +94,6 @@ class OrderCreationService
      */
     protected function createAnPendingPayment(array|object $newOrder):Payment|Model
     {
-
-        $paymentProviderModelId = !is_null($this->paymentService) ? $this->paymentService->getProviderModel()->id : null;
-
-
         return $this->cart->getCustomer()->payments()->create([
             'receipt' => $this->receipt,
             'provider_gen_id' => $newOrder['id'],
@@ -92,35 +106,56 @@ class OrderCreationService
             'total' => $this->cartMeta['total']->getAmount(),
             'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
             'expire_at' => now()->addMinutes(config('app.booking_cleanup_time_limit')),
-            'payment_provider_id' => $paymentProviderModelId,
+            'payment_provider_id' => $this->paymentService->getProviderModel()->id,
         ]);
     }
 
 
-    private function createAnPendingOrder(Model|Payment $payment)
+    private function createAnPendingOrder(Model|Payment $payment,Address $billingAddress)
     {
+        $uuid = self::getUniqueOrderID($this->customer->orders);
         return $this->customer->orders()->create([
-                'order_receipt' => '',
-                'amount' => '',
+                'uuid' => $uuid,
+                'amount' => $payment->total,
                 'subtotal' => $payment->subtotal,
-                'discount_amount' => $payment->discount,
-                'tax_amount' => $payment->tax,
+                'discount' => $payment->discount,
+                'tax' => $payment->tax,
                 'total' => $payment->total,
                 'quantity' => $payment->quantity,
                 'voucher' => $payment->voucher,
-                'tracking_id' => '',
-                'status' => '',
-                'payment_success' => '',
-                'expire_at' => '',
-                'customer_id' => '',
-                'payment_provider_id' => '',
-                'customer_gstin' => '',
-                'shipping_is_billing' => '',
-                'billing_address_id' => '',
-                'address_id' => '',
+                'status' => Order::PENDING,
+                'payment_success' => false,
+                'expire_at' => now()->addMinutes(config('app.booking_cleanup_time_limit')),
+                'customer_id' => $this->customer->id,
+                'payment_provider_id' => $this->paymentService->getProviderModel()->id,
+                'customer_gstin' => null, // need data here
+                'shipping_is_billing' => false,
+                'billing_address_id' => $billingAddress->id,
+//                'address_id' => '', // need to check
             ]);
 
     }
+
+
+    protected function attachProductsToOrder(): void
+    {
+            $records = [];
+            foreach ($this->cartMeta['products'] as $item)
+            {
+                $records [] = [
+                    'quantity' => $item['pivot_quantity'],
+                    'amount' => $item['total_base_amount']->getAmount(),
+                    'discount' => $item['total_discount_amount']->getAmount(),
+                    'tax' => $item['total_tax_amount']->getAmount(),
+                    'total' => $item['net_total']->getAmount(),
+                    'product_id' => $item['id']
+                ];
+            }
+
+            $this->order->orderProducts()->createMany($records);
+    }
+
+
 
 
 
@@ -141,6 +176,13 @@ class OrderCreationService
         return $this->cartMeta['products']->keyBy('id')->map(function ($item) {
             return ['quantity' => $item['pivot_quantity']];
         })->toArray();
+    }
+
+    protected static function getUniqueOrderID(object $orderArray): string
+    {
+        $uid = ucwords(Str::random(6));
+        $result = $orderArray->contains('uuid', $uid);
+        return (!$result) ? $uid : self::getUniqueOrderID($orderArray);
     }
 
 

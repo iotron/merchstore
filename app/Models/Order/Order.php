@@ -2,12 +2,15 @@
 
 namespace App\Models\Order;
 
+use App\Helpers\Money\MoneyCast;
 use App\Models\Customer\Customer;
+use App\Models\Localization\Address;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
@@ -37,11 +40,11 @@ class Order extends Model
 
 
     protected $fillable = [
-        'order_receipt',
+        'uuid',
         'amount',
         'subtotal',
-        'discount_amount',
-        'tax_amount',
+        'discount',
+        'tax',
         'total',
         'quantity',
         'voucher',
@@ -54,7 +57,13 @@ class Order extends Model
         'billing_address_id',
     ];
 
-
+    protected $casts = [
+        'amount' => MoneyCast::class,
+        'subtotal' => MoneyCast::class,
+        'discount' => MoneyCast::class,
+        'tax' => MoneyCast::class,
+        'total' => MoneyCast::class,
+    ];
 
     public function customer(): BelongsTo
     {
@@ -67,12 +76,20 @@ class Order extends Model
         return $this->hasOne(Payment::class, 'order_id', 'id');
     }
 
-    public function paymentMethod()
+    public function paymentMethod(): BelongsTo
     {
-        return $this->belongsTo(PaymentProvider::class, 'payment_provider_id');
+        return $this->belongsTo(PaymentProvider::class, 'payment_provider_id','id');
     }
 
+    public function billingAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class,'billing_address_id','id');
+    }
 
+    public function orderProducts(): HasMany
+    {
+        return $this->hasMany(OrderProduct::class, 'order_id', 'id');
+    }
 
 
 

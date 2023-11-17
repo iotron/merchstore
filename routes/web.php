@@ -19,7 +19,7 @@ Route::get('/', function () {
 });
 
 
-Route::middleware(['auth'])->group(function (){
+Route::middleware(['auth:customer'])->group(function (){
     // POS Route
     Route::get('remove-cart/{customer}/{product}',function (\App\Models\Customer\Customer $customer,\App\Models\Product\Product $product){
         if ($customer->cart->contains('id',$product->id))
@@ -33,7 +33,15 @@ Route::middleware(['auth'])->group(function (){
         }
         return back();
     })->name('remove-cart');
+
+
+    // Checkout Route
+    Route::get('checkout/{payment:receipt}', \App\Livewire\CheckoutPage::class)->name('payment.visit');
+
 });
+
+
+
 
 
 
