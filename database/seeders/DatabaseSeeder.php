@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             CustomerGroupSeeder::class,
             FilterSeeder::class,
             CategorySeeder::class,
+            PaymentProviderSeeder::class
         ];
     }
 

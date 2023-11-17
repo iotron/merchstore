@@ -2,9 +2,11 @@
 
 namespace App\Models\Product;
 
+use App\Models\Localization\Address;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class ProductStock extends Model
 {
@@ -47,7 +49,13 @@ class ProductStock extends Model
     {
         return min($this->in_stock_quantity, $count);
     }
-
+    /**
+     * @return MorphMany
+     */
+    public function addresses()
+    {
+        return $this->morphMany(Address::class, 'addressable');
+    }
 
 
 }
