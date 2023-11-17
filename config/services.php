@@ -49,6 +49,25 @@ return [
         ],
     ],
 
+    'razorpay' => [
+        'api_key' => env('RAZORPAY_KEY'),
+        'api_secret'=> env('RAZORPAY_SECRET'),
+        'provider'=> 'razorpay',
+        'webhook_secret'=> env('RAZORPAY_WEBHOOK_SECRET'),
+
+        'api_x_key' => env('RAZORPAY_X_KEY'),
+        'api_x_secret'=> env('RAZORPAY_X_SECRET'),
+
+        'payout' => [
+            'account_no' => 2323230020266990,
+            'mode' => 'NEFT',
+
+        ]
+    ],
+    'stripe' => [
+        'sk_api_key' => env('STRIPE_SK_KEY'),
+        'pk_api_key' => env('STRIPE_PK_KEY')
+    ],
 
 
 

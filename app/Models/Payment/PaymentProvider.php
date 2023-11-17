@@ -9,6 +9,10 @@ class PaymentProvider extends Model
 {
     use HasFactory;
 
+    public const RAZORPAY = 'razorpay';
+    public const RAZORPAYX = 'razorpay-x';
+    public const STRIPE = 'stripe';
+
 
     protected $fillable = [
         'name',

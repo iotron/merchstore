@@ -45,7 +45,8 @@ class OrderActionController extends Controller
         if (!$paymentProvider->status) {
             return response()->json(['status' => false, 'message' => 'please choose another payment service'], 422);
         }
-        $this->paymentService->provider($paymentProvider->url);
+       $this->paymentService->provider($paymentProvider->url);
+
 
         // Validate Delivery Address
         $deliveryAddress = Address::firstWhere('id', $validate['delivery_address_id']);
@@ -59,11 +60,12 @@ class OrderActionController extends Controller
         }
 
         // Check this Address Belongs to Active User
-        if (!auth('customer')->user()->addresses()->contains($deliveryAddress))
+        $activeCustomer = auth('customer')->user();
+        $activeCustomer->loadMissing('addresses');
+        if (!$activeCustomer->addresses->contains($deliveryAddress))
         {
             return response()->json(['status' => false, 'message' => 'please choose another delivery address'], 422);
         }
-
 
         // Can not Place Order With Empty Cart
         if ($cart->getTotalQuantity() <= 0) {

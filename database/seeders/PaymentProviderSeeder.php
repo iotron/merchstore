@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderCreationService;
+use App\Services\PaymentService\Providers\CashOnDelivery\CodPaymentService;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayPaymentService;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,16 +18,12 @@ class PaymentProviderSeeder extends Seeder
     public function run(): void
     {
 
-        $cashOnDelivery = PaymentProvider::create([
-           'name' => 'Cash On Delivery',
-           'url' => 'cod',
-           'status' => true,
-        ]);
 
-        $unCategoriesProvider = PaymentProvider::create([
-            'name' => 'General Provider',
-            'url' => 'general',
-            'service_provider' => OrderCreationService::class,
+
+        $cashOnDeliveryProvider = PaymentProvider::create([
+            'name' => 'Cash On Delivery',
+            'url' => 'cod',
+            'service_provider' => CodPaymentService::class,
             'status' => true,
             'is_primary' => false,
             'has_api' => false,
@@ -39,7 +36,7 @@ class PaymentProviderSeeder extends Seeder
             'url' => 'razorpay',
             'service_provider' => RazorpayPaymentService::class,
             'status' => true,
-            'is_primary' => false,
+            'is_primary' => true,
             'has_api' => true,
             'desc' => 'Take Payment and Disburse Payout On Fly'
         ]);
@@ -50,7 +47,7 @@ class PaymentProviderSeeder extends Seeder
             'url' => 'stripe',
             'service_provider' => StripePaymentService::class,
             'status' => true,
-            'is_primary' => true,
+            'is_primary' => false,
             'has_api' => true,
             'desc' => 'Take Payment On Fly'
         ]);

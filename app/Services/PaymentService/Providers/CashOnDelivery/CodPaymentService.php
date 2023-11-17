@@ -8,10 +8,14 @@ use App\Services\PaymentService\Contracts\Provider\PaymentProviderPayoutContract
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderRefundContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationContract;
 
-class CodPaymentService
+class CodPaymentService implements PaymentProviderContract
 {
 
-    // implements PaymentProviderContract
+    //
+
+    public function __construct()
+    {
+    }
 
     public function getApi(): object
     {

@@ -3,6 +3,7 @@
 namespace App\Services\PaymentService\Supports\Order;
 
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
+use App\Services\PaymentService\Supports\Order\Provider\CodOrder;
 use App\Services\PaymentService\Supports\Order\Provider\RazorpayOrder;
 use App\Services\PaymentService\Supports\Order\Provider\StripeOrder;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ class OrderBuilder implements OrderBuilderContract
 {
 
     protected const AVAILABLE_ORDER_CLASSES = [
+        'cod' => CodOrder::class,
         'razorpay' => RazorpayOrder::class,
         'stripe' => StripeOrder::class
     ];

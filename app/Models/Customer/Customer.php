@@ -3,10 +3,12 @@
 namespace App\Models\Customer;
 
 use App\Models\Localization\Address;
+use App\Models\Payment\Payment;
 use App\Models\Product\Product;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -71,7 +73,10 @@ class Customer extends Authenticatable implements MustVerifyEmail
             ->withPivot('quantity','discount')->withTimestamps();
     }
 
-
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class,'customer_id','id');
+    }
 
 
 

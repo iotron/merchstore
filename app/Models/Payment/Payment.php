@@ -2,12 +2,33 @@
 
 namespace App\Models\Payment;
 
+use App\Helpers\Money\MoneyCast;
+use App\Models\Customer\Customer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
     use HasFactory;
+
+    const PENDING = 'pending';
+    const PROCESSING = 'processing';
+    const PAYMENT_FAILED = 'payment_failed';
+    const COMPLETED = 'completed';
+    const REFUND = 'refund';
+    const CANCEL_REFUND = 'cancel_refund';
+
+
+    public const STATUS_OPTION = [
+        self::PENDING => 'Pending',
+        self::CANCEL_REFUND => 'Cancel Payment',
+        self::PROCESSING => 'Processing',
+        self::COMPLETED => 'Completed',
+        self::PAYMENT_FAILED => 'Payment Failed',
+        self::REFUND => 'Refund'
+    ];
+
 
     protected $fillable = [
         'receipt',
@@ -29,6 +50,27 @@ class Payment extends Model
     ];
 
 
+    protected $casts = [
+        'details' => 'array',
+        'subtotal' => MoneyCast::class,
+        'discount' => MoneyCast::class,
+        'tax' => MoneyCast::class,
+        'total' => MoneyCast::class,
+    ];
+
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class,'customer_id','id');
+    }
+
+
+
+
+    public function provider(): BelongsTo
+    {
+        return $this->belongsTo(PaymentProvider::class,'payment_provider_id','id');
+    }
 
 
 

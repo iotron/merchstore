@@ -8,6 +8,8 @@ use App\Models\Filter\Filter;
 use App\Models\Filter\FilterGroup;
 use App\Models\Product\Product;
 use App\Models\Promotion\Sale;
+use App\Services\PaymentService\Contracts\PaymentServiceContract;
+use App\Services\PaymentService\PaymentService;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as SimpleQR;
 
@@ -15,16 +17,10 @@ class TestController extends Controller
 {
 
 
-    public function index()
+    public function index(PaymentService $paymentService)
     {
 
-        $rawProductData = Product::factory()->raw(['type' => Product::CONFIGURABLE]);
-        $typeInstance = app(config('project.product_types.'.$rawProductData['type'].'.class'));
-        $rawProductData['filter_attributes'] = $this->getFilterDetails($rawProductData['filter_group_id']);
-        // Create Configurable Product
-        $product = $typeInstance->create($rawProductData);
-
-        dd($product,$product->flat);
+        dd($paymentService->allProviders());
 
     }
 

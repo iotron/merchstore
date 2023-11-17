@@ -28,7 +28,23 @@ class CustomerSeeder extends Seeder
             'customer_group_id' => $customerGroups->random()->id
         ]);
 
-
+        // Create Customer Address
+        $demoCustomer->addresses()->create([
+            'name' => fake()->word.' Address',
+            'contact' => fake()->numerify('##########'),
+            'alternate_contact' => '',
+            'type' => 'Home',
+            'address_1' => fake()->address,
+            'address_2' => 'Line Two',
+            'landmark' => '',
+            'city' => 'Kolkata',
+            'postal_code' => 700001,
+            'state' => 'wb',
+            'default' => 1,
+            'priority' => 1,
+            'country_code' => 'IN',
+        ]);
+        $demoCustomer->save();
 
 
 

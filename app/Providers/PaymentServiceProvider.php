@@ -19,7 +19,7 @@ class PaymentServiceProvider extends ServiceProvider
         // For Service Class
         $this->app->singleton(PaymentService::class, function () {
             // PaymentService::activateProviders('razorpay','stripe');
-            $newPaymentService = (app()->isProduction()) ? new PaymentService('razorpay') : new PaymentService('razorpay','general');
+            $newPaymentService = (app()->isProduction()) ? new PaymentService('razorpay') : new PaymentService('razorpay','cod');
             throw_unless($newPaymentService instanceof PaymentServiceContract, get_class($newPaymentService) . ' must implement App\Services\PaymentService\Contracts\PaymentServiceContract');
             return $newPaymentService;
         });
