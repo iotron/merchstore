@@ -7,6 +7,8 @@ use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderPayoutContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderRefundContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationContract;
+use App\Services\PaymentService\Providers\CashOnDelivery\Actions\OrderAction;
+
 
 class CodPaymentService implements PaymentProviderContract
 {
@@ -32,19 +34,26 @@ class CodPaymentService implements PaymentProviderContract
         return get_class($this);
     }
 
+    /**
+     * @param string $error
+     * @return void
+     */
     public function setError(string $error): void
     {
-        // TODO: Implement setError() method.
+        $this->error = $error;
     }
 
+    /**
+     * @return string|null
+     */
     public function getError(): ?string
     {
-        // TODO: Implement getError() method.
+        return $this->error;
     }
 
     public function order(): PaymentProviderMethodContract
     {
-        // TODO: Implement order() method.
+        return new OrderAction($this);
     }
 
     public function payment(): PaymentProviderMethodContract

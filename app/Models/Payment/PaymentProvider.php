@@ -2,6 +2,7 @@
 
 namespace App\Models\Payment;
 
+use App\Models\Order\Order;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,6 +33,12 @@ class PaymentProvider extends Model
     {
         return $this->hasMany(Payment::class,'payment_provider_id','id');
     }
+
+    public function orders(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Order::class,'payment_provider_id','id');
+    }
+
 
 
 }

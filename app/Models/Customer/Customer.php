@@ -3,6 +3,7 @@
 namespace App\Models\Customer;
 
 use App\Models\Localization\Address;
+use App\Models\Order\Order;
 use App\Models\Payment\Payment;
 use App\Models\Product\Product;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -76,6 +77,12 @@ class Customer extends Authenticatable implements MustVerifyEmail
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class,'customer_id','id');
+    }
+
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class,'customer_id','id');
     }
 
 

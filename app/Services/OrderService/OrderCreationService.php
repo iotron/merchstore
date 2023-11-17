@@ -4,9 +4,13 @@ namespace App\Services\OrderService;
 
 use App\Helpers\Cart\Cart;
 use App\Models\Customer\Customer;
+use App\Models\Order\Order;
+use App\Models\Payment\Payment;
+use App\Models\Payment\PaymentProvider;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\PaymentService\Supports\Order\OrderBuilder;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class OrderCreationService
@@ -17,6 +21,8 @@ class OrderCreationService
     protected string $receipt;
     protected array $cartMeta = [];
     protected Authenticatable|Customer $customer;
+    protected string $provider;
+    protected ?Order $order=null;
 
     public function __construct(PaymentServiceContract|null $paymentService, Cart $cart)
     {
@@ -26,6 +32,7 @@ class OrderCreationService
         $this->cart->getCustomer()->loadMissing('payments');
         $this->receipt = self::getUniqueReceiptID($this->cart->getCustomer()->payments);
         $this->customer  = $this->cart->getCustomer();
+        $this->provider = $this->paymentService->provider()->getClass();
     }
 
     public function checkout()
@@ -46,14 +53,74 @@ class OrderCreationService
             ->getArray();
 
 
-        dd($orderArray);
+        // Create New Order Via Payment Provider Based On Order Array
+        $newOrder = $this->paymentService->provider()->order()->create($orderArray);
+
+        // Create An Pending Payment Based On Provider New Order Data
+        $payment = $this->createAnPendingPayment($newOrder);
 
 
+        // Next Start From here...
+        // Create An Pending Order Based On Newly Created Payment
+        $this->order = $this->createAnPendingOrder($payment);
 
+        dd($this->order);
 
 
     }
 
+
+    /**
+     * @param array|object $newOrder
+     * @return Payment|Model
+     */
+    protected function createAnPendingPayment(array|object $newOrder):Payment|Model
+    {
+
+        $paymentProviderModelId = !is_null($this->paymentService) ? $this->paymentService->getProviderModel()->id : null;
+
+
+        return $this->cart->getCustomer()->payments()->create([
+            'receipt' => $this->receipt,
+            'provider_gen_id' => $newOrder['id'],
+            'provider_class' => $this->provider,
+            'promo_code' => $this->cartMeta['coupon'] ?? '',
+            'quantity' => $this->cartMeta['quantity'],
+            'subtotal' => $this->cartMeta['subtotal']->getAmount(),
+            'discount' => $this->cartMeta['discount']->getAmount(),
+            'tax' => $this->cartMeta['tax']->getAmount(),
+            'total' => $this->cartMeta['total']->getAmount(),
+            'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
+            'expire_at' => now()->addMinutes(config('app.booking_cleanup_time_limit')),
+            'payment_provider_id' => $paymentProviderModelId,
+        ]);
+    }
+
+
+    private function createAnPendingOrder(Model|Payment $payment)
+    {
+        return $this->customer->orders()->create([
+                'order_receipt' => '',
+                'amount' => '',
+                'subtotal' => $payment->subtotal,
+                'discount_amount' => $payment->discount,
+                'tax_amount' => $payment->tax,
+                'total' => $payment->total,
+                'quantity' => $payment->quantity,
+                'voucher' => $payment->voucher,
+                'tracking_id' => '',
+                'status' => '',
+                'payment_success' => '',
+                'expire_at' => '',
+                'customer_id' => '',
+                'payment_provider_id' => '',
+                'customer_gstin' => '',
+                'shipping_is_billing' => '',
+                'billing_address_id' => '',
+                'address_id' => '',
+            ]);
+
+    }
 
 
 
@@ -75,6 +142,7 @@ class OrderCreationService
             return ['quantity' => $item['pivot_quantity']];
         })->toArray();
     }
+
 
 
 }
