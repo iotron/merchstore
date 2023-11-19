@@ -14,6 +14,9 @@ use App\Services\OrderService\Supports\Order\OrderBuilder;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\Order\OrderShipment;
+use App\Models\Order\OrderInvoice;
+use App\Models\Shipping\ShippingProvider;
 
 class OrderCreationService
 {
@@ -26,6 +29,7 @@ class OrderCreationService
     protected string $provider;
     protected ?Order $order=null;
     protected bool $isCod = false;
+    protected array $stockBag = [];
 
     public function __construct(PaymentServiceContract|null $paymentService, Cart $cart)
     {
@@ -79,6 +83,10 @@ class OrderCreationService
 
         // Attaching Products To Order
         $this->attachProductsToOrder();
+
+        // Create Shipment  & Invoice Of ThisOrder
+
+        $this->makeOrderShipmentWithInvoice($billing_address);
 
 
 
@@ -187,11 +195,13 @@ class OrderCreationService
             {
                 if($stock->in_stock_quantity >= $totalQuantity)
                 {
+                    $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
                     // Update Product Stock
                     $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
                     $stock->save();
                 }elseif($stock->in_stock){
                     // Partially Update Stock From Each Stock
+                    $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
                     $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
                     // Update Product Stock
                     $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
@@ -203,6 +213,36 @@ class OrderCreationService
     }
 
 
+    protected function makeOrderShipmentWithInvoice(Address $billing_address)
+    {
+
+        $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
+        $customShippingProvider = ShippingProvider::firstWhere('url','custom');
+        foreach($AddressGroup as $key => $group)
+        {
+            foreach ($group as $value)
+            {
+                $orderShipment = $this->order->shipments()->create([
+                    'total_quantity' => $value['quantity'],
+                    'pickup_address' => empty($key) ? null : $value['model']->address_id,
+                    'delivery_address' => $billing_address->id,
+                    'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
+                    'cod' => $this->isCod,
+                    'status' => OrderShipment::PROCESSING
+                ]);
+
+                $orderInvoice = $this->order->invoices()->create([
+                    'order_shipment_id' => $orderShipment->id
+                ]);
+
+                $orderShipment->invoice_uid = $orderInvoice->id;
+                $orderShipment->save();
+
+            }
+
+        }
+
+    }
 
 
 

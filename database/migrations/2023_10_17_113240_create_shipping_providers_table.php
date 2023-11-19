@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('order')->default(0);
             $table->boolean('has_api')->default(false);
             $table->boolean('status')->default(true);
+            $table->boolean('is_primary')->default(false);
             $table->text('desc')->nullable();
             $table->timestamps();
         });

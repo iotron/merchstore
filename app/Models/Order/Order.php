@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Order\OrderShipment;
+use App\Models\Order\OrderInvoice;
 
 class Order extends Model
 {
@@ -95,6 +97,16 @@ class Order extends Model
     public function orderProducts(): HasMany
     {
         return $this->hasMany(OrderProduct::class, 'order_id', 'id');
+    }
+
+    public function shipments()
+    {
+        return $this->hasMany(OrderShipment::class,'order_id','id');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(OrderInvoice::class);
     }
 
 
