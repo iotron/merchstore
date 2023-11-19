@@ -22,6 +22,10 @@ class TestController extends Controller
     public function index(PaymentService $paymentService)
     {
 
+
+      //  dd($paymentService->provider('razorpay')->order()->fetch('order_N2NOkMZ3higYO2'));
+
+
         $this->loginDefaultCustomer();
 
     }
@@ -31,6 +35,7 @@ class TestController extends Controller
     {
         $customer = Customer::firstWhere('email','customer@example.com');
         Auth::guard('customer')->login($customer);
+        echo "Login Successfully!";
     }
 
 

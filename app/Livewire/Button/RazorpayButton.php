@@ -25,6 +25,8 @@ class RazorpayButton extends Component
 
         $this->payable = $this->payment->status == Payment::PENDING;
 
+       // dd($this->options);
+
 
     }
 
@@ -39,7 +41,7 @@ class RazorpayButton extends Component
             'currency' => config('services.defaults.currency'),
             'name' => config('app.name'),
             'description' => 'Order Summary',
-            'image' => '',
+            // 'image' => '',
             'order_id' => $this->payment->provider_gen_id,
             'callback_url' => route('confirm.payment', ['payment' => $this->payment->receipt]),
 

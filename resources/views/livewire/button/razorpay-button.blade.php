@@ -36,7 +36,6 @@
 
             let rzp1 = getPaymentInstance();
             rzp1.open();
-            console.log(e);
             e.preventDefault();
         }
 
@@ -45,7 +44,6 @@
             if (isPending) {
                 let rzp1 = getPaymentInstance();
                 rzp1.open();
-                console.log(e);
                 e.preventDefault();
             }
         });
