@@ -47,6 +47,7 @@ return [
             'tcs' => 0,
             'tds' => 0
         ],
+        'order_cleanup_time_limit' => env('ORDER_EXPIRED_TIME_LIMIT_IN_MINUTE', 120),
     ],
 
     'razorpay' => [

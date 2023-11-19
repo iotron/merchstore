@@ -67,6 +67,8 @@ class OrderCreationService
         // Create New Order Via Payment Provider Based On Order Array
         $newOrder = $this->paymentService->provider()->order()->create($orderArray);
 
+        // dd($this->paymentService->provider()->order()->fetch('order_N2Mb5Qrp4pFbf3'));
+
         // Create An Pending Payment Based On Provider New Order Data
         $payment = $this->createAnPendingPayment($newOrder);
         // Create An Pending Order Based On Newly Created Payment
@@ -129,7 +131,7 @@ class OrderCreationService
             'tax' => $this->cartMeta['tax']->getAmount(),
             'total' => $this->cartMeta['total']->getAmount(),
             'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
-            'expire_at' => (!$this->isCod) ? now()->addMinutes(config('app.booking_cleanup_time_limit')) : now()->addMonth(),
+            'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
             'payment_provider_id' => $this->paymentService->getProviderModel()->id,
         ]);
     }
@@ -149,7 +151,7 @@ class OrderCreationService
                 'voucher' => $payment->voucher,
                 'status' => (!$this->isCod) ? Order::PENDING : Order::CONFIRM,
                 'payment_success' => false,
-                'expire_at' => (!$this->isCod) ? now()->addMinutes(config('app.booking_cleanup_time_limit')) : now()->addMonth(),
+                'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
                 'customer_id' => $this->customer->id,
                 'payment_provider_id' => $this->paymentService->getProviderModel()->id,
                 'customer_gstin' => null, // need data here

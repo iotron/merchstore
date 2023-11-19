@@ -63,6 +63,7 @@ class Order extends Model
         'customer_gstin',
         'shipping_is_billing',
         'billing_address_id',
+        'payment_provider_id'
     ];
 
     protected $casts = [

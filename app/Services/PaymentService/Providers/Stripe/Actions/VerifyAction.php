@@ -2,7 +2,7 @@
 
 namespace App\Services\PaymentService\Providers\Stripe\Actions;
 
-use App\Models\Customer\Payment;
+use App\Models\Payment\Payment;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationContract;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentServiceContract;

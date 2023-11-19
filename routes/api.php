@@ -29,4 +29,4 @@ Route::prefix('themes')->group(base_path('routes/ver/themes.php'));
 Route::middleware(['auth:customer'])->group(base_path('routes/ver/cart.php'));
 
 //Order
-Route::middleware(['auth:customer'])->group(base_path('routes/ver/order.php'));
+Route::prefix('order')->group(base_path('routes/ver/order.php'));

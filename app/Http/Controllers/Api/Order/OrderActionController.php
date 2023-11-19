@@ -10,6 +10,8 @@ use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderCreationService;
 use App\Services\PaymentService\PaymentService;
 use Illuminate\Http\Request;
+use App\Models\Payment\Payment;
+use App\Http\Requests\Order\OrderConfirmRequest;
 
 class OrderActionController extends Controller
 {
@@ -79,6 +81,30 @@ class OrderActionController extends Controller
         return $orderCreationService->checkout($deliveryAddress);
 
     }
+
+
+
+
+    public function confirmPayment(Payment $payment, OrderConfirmRequest $request)
+    {
+        dd('Order Confirmation!');
+
+        $paymentVerified =
+            $this->paymentService
+                ->provider($payment->provider->url)
+                ->verify()
+                ->verifyWith($payment,$request->validationData());
+
+       // dd($paymentVerified);
+
+
+
+
+    }
+
+
+
+
 
 
 }

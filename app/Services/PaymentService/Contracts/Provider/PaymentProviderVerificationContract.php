@@ -2,7 +2,7 @@
 
 namespace App\Services\PaymentService\Contracts\Provider;
 
-use App\Models\Customer\Payment;
+use App\Models\Payment\Payment;
 
 interface PaymentProviderVerificationContract
 {

@@ -35,7 +35,7 @@ class OrderAction implements PaymentProviderMethodContract
      */
     public function fetch(int|string $id)
     {
-        // TODO: Implement fetch() method.
+        return $this->api->order->fetch($id);
     }
 
     /**

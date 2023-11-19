@@ -12,6 +12,8 @@ use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\PaymentService\PaymentService;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as SimpleQR;
+use App\Models\Customer\Customer;
+use Illuminate\Support\Facades\Auth;
 
 class TestController extends Controller
 {
@@ -20,10 +22,16 @@ class TestController extends Controller
     public function index(PaymentService $paymentService)
     {
 
-        dd($paymentService->allProviders());
+        $this->loginDefaultCustomer();
 
     }
 
+
+    private function loginDefaultCustomer()
+    {
+        $customer = Customer::firstWhere('email','customer@example.com');
+        Auth::guard('customer')->login($customer);
+    }
 
 
 
