@@ -118,13 +118,11 @@ class RazorpayOrder implements OrderBuilderContract
                 'booking_name' => $this->bookingName,
                 'booking_email' => $this->bookingEmail,
                 'booking_contact' => $this->bookingContact,
-                'event_id' => $this->subjectModel->id,
-                'event_name' => $this->subjectModel->name,
-                'event_url' => $this->subjectModel->url,
-                'tickets_ids' => implode(',', $this->cartMeta['tickets']->pluck('id')->toArray()),
-                'tickets_details' => json_encode($this->items),
+                'model_id' => !is_null($this->subjectModel) ? $this->subjectModel->id : null,
+                'products_ids' => implode(',', $this->cartMeta['products']->pluck('id')->toArray()),
+                'product_details' => json_encode($this->items),
                 // Currently Not Necessary (Remove When Update Livewire)
-                'promo' => $this->cartMeta['coupon'] ?? '',
+                'voucher' => $this->cartMeta['coupon'] ?? '',
                 // column
                 'quantity' => $this->cartMeta['quantity'],
                 'subtotal' => $this->cartMeta['subtotal']->getAmount(),
