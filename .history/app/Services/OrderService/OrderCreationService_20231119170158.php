@@ -67,21 +67,23 @@ class OrderCreationService
         $payment = $this->createAnPendingPayment($newOrder);
         // Create An Pending Order Based On Newly Created Payment
         $this->order = $this->createAnPendingOrder($payment,$billing_address);
+
+        if($this->isCod)
+        {
+            // Cash On Delivery Order Creation
+            $this->order->status = Order::CONFIRM;
+            $this->order->expire_at = now()->addMonth();
+            $this->order->save();
+        }
         // Finish Pending Payment Process And Update Payment With Booking ID
         $payment->order_id = $this->order->id;
         $payment->save();
 
-        if($this->isCod)
-        {
-            // Update Product Stock
-            $this->updateProductStock();
-        }
+
+
 
         // Attaching Products To Order
         $this->attachProductsToOrder();
-
-
-
 
         // Clean Up Cart
         $this->cart->reset();
@@ -90,11 +92,9 @@ class OrderCreationService
         return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
             'success' => true,
             'message' => 'order placed successfully',
-            'payment_provider_url' => $this->paymentService->getProviderModel()->url,
-            'order' => [
-                'uuid' => $this->order->uuid,
-                'status' => $this->order->status,
-            ],
+            'type' => $this->paymentService->getProviderModel()->url,
+            'order_uuid' => $this->order->uuid,
+            'order_status' => $this->order->status,
             'redirect' => ($this->paymentService->getProviderModel()->url == PaymentProvider::COD) ?
                         config('app.client_url').'/orders/'.$this->order->uuid : route('payment.visit', ['payment' => $payment->receipt]),
         ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $payment];
@@ -121,7 +121,7 @@ class OrderCreationService
             'tax' => $this->cartMeta['tax']->getAmount(),
             'total' => $this->cartMeta['total']->getAmount(),
             'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
-            'expire_at' => (!$this->isCod) ? now()->addMinutes(config('app.booking_cleanup_time_limit')) : now()->addMonth(),
+            'expire_at' => now()->addMinutes(config('app.booking_cleanup_time_limit')),  // Changed For COD
             'payment_provider_id' => $this->paymentService->getProviderModel()->id,
         ]);
     }
@@ -139,9 +139,9 @@ class OrderCreationService
                 'total' => $payment->total,
                 'quantity' => $payment->quantity,
                 'voucher' => $payment->voucher,
-                'status' => (!$this->isCod) ? Order::PENDING : Order::CONFIRM,
+                'status' => Order::PENDING,
                 'payment_success' => false,
-                'expire_at' => (!$this->isCod) ? now()->addMinutes(config('app.booking_cleanup_time_limit')) : now()->addMonth(),
+                'expire_at' => now()->addMinutes(config('app.booking_cleanup_time_limit')),
                 'customer_id' => $this->customer->id,
                 'payment_provider_id' => $this->paymentService->getProviderModel()->id,
                 'customer_gstin' => null, // need data here
@@ -171,36 +171,6 @@ class OrderCreationService
             $this->order->orderProducts()->createMany($records);
     }
 
-
-    protected function updateProductStock()
-    {
-
-
-        foreach ($this->cartMeta['products'] as $item)
-        {
-            $productModel = $item['product'];
-            $totalQuantity = $productModel->pivot->quantity;
-            $productAllStock = $productModel->availableStocks()->get();
-
-
-            foreach($productAllStock as $stock)
-            {
-                if($stock->in_stock_quantity >= $totalQuantity)
-                {
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
-                    $stock->save();
-                }elseif($stock->in_stock){
-                    // Partially Update Stock From Each Stock
-                    $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
-                    $stock->save();
-                }
-            }
-
-        }
-    }
 
 
 

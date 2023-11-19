@@ -73,7 +73,6 @@ class OrderCreationService
 
         if($this->isCod)
         {
-            // Update Product Stock
             $this->updateProductStock();
         }
 
@@ -198,6 +197,9 @@ class OrderCreationService
                     $stock->save();
                 }
             }
+
+            //  $productModel->sold_quantity = $ticket->sold_quantity + $ticket->pivot->quantity;
+            //  $ticket->save();
 
         }
     }

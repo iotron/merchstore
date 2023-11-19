@@ -73,7 +73,6 @@ class OrderCreationService
 
         if($this->isCod)
         {
-            // Update Product Stock
             $this->updateProductStock();
         }
 

@@ -71,15 +71,14 @@ class OrderCreationService
         $payment->order_id = $this->order->id;
         $payment->save();
 
-        if($this->isCod)
-        {
-            // Update Product Stock
-            $this->updateProductStock();
-        }
 
         // Attaching Products To Order
         $this->attachProductsToOrder();
 
+        if($this->isCod)
+        {
+            $this->updateProductStock();
+        }
 
 
 
@@ -174,32 +173,9 @@ class OrderCreationService
 
     protected function updateProductStock()
     {
+        $this->order->orderProducts->each(function(Product $product){
 
-
-        foreach ($this->cartMeta['products'] as $item)
-        {
-            $productModel = $item['product'];
-            $totalQuantity = $productModel->pivot->quantity;
-            $productAllStock = $productModel->availableStocks()->get();
-
-
-            foreach($productAllStock as $stock)
-            {
-                if($stock->in_stock_quantity >= $totalQuantity)
-                {
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
-                    $stock->save();
-                }elseif($stock->in_stock){
-                    // Partially Update Stock From Each Stock
-                    $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
-                    $stock->save();
-                }
-            }
-
-        }
+        });
     }
 
 

@@ -71,17 +71,11 @@ class OrderCreationService
         $payment->order_id = $this->order->id;
         $payment->save();
 
-        if($this->isCod)
-        {
-            // Update Product Stock
-            $this->updateProductStock();
-        }
+
+
 
         // Attaching Products To Order
         $this->attachProductsToOrder();
-
-
-
 
         // Clean Up Cart
         $this->cart->reset();
@@ -90,11 +84,9 @@ class OrderCreationService
         return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
             'success' => true,
             'message' => 'order placed successfully',
-            'payment_provider_url' => $this->paymentService->getProviderModel()->url,
-            'order' => [
-                'uuid' => $this->order->uuid,
-                'status' => $this->order->status,
-            ],
+            'type' => $this->paymentService->getProviderModel()->url,
+            'order_uuid' => $this->order->uuid,
+            'order_status' => $this->order->status,
             'redirect' => ($this->paymentService->getProviderModel()->url == PaymentProvider::COD) ?
                         config('app.client_url').'/orders/'.$this->order->uuid : route('payment.visit', ['payment' => $payment->receipt]),
         ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $payment];
@@ -171,36 +163,6 @@ class OrderCreationService
             $this->order->orderProducts()->createMany($records);
     }
 
-
-    protected function updateProductStock()
-    {
-
-
-        foreach ($this->cartMeta['products'] as $item)
-        {
-            $productModel = $item['product'];
-            $totalQuantity = $productModel->pivot->quantity;
-            $productAllStock = $productModel->availableStocks()->get();
-
-
-            foreach($productAllStock as $stock)
-            {
-                if($stock->in_stock_quantity >= $totalQuantity)
-                {
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
-                    $stock->save();
-                }elseif($stock->in_stock){
-                    // Partially Update Stock From Each Stock
-                    $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
-                    $stock->save();
-                }
-            }
-
-        }
-    }
 
 
 

@@ -13,7 +13,6 @@ class PaymentProvider extends Model
     public const RAZORPAY = 'razorpay';
     public const RAZORPAYX = 'razorpay-x';
     public const STRIPE = 'stripe';
-    public const COD = 'cod';
 
 
     protected $fillable = [

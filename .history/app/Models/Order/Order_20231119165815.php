@@ -32,15 +32,14 @@ class Order extends Model
 
     public const StatusOptions = [
         self::PROCESSING => 'Processing',
-        self::PENDING => 'Pending',
-        self::PAYMENT_FAILED => 'Payment Failed!',
-        self::CONFIRM => 'Confirm',
+        self::PENDING = 'Pending',
         self::REVIEW => 'Review',
         self::ACCEPTED => 'Accepted',
         self::READYTOSHIP => 'Ready To Ship',
         self::INTRANSIT => 'In Transit',
         self::COMPLETED => 'Completed',
         self::CANCELLED => 'Cancelled',
+        self::CONFIRM => 'Confirm',
         self::REFUNED => 'Refunded',
     ];
 

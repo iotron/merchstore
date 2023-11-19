@@ -27,21 +27,15 @@ class Order extends Model
     public const INTRANSIT = 'intransit';
     const COMPLETED = 'completed';
     public const CANCELLED = 'cancelled';
-    const CONFIRM = 'confirm';
-    const REFUNED = 'refunded';
 
     public const StatusOptions = [
         self::PROCESSING => 'Processing',
-        self::PENDING => 'Pending',
-        self::PAYMENT_FAILED => 'Payment Failed!',
-        self::CONFIRM => 'Confirm',
         self::REVIEW => 'Review',
         self::ACCEPTED => 'Accepted',
         self::READYTOSHIP => 'Ready To Ship',
         self::INTRANSIT => 'In Transit',
         self::COMPLETED => 'Completed',
-        self::CANCELLED => 'Cancelled',
-        self::REFUNED => 'Refunded',
+        self::CANCELLED => 'Cancelled'
     ];
 
 
