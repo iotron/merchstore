@@ -48,7 +48,8 @@ class Payment extends Model
         'verified',
         'status',
         'expire_at',
-        'payment_provider_id'
+        'payment_provider_id',
+        'customer_id'
     ];
 
 

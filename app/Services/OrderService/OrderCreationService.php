@@ -49,7 +49,32 @@ class OrderCreationService
             return response()->json(['success' => false, 'message' => $this->cart->getErrors()], 403);
         }
 
-        // Prepare An Order Array
+        $uuid = self::getUniqueOrderID($this->customer->orders);
+        // Create An Pending Order Based On Newly Created Payment
+        $this->order =  $this->customer->orders()->create([
+            'uuid' => $uuid,
+            'voucher' => $this->cartMeta['coupon'] ?? '',
+            'quantity' => $this->cartMeta['quantity'],
+            'amount' => $this->cartMeta['total']->getAmount(),
+            'subtotal' => $this->cartMeta['subtotal']->getAmount(),
+            'discount' => $this->cartMeta['discount']->getAmount(),
+            'tax' => $this->cartMeta['tax']->getAmount(),
+            'total' => $this->cartMeta['total']->getAmount(),
+            'status' => (!$this->isCod) ? Order::PENDING : Order::CONFIRM,
+            'payment_success' => false,
+            'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
+            'customer_id' => $this->customer->id,
+            'payment_provider_id' => $this->paymentService->getProviderModel()->id,
+            'customer_gstin' => null, // need data here
+            'shipping_is_billing' => false,
+            'billing_address_id' => $billing_address->id,
+//                'address_id' => '', // need to check
+        ]);
+
+
+
+
+        // Prepare An Order Array (Provider Case) (code shorten)
         $orderBuilder = new OrderBuilder($this->paymentService);
         $orderArray = $orderBuilder
             ->model(null)
@@ -61,21 +86,12 @@ class OrderCreationService
             ->bookingContact($this->customer->contact)
             ->getArray();
 
-
-
-
-        // Create New Order Via Payment Provider Based On Order Array
+        // Create New Order Via Payment Provider Based On Order Array (Provider Case)
         $newOrder = $this->paymentService->provider()->order()->create($orderArray);
 
-        // dd($this->paymentService->provider()->order()->fetch('order_N2Mb5Qrp4pFbf3'));
-
-        // Create An Pending Payment Based On Provider New Order Data
+        // Create An Pending Payment Based On Provider New Order Data (DB Case)
         $payment = $this->createAnPendingPayment($newOrder);
-        // Create An Pending Order Based On Newly Created Payment
-        $this->order = $this->createAnPendingOrder($payment,$billing_address);
-        // Finish Pending Payment Process And Update Payment With Booking ID
-        $payment->order_id = $this->order->id;
-        $payment->save();
+
 
         if($this->isCod)
         {
@@ -120,7 +136,7 @@ class OrderCreationService
      */
     protected function createAnPendingPayment(array|object $newOrder):Payment|Model
     {
-        return $this->cart->getCustomer()->payments()->create([
+        return $this->order->payment()->create([
             'receipt' => $this->receipt,
             'provider_gen_id' => $newOrder['id'],
             'provider_class' => $this->provider,
@@ -133,34 +149,10 @@ class OrderCreationService
             'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
             'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
             'payment_provider_id' => $this->paymentService->getProviderModel()->id,
+            'customer_id' => $this->customer->id,
         ]);
     }
 
-
-    private function createAnPendingOrder(Model|Payment $payment,Address $billingAddress)
-    {
-        $uuid = self::getUniqueOrderID($this->customer->orders);
-        return $this->customer->orders()->create([
-                'uuid' => $uuid,
-                'amount' => $payment->total,
-                'subtotal' => $payment->subtotal,
-                'discount' => $payment->discount,
-                'tax' => $payment->tax,
-                'total' => $payment->total,
-                'quantity' => $payment->quantity,
-                'voucher' => $payment->voucher,
-                'status' => (!$this->isCod) ? Order::PENDING : Order::CONFIRM,
-                'payment_success' => false,
-                'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
-                'customer_id' => $this->customer->id,
-                'payment_provider_id' => $this->paymentService->getProviderModel()->id,
-                'customer_gstin' => null, // need data here
-                'shipping_is_billing' => false,
-                'billing_address_id' => $billingAddress->id,
-//                'address_id' => '', // need to check
-            ]);
-
-    }
 
 
     protected function attachProductsToOrder(): void

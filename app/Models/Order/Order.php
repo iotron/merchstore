@@ -63,7 +63,8 @@ class Order extends Model
         'customer_gstin',
         'shipping_is_billing',
         'billing_address_id',
-        'payment_provider_id'
+        'payment_provider_id',
+
     ];
 
     protected $casts = [
@@ -85,7 +86,7 @@ class Order extends Model
         return $this->hasOne(Payment::class, 'order_id', 'id');
     }
 
-    public function paymentMethod(): BelongsTo
+    public function paymentProvider(): BelongsTo
     {
         return $this->belongsTo(PaymentProvider::class, 'payment_provider_id','id');
     }

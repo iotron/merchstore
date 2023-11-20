@@ -40,7 +40,7 @@ class OrderActionController extends Controller
     public function placeOrder(OrderStoreRequest $request, Cart $cart)
     {
         $validate = $request->validated();
-        $paymentProvider = PaymentProvider::firstWhere('id', $validate['payment_method_id']);
+        $paymentProvider = PaymentProvider::firstWhere('id', $validate['payment_provider_id']);
         // Validate Payment Method
         if (is_null($paymentProvider)) {
             return response()->json(['status' => false, 'message' => 'payment service does not exist'], 422);
@@ -51,26 +51,19 @@ class OrderActionController extends Controller
        $this->paymentService->provider($paymentProvider->url);
 
 
-        // Validate Delivery Address
-        $deliveryAddress = Address::firstWhere('id', $validate['delivery_address_id']);
+        // Validate Delivery Address (auth)
+        $deliveryAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['shipping_address_id']);
         // Validate Shipping Method
         if (is_null($deliveryAddress)) {
-            return response()->json(['status' => false, 'message' => 'delivery address does not exist'], 422);
+            return response()->json(['status' => false, 'message' => 'shipping address does not exist'], 422);
         }
-        // Check It is Default Address
-        if (!$deliveryAddress->default) {
-            return response()->json(['status' => false, 'message' => 'please choose another delivery address'], 422);
-        }
-
-        // Check this Address Belongs to Active User
-        $activeCustomer = auth('customer')->user();
-        $activeCustomer->loadMissing('addresses');
-        if (!$activeCustomer->addresses->contains($deliveryAddress))
+        if ($validate['shipping_is_billing'])
         {
-            return response()->json(['status' => false, 'message' => 'please choose another delivery address'], 422);
+            $billingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['billing_address_id']);
         }
 
-        // Can not Place Order With Empty Cart
+
+        // Can not Place Order With Empty Cart (changed option old cart for stock)
         if ($cart->getTotalQuantity() <= 0) {
             return response()->json(['success' => false, 'message' => 'cart empty!'], 403);
         }

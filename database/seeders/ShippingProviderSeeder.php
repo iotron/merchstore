@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Shipping\ShippingProvider;
-use App\Services\ShippingService\Providers\Manual\ManualShippingService;
+use App\Services\ShippingService\Providers\Custom\CustomShippingService;
+use App\Services\ShippingService\Providers\Pickrr\PickrrShippingService;
+use App\Services\ShippingService\Providers\ShipRocket\ShipRocketShippingService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,11 +19,35 @@ class ShippingProviderSeeder extends Seeder
         $cashOnDeliveryShippingProvider = ShippingProvider::create([
             'name' => 'Custom',
             'url' => 'custom',
-            'service_provider' => ManualShippingService::class,
+            'service_provider' => CustomShippingService::class,
             'status' => true,
-            'is_primary' => false,
+            'is_primary' => true,
             'has_api' => false,
             'desc' => 'This provider only for cod delivery purpose'
         ]);
+
+
+        $shiprocketShippingProvider = ShippingProvider::create([
+            'name' => 'ShipRocket',
+            'url' => 'shiprocket',
+            'service_provider' => ShipRocketShippingService::class,
+            'status' => true,
+            'is_primary' => false,
+            'has_api' => true,
+            'desc' => 'This provider only for delivery purpose'
+        ]);
+
+
+        $pickrrShippingProvider = ShippingProvider::create([
+            'name' => 'ShipRocket',
+            'url' => 'shiprocket',
+            'service_provider' => PickrrShippingService::class,
+            'status' => true,
+            'is_primary' => false,
+            'has_api' => true,
+            'desc' => 'This provider only for delivery purpose'
+        ]);
+
+
     }
 }

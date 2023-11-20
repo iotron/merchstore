@@ -36,7 +36,7 @@ return new class extends Migration
             $table->foreignId('billing_address_id')->nullable()->constrained('addresses')->onUpdate('cascade')->onDelete('cascade');
 
             // delivery/shipping address
-            $table->foreignId('address_id')->nullable()->constrained('addresses')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('shipping_address_id')->nullable()->constrained('addresses')->cascadeOnUpdate()->cascadeOnDelete();
 
 
 

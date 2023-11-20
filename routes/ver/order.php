@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:customer'])->group(function(){
     Route::post('place',[OrderActionController::class,'placeOrder']);
 
-    Route::get('all',[OrderController::class,'index']);
+    Route::get('/',[OrderController::class,'index']);
+    Route::get('{order:uuid}',[OrderController::class,'show']);
 });
 
 

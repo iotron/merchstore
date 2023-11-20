@@ -23,20 +23,22 @@ class OrderStoreRequest extends FormRequest
     {
         return [
 
-            'payment_method_id' => 'int|required',
-            'delivery_address_id' => 'int|required',
-//            'shipping_method_id' => 'int|required',
-//            'coupon'            => 'string',
+            'payment_provider_id' => 'int|required',
+            'shipping_address_id' => 'int|required',
+            'billing_address_id' => 'int|required_if:shipping_is_billing,false',
+            'coupon'            => 'string|nullable',
+            'shipping_is_billing' => 'boolean'
         ];
     }
 
     public function messages()
     {
         return [
-            'payment_method_id.required' => 'payment method id is required!',
-            'payment_method_id.int' => 'payment method id must be an integer!',
-            'delivery_address_id.required' => 'delivery address id is required!',
-            'delivery_address_id.int' => 'delivery address id must be an integer!',
+            'payment_provider_id.required' => 'payment method id is required!',
+            'payment_provider_id.int' => 'payment method id must be an integer!',
+            'shipping_address_id.required' => 'delivery address id is required!',
+            'shipping_address_id.int' => 'delivery address id must be an integer!',
+
         ];
     }
 
