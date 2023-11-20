@@ -153,7 +153,6 @@ class PaymentService implements PaymentServiceContract
     {
         return match ($provider) {
             PaymentProviderModel::RAZORPAY => new RazorpayApi(config('services.razorpay.api_key'), config('services.razorpay.api_secret')),
-//            PaymentProviderModel::RAZORPAYX => new RazorpayApi(config('services.razorpay.api_x_key'), config('services.razorpay.api_x_secret')),
             PaymentProviderModel::STRIPE => new StripeApi(config('services.stripe.sk_api_key')),
             default => null,
         };

@@ -195,19 +195,24 @@ class OrderCreationService
 
             foreach($productAllStock as $stock)
             {
-                if($stock->in_stock_quantity >= $totalQuantity)
+                if ($totalQuantity != 0)
                 {
-                    $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
-                    $stock->save();
-                }elseif($stock->in_stock){
-                    // Partially Update Stock From Each Stock
-                    $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-                    $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
-                    // Update Product Stock
-                    $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
-                    $stock->save();
+                    if($stock->in_stock_quantity >= $totalQuantity)
+                    {
+                        // Update Product Stock
+                        $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
+                        $stock->save();
+                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
+                        $totalQuantity = 0;
+                    }elseif($stock->in_stock){
+                        // Partially Update Stock From Each Stock
+                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
+                        $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
+                        // Update Product Stock
+                        $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
+                        $stock->save();
+
+                    }
                 }
             }
 
