@@ -2,7 +2,7 @@
 
 namespace App\Services\PaymentService;
 
-use App\Models\Payment\PaymentProvider;
+use App\Models\Payment\PaymentProvider as PaymentProviderModel;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayApi;
@@ -100,7 +100,7 @@ class PaymentService implements PaymentServiceContract
     private function activateProviders(array $providers_name):void
     {
         // Check Database
-        $this->allPaymentProviders = PaymentProvider::where('status',true)->get();
+        $this->allPaymentProviders = PaymentProviderModel::where('status',true)->get();
         throw_unless($this->allPaymentProviders->count(),'no provider records  found in Database');
         $primaryProviderCount = $this->allPaymentProviders->where('is_primary',true)->count();
         throw_if($primaryProviderCount > 1,'Multiple primary payment provider found!');
@@ -121,8 +121,15 @@ class PaymentService implements PaymentServiceContract
                 $providerApi = $this->getProviderApi($provider);
                 throw_if(is_null($providerApi),'no api data found for '.$provider);
             }
-            // Activate And Get Provider Instance
-            $providerInstance = new $providerClass($providerApi);
+
+            if ($provider == PaymentProviderModel::RAZORPAY && in_array(PaymentProviderModel::RAZORPAYX,$providers_name))
+            {
+                // Activate And Get Provider Instance
+                $providerInstance = new $providerClass($providerApi,true);
+            }else{
+                // Activate And Get Provider Instance
+                $providerInstance = new $providerClass($providerApi);
+            }
             throw_unless($providerInstance instanceof PaymentProviderContract,$providerClass.' must implement App\Services\PaymentService\Contracts\PaymentProviderContract');
             // Add Provider Service In Providers List
             $this->providers[$provider] = $providerInstance;
@@ -145,9 +152,9 @@ class PaymentService implements PaymentServiceContract
     protected  function getProviderApi(string $provider): RazorpayApi|StripeApi|null
     {
         return match ($provider) {
-            PaymentProvider::RAZORPAY => new RazorpayApi(config('services.razorpay.api_key'), config('services.razorpay.api_secret')),
-            PaymentProvider::RAZORPAYX => new RazorpayApi(config('services.razorpay.api_x_key'), config('services.razorpay.api_x_secret')),
-            PaymentProvider::STRIPE => new StripeApi(config('services.stripe.sk_api_key')),
+            PaymentProviderModel::RAZORPAY => new RazorpayApi(config('services.razorpay.api_key'), config('services.razorpay.api_secret')),
+//            PaymentProviderModel::RAZORPAYX => new RazorpayApi(config('services.razorpay.api_x_key'), config('services.razorpay.api_x_secret')),
+            PaymentProviderModel::STRIPE => new StripeApi(config('services.stripe.sk_api_key')),
             default => null,
         };
     }

@@ -23,18 +23,23 @@ class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentS
     private RazorpayApi $api;
     private ?string $error = null;
     protected string $speed = 'normal';
-    private RazorpayApi $apiX;
+    private ?RazorpayApi $apiX=null;
+    protected bool $activateX = false;
 
-    public function __construct(RazorpayApi $api)
+    public function __construct(RazorpayApi $api,bool $activateX=false)
     {
         $this->api = $api;
+        $this->activateX = $activateX;
         $this->discoverConfig();
     }
 
     protected function discoverConfig()
     {
         $this->speed = config('payment-provider.providers.razorpay.speed');
-        $this->apiX = $this->getRazorpayXApi();
+        if ($this->activateX)
+        {
+            $this->apiX = $this->getRazorpayXApi();
+        }
     }
 
     public function getSpeed(): string

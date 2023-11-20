@@ -40,7 +40,7 @@ class RazorpayButton extends Component
             'amount' => $this->payment->total->getAmount(),
             'currency' => config('services.defaults.currency'),
             'name' => config('app.name'),
-            'description' => 'Order Summary',
+//            'description' => 'Order Summary',
             // 'image' => '',
             'order_id' => $this->payment->provider_gen_id,
             'callback_url' => route('confirm.payment', ['payment' => $this->payment->receipt]),
