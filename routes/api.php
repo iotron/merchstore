@@ -27,6 +27,8 @@ Route::prefix('themes')->group(base_path('routes/ver/themes.php'));
 
 // Cart
 Route::middleware(['auth:customer'])->group(base_path('routes/ver/cart.php'));
+// Customer Address
+Route::middleware(['auth:customer'])->group(base_path('routes/ver/address.php'));
 
 //Order
 Route::prefix('order')->group(base_path('routes/ver/order.php'));
