@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\OrderStoreRequest;
 use App\Models\Localization\Address;
 use App\Models\Payment\PaymentProvider;
+use App\Services\OrderService\OrderConfirmService;
 use App\Services\OrderService\OrderCreationService;
 use App\Services\PaymentService\PaymentService;
 use Illuminate\Http\Request;
@@ -87,7 +88,6 @@ class OrderActionController extends Controller
 
     public function confirmPayment(Payment $payment, OrderConfirmRequest $request)
     {
-        dd('Order Confirmation!');
 
         $paymentVerified =
             $this->paymentService
@@ -95,7 +95,25 @@ class OrderActionController extends Controller
                 ->verify()
                 ->verifyWith($payment,$request->validationData());
 
-       // dd($paymentVerified);
+
+        if ($paymentVerified && is_null($this->paymentService->provider()->getError()))
+        {
+            $orderConfirmService = new OrderConfirmService($payment);
+            if ($orderConfirmService->updateOrder()
+            ) {
+                $order = $orderConfirmService->getOrder();
+                if ($order->exists) {
+                    //Send Notification To Event Manager
+                    //$this->notifyManagerOnSuccess($order->event->manager,'new booking found!','a new booking '.$order->uuid.' found for order - '.$order->event->name);
+                    //Redirect On Success
+                    return redirect(config('app.client_url') . '/orders/' . $order->uuid);
+                }
+                return redirect(config('app.client_url') . '/cart/');
+            }
+            return redirect(config('app.client_url') . '/cart/');
+        } else {
+            return response()->json(['status' => false, 'message' => 'provider order id mismatch'], 403);
+        }
 
 
 

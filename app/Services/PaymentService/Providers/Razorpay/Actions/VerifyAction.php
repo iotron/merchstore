@@ -33,11 +33,24 @@ class VerifyAction implements PaymentProviderVerificationContract
      */
     public function verifyWith(Payment $payment, array $data): bool
     {
+
         $success = false;
         try {
             if ($payment->provider_gen_id == $data['razorpay_order_id'])
             {
-                $verify = $this->api->utility->verifyPaymentSignature($data);
+                $preparedData = [
+                    "razorpay_order_id" => $data['razorpay_order_id'],
+                    "razorpay_payment_id" => $data['razorpay_payment_id'],
+                    "razorpay_signature" => $data['razorpay_signature']
+                ];
+
+                $verify = $this->api->utility->verifyPaymentSignature($preparedData);
+
+                if (is_null($verify))
+                {
+                    $verify = $this->verifyManuallySignature($preparedData);
+                }
+
                 if ($verify)
                 {
                     $success = true;
@@ -54,6 +67,24 @@ class VerifyAction implements PaymentProviderVerificationContract
             return false;
         }
     }
+
+
+    function verifyManuallySignature($data): bool
+    {
+        $generatedSignature = hash_hmac('sha256', $data['razorpay_order_id'] . "|" . $data['razorpay_payment_id'], config('services.razorpay.api_secret'));
+
+        if (hash_equals($generatedSignature, $data['razorpay_signature'])) {
+            // Payment is successful
+            return true;
+        } else {
+            // Payment failed
+            return false;
+        }
+    }
+
+
+
+
 
     /**
      * @param string $signature
