@@ -141,7 +141,6 @@
         "name": "Cosplay",
         "slug": "cosplay",
         "children": [
-            { "name": "Character Dress" },
             {
                 "name": "Character Accessories",
                 "children": [
@@ -157,6 +156,7 @@
                     { "name": "Bags" }
                 ]
             },
+            { "name": "Character Dress" },
             { "name": "Character Weapons" }
         ]
     }
