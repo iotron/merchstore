@@ -38,9 +38,6 @@ class ListPaymentProviders extends ListRecords
                         ->weight(FontWeight::Bold)
                         ->searchable(),
                     Tables\Columns\TextColumn::make('code')
-//                        ->formatStateUsing(function ($state){
-//                            return PaymentProvider::CODE_OPTIONS[$state];
-//                        })
                         ->alignRight()
                         ->badge()
                         ->searchable(),
@@ -52,7 +49,7 @@ class ListPaymentProviders extends ListRecords
                         Tables\Columns\TextColumn::make('service_provider')
                             ->tooltip('Service Provider')
                             ->formatStateUsing(function ($state){
-                                return Str::remove('App\Services\PaymentService\\',$state);
+                                return Str::remove('App\Services\PaymentService',$state);
                             })
                             ->grow()
                             ->weight(FontWeight::Thin)
@@ -60,9 +57,11 @@ class ListPaymentProviders extends ListRecords
                         Tables\Columns\Layout\Split::make([
                             Tables\Columns\TextColumn::make('payments_count')->counts('payments')
                                 ->description('Payments')
+                                ->tooltip('Total Payments Init')
                                 ->weight(FontWeight::Bold),
                             Tables\Columns\TextColumn::make('orders_count')->counts('orders')
                                 ->description('Orders')
+                                ->tooltip('Total Orders Init')
                                 ->weight(FontWeight::Bold),
 
                         ]),
@@ -89,11 +88,13 @@ class ListPaymentProviders extends ListRecords
                     Tables\Columns\TextColumn::make('created_at')
                         ->dateTime()
                         ->sortable()
+                        ->description('Created On')
                         ->toggleable(isToggledHiddenByDefault: true),
                     Tables\Columns\TextColumn::make('updated_at')
                         ->dateTime()
                         ->sortable()
                         ->alignRight()
+                        ->description('Update On')
                         ->toggleable(isToggledHiddenByDefault: true),
                 ]),
 

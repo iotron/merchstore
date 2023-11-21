@@ -2,12 +2,26 @@
 
 namespace App\Models\Shipping;
 
+use App\Services\ShippingService\Providers\Custom\CustomShippingService;
+use App\Services\ShippingService\Providers\Pickrr\PickrrShippingService;
+use App\Services\ShippingService\Providers\ShipRocket\ShipRocketShippingService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ShippingProvider extends Model
 {
     use HasFactory;
+
+
+
+
+    public const AVAILABLE_PROVIDERS = [
+        CustomShippingService::class => 'Custom Shipping Provider (Cash On Delivery)',
+        ShipRocketShippingService::class => 'ShipRocket Shipping Provider',
+        PickrrShippingService::class => 'Pickrr Shipping Provider'
+    ];
+
+
 
     protected $fillable = [
         'name',

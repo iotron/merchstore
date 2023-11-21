@@ -7,11 +7,13 @@ use App\Filament\Resources\Shipping\ShippingProviderResource\RelationManagers;
 use App\Models\Shipping\ShippingProvider;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class ShippingProviderResource extends Resource
 {
@@ -26,77 +28,59 @@ class ShippingProviderResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('url')
+                    ->placeholder('Type Provider Name')
+                    ->lazy()
+                    ->afterStateUpdated(function ($state,Set $set){
+                        $set('code',Str::slug($state));
+                    })
+                    ->hint('Max: 100')
+                    ->maxLength(100),
+                Forms\Components\TextInput::make('code')
                     ->required()
-                    ->maxLength(255),
+                    ->placeholder('Type Provider Code')
+                    ->hint('Max: 100')
+                    ->maxLength(100),
+                Forms\Components\Select::make('service_provider')
+                    ->columnSpanFull()
+                    ->placeholder('Select a service provider')
+                    ->options(ShippingProvider::AVAILABLE_PROVIDERS),
+
                 Forms\Components\TextInput::make('key')
+                    ->placeholder('Type Provider Api Key/ID')
+                    ->hint('Max: 255')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('secret')
+                    ->placeholder('Type Provider Api Secret')
+                    ->hint('Max: 255')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('webhook')
+                    ->columnSpanFull()
+                    ->placeholder('Type Provider Api Webhook Address')
+                    ->hint('Max: 255')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('service_provider')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('order')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-                Forms\Components\Toggle::make('has_api')
-                    ->required(),
-                Forms\Components\Toggle::make('status')
-                    ->required(),
+
+
+                Forms\Components\Grid::make([
+                    'md' => 3
+                ])->schema([
+                    Forms\Components\Toggle::make('is_primary')
+                        ->required(),
+                    Forms\Components\Toggle::make('has_api')
+                        ->required(),
+                    Forms\Components\Toggle::make('status')
+                        ->required(),
+                ]),
+
                 Forms\Components\Textarea::make('desc')
-                    ->maxLength(65535)
+                    ->label('Description')
+                    ->maxLength(60000)
+                    ->hint('Max: 60K')
+                    ->placeholder('Type Provider Details')
                     ->columnSpanFull(),
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('url')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('key')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('secret')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('webhook')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('service_provider')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('order')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('has_api')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+
 
     public static function getRelations(): array
     {
