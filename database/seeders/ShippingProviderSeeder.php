@@ -18,7 +18,7 @@ class ShippingProviderSeeder extends Seeder
     {
         $cashOnDeliveryShippingProvider = ShippingProvider::create([
             'name' => 'Custom',
-            'url' => 'custom',
+            'code' => 'custom',
             'service_provider' => CustomShippingService::class,
             'status' => true,
             'is_primary' => true,
@@ -29,7 +29,7 @@ class ShippingProviderSeeder extends Seeder
 
         $shiprocketShippingProvider = ShippingProvider::create([
             'name' => 'ShipRocket',
-            'url' => 'shiprocket',
+            'code' => 'shiprocket',
             'service_provider' => ShipRocketShippingService::class,
             'status' => true,
             'is_primary' => false,
@@ -40,7 +40,7 @@ class ShippingProviderSeeder extends Seeder
 
         $pickrrShippingProvider = ShippingProvider::create([
             'name' => 'Pickrr',
-            'url' => 'pickrr',
+            'code' => 'pickrr',
             'service_provider' => PickrrShippingService::class,
             'status' => true,
             'is_primary' => false,

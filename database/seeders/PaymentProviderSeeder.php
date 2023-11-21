@@ -22,7 +22,7 @@ class PaymentProviderSeeder extends Seeder
 
         $cashOnDeliveryProvider = PaymentProvider::create([
             'name' => 'Cash On Delivery',
-            'url' => 'cod',
+            'code' => 'cod',
             'service_provider' => CodPaymentService::class,
             'status' => true,
             'is_primary' => false,
@@ -33,7 +33,7 @@ class PaymentProviderSeeder extends Seeder
 
         $razorpay = PaymentProvider::create([
             'name' => 'Razorpay',
-            'url' => 'razorpay',
+            'code' => 'razorpay',
             'service_provider' => RazorpayPaymentService::class,
             'status' => true,
             'is_primary' => true,
@@ -44,7 +44,7 @@ class PaymentProviderSeeder extends Seeder
 
         $stripe = PaymentProvider::create([
             'name' => 'Stripe',
-            'url' => 'stripe',
+            'code' => 'stripe',
             'service_provider' => StripePaymentService::class,
             'status' => true,
             'is_primary' => false,

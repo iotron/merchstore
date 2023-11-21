@@ -18,7 +18,7 @@ class PaymentProvider extends Model
 
     protected $fillable = [
         'name',
-        'url',
+        'code',
         'key',
         'secret',
         'webhook',

@@ -52,7 +52,7 @@ class OrderActionController extends Controller
         if (!$paymentProvider->status) {
             return response()->json(['status' => false, 'message' => 'please choose another payment service'], 422);
         }
-       $this->paymentService->provider($paymentProvider->url);
+       $this->paymentService->provider($paymentProvider->code);
 
 
         // Validate Delivery Address (auth)
@@ -91,7 +91,7 @@ class OrderActionController extends Controller
 
         $paymentVerified =
             $this->paymentService
-                ->provider($payment->provider->url)
+                ->provider($payment->provider->code)
                 ->verify()
                 ->verifyWith($payment,$request->validationData());
 

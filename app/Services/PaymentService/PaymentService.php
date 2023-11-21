@@ -88,7 +88,7 @@ class PaymentService implements PaymentServiceContract
 
     public function getProviderModel():Model
     {
-        return  $this->allPaymentProviders->where('url','=',$this->getProviderName())->first();
+        return  $this->allPaymentProviders->where('code','=',$this->getProviderName())->first();
     }
 
 
@@ -109,7 +109,7 @@ class PaymentService implements PaymentServiceContract
         // Activating Given Providers
         foreach ($providers_name as $provider)
         {
-            $providerModel = $this->allPaymentProviders->firstWhere('url',$provider);
+            $providerModel = $this->allPaymentProviders->firstWhere('code',$provider);
             throw_unless($providerModel->exists,'no provider records  found in Database for '.$provider );
 
 

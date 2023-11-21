@@ -40,7 +40,7 @@ class OrderCreationService
         $this->receipt = self::getUniqueReceiptID($this->cart->getCustomer()->payments);
         $this->customer  = $this->cart->getCustomer();
         $this->provider = $this->paymentService->provider()->getClass();
-        $this->isCod = $this->paymentService->getProviderModel()->url == PaymentProvider::COD ;
+        $this->isCod = $this->paymentService->getProviderModel()->code == PaymentProvider::COD ;
     }
 
     public function checkout(Address $shippingAddress,Address $billing_address): \Illuminate\Http\JsonResponse|array
@@ -116,12 +116,15 @@ class OrderCreationService
         return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
             'success' => true,
             'message' => 'order placed successfully',
-            'payment_provider_url' => $this->paymentService->getProviderModel()->url,
+            'payment_provider' => [
+                'name' => $this->paymentService->getProviderModel()->name,
+                'code' => $this->paymentService->getProviderModel()->code,
+            ],
             'order' => [
                 'uuid' => $this->order->uuid,
                 'status' => $this->order->status,
             ],
-            'redirect' => ($this->paymentService->getProviderModel()->url == PaymentProvider::COD) ?
+            'redirect' => ($this->isCod) ?
                         config('app.client_url').'/orders/'.$this->order->uuid : route('payment.visit', ['payment' => $payment->receipt]),
         ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $payment];
 
@@ -212,11 +215,11 @@ class OrderCreationService
     }
 
 
-    protected function makeOrderShipmentWithInvoice(Address $shippingAddress)
+    protected function makeOrderShipmentWithInvoice(Address $shippingAddress): void
     {
 
         $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
-        $customShippingProvider = ShippingProvider::firstWhere('url','custom');
+        $customShippingProvider = ShippingProvider::firstWhere('code','custom');
         foreach($AddressGroup as $key => $group)
         {
             foreach ($group as $value)

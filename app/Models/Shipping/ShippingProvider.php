@@ -11,7 +11,7 @@ class ShippingProvider extends Model
 
     protected $fillable = [
         'name',
-        'url',
+        'code',
         'key',
         'secret',
         'webhook',

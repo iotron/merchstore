@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_providers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('url')->unique();
+            $table->string('code')->unique();
             $table->string('key')->unique()->nullable();
             $table->string('secret')->nullable();
             $table->string('webhook')->nullable();
