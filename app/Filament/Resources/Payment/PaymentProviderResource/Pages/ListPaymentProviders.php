@@ -48,26 +48,41 @@ class ListPaymentProviders extends ListRecords
                 ])->grow(),
 
                 Tables\Columns\Layout\Split::make([
-                    Tables\Columns\TextColumn::make('service_provider')
-                        ->tooltip('Service Provider')
-                        ->formatStateUsing(function ($state){
-                            return Str::afterLast($state,'\\');
-                        })
-                        ->grow()
-                        ->weight(FontWeight::Bold)
-                        ->searchable(),
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('service_provider')
+                            ->tooltip('Service Provider')
+                            ->formatStateUsing(function ($state){
+                                return Str::remove('App\Services\PaymentService\\',$state);
+                            })
+                            ->grow()
+                            ->weight(FontWeight::Thin)
+                            ->searchable(),
+                        Tables\Columns\Layout\Split::make([
+                            Tables\Columns\TextColumn::make('payments_count')->counts('payments')
+                                ->description('Payments')
+                                ->weight(FontWeight::Bold),
+                            Tables\Columns\TextColumn::make('orders_count')->counts('orders')
+                                ->description('Orders')
+                                ->weight(FontWeight::Bold),
 
-                    Tables\Columns\IconColumn::make('is_primary')
-                        ->boolean()
-                        ->tooltip('Is Primary Provider?')
-                        ->alignRight(),
-                    Tables\Columns\IconColumn::make('has_api')
-                        ->tooltip('Is Provider has Api')
-                        ->boolean()->alignRight(),
-                    Tables\Columns\IconColumn::make('status')
-                        ->tooltip('Provider Status')
-                        ->boolean()->alignRight(),
+                        ]),
+                    ]),
+
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\IconColumn::make('is_primary')
+                            ->boolean()
+                            ->tooltip('Is Primary Provider?')
+                            ->alignRight(),
+                        Tables\Columns\IconColumn::make('has_api')
+                            ->tooltip('Is Provider has Api')
+                            ->boolean()->alignRight(),
+                        Tables\Columns\IconColumn::make('status')
+                            ->tooltip('Provider Status')
+                            ->boolean()->alignRight(),
+                    ])
                 ]),
+
+
 
 
                 Tables\Columns\Layout\Split::make([
