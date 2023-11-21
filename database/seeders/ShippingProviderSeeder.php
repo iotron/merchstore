@@ -39,8 +39,8 @@ class ShippingProviderSeeder extends Seeder
 
 
         $pickrrShippingProvider = ShippingProvider::create([
-            'name' => 'ShipRocket',
-            'url' => 'shiprocket',
+            'name' => 'Pickrr',
+            'url' => 'pickrr',
             'service_provider' => PickrrShippingService::class,
             'status' => true,
             'is_primary' => false,
