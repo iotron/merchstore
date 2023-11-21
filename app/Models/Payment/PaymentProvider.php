@@ -15,6 +15,13 @@ class PaymentProvider extends Model
     public const STRIPE = 'stripe';
     public const COD = 'cod';
 
+    public const CODE_OPTIONS = [
+        self::COD       => 'Cash On Delivery',
+        self::RAZORPAY  => 'Razorpay',
+        self::RAZORPAYX => 'Razorpay X',
+        self::STRIPE    => 'Stripe',
+    ];
+
 
     protected $fillable = [
         'name',

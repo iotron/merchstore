@@ -10,23 +10,17 @@ class PayButton extends Component
 
 //    public $id;
     protected Payment $payment;
-    public $provider;
+    public string $provider;
     public bool $payable = false;
 
 
 
     public function mount(Payment $payment)
     {
-
         $this->payment = $payment->load('provider');
-
-        $this->provider = $this->payment->provider->url;
-
-
-
+        $this->provider = $this->payment->provider->code;
         $this->payable = $this->payment->status == Payment::PENDING;
-
-
+      //  dd($this->payment);
     }
 
 

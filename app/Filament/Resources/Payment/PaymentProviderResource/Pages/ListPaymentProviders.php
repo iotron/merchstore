@@ -3,8 +3,13 @@
 namespace App\Filament\Resources\Payment\PaymentProviderResource\Pages;
 
 use App\Filament\Resources\Payment\PaymentProviderResource;
+use App\Models\Payment\PaymentProvider;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Table;
+use Filament\Tables;
+use Illuminate\Support\Str;
 
 class ListPaymentProviders extends ListRecords
 {
@@ -16,4 +21,97 @@ class ListPaymentProviders extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+
+
+
+
+    public  function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+
+
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\TextColumn::make('name')
+                        ->size(Tables\Columns\TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold)
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('code')
+//                        ->formatStateUsing(function ($state){
+//                            return PaymentProvider::CODE_OPTIONS[$state];
+//                        })
+                        ->alignRight()
+                        ->badge()
+                        ->searchable(),
+
+                ])->grow(),
+
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\TextColumn::make('service_provider')
+                        ->tooltip('Service Provider')
+                        ->formatStateUsing(function ($state){
+                            return Str::afterLast($state,'\\');
+                        })
+                        ->grow()
+                        ->weight(FontWeight::Bold)
+                        ->searchable(),
+
+                    Tables\Columns\IconColumn::make('is_primary')
+                        ->boolean()
+                        ->tooltip('Is Primary Provider?')
+                        ->alignRight(),
+                    Tables\Columns\IconColumn::make('has_api')
+                        ->tooltip('Is Provider has Api')
+                        ->boolean()->alignRight(),
+                    Tables\Columns\IconColumn::make('status')
+                        ->tooltip('Provider Status')
+                        ->boolean()->alignRight(),
+                ]),
+
+
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\TextColumn::make('created_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('updated_at')
+                        ->dateTime()
+                        ->sortable()
+                        ->alignRight()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ]),
+
+
+
+
+            ])
+            ->contentGrid([
+                'md' => 2
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

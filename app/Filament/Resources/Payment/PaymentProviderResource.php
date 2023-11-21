@@ -18,6 +18,7 @@ class PaymentProviderResource extends Resource
     protected static ?string $model = PaymentProvider::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Providers';
 
     public static function form(Form $form): Form
     {
@@ -49,50 +50,7 @@ class PaymentProviderResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('url')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('key')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('secret')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('webhook')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('service_provider')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_primary')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('has_api')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+
 
     public static function getRelations(): array
     {

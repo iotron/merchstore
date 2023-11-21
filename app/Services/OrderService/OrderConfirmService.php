@@ -39,6 +39,7 @@ class OrderConfirmService
     public function updateOrder():bool
     {
         $this->updateOrderStatus();
+        $this->updatePaymentStatus();
         $this->updateProductStock();
         $this->updateUsageOfCouponIfPresent();
 
@@ -52,6 +53,15 @@ class OrderConfirmService
         $this->order->status == Order::CONFIRM;
         $this->order->payment_success = true;
         $this->order->save();
+    }
+
+
+    protected function updatePaymentStatus(): void
+    {
+        $this->payment->fill([
+            'status' => Payment::COMPLETED,
+            'verified' => true
+        ])->save();
     }
 
     private function updateProductStock():void

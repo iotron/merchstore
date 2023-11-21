@@ -18,6 +18,7 @@ class ShippingProviderResource extends Resource
     protected static ?string $model = ShippingProvider::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Providers';
 
     public static function form(Form $form): Form
     {

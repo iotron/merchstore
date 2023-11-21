@@ -17,7 +17,7 @@ class CheckoutPage extends Component
     public bool $paymentExpire = true;
     public int $quantity = 0;
     public ?Order $order = null;
-
+    public bool $payable = false;
     public function mount(Payment $payment, Request $request)
     {
 
@@ -36,6 +36,8 @@ class CheckoutPage extends Component
         if ($this->payment->status != Payment::PENDING) {
             $this->paymentExpire = true;
         }
+        $this->payable = $this->payment->status == Payment::PENDING;
+        abort_unless($this->payable, 409, 'Conflict: This payment has already been made or payment is not payable anymore.');
 
     }
 

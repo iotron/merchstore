@@ -1,6 +1,10 @@
 <div class="w-full h-full bg-fuchsia-900 overflow-hidden px-3 py-4">
     <h1 class="text-center text-3xl md:text-5xl font-medium underline py-2">Order Details</h1>
-    <h4 class="text-center text-md lg:text-lg">Remaining: <span id="timeLeft"></span></h4>
+     <h4 class="text-center text-md lg:text-lg">
+         @if($payable)
+         Remaining: <span id="timeLeft"></span>
+         @endif
+     </h4>
         <div class="w-full h-full flex justify-center py-10 relative">
 
             <div class=" h-fit w-96 bg-white text-purple-900 px-2 pt-3 pb-1 rounded-2xl shadow-black shadow-lg">
