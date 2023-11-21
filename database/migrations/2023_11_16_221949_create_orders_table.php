@@ -22,14 +22,13 @@ return new class extends Migration
             $table->integer('quantity'); // total quantity
             $table->string('voucher')->nullable();
 
-            $table->string('tracking_id')->nullable();
+            $table->string('tracking_id')->nullable(); // can be deleted
 
             $table->string('status')->default('pending');
             $table->boolean('payment_success')->default(false);
             $table->dateTime('expire_at');
 
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('payment_provider_id')->nullable()->constrained('payment_providers')->cascadeOnUpdate()->nullOnDelete();
             $table->string('customer_gstin')->nullable();
             // billing address
             $table->boolean('shipping_is_billing')->default(true);

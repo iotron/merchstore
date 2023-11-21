@@ -64,7 +64,6 @@ class Order extends Model
         'shipping_is_billing',
         'billing_address_id',
         'shipping_address_id',
-        'payment_provider_id',
 
     ];
 
@@ -87,10 +86,7 @@ class Order extends Model
         return $this->hasOne(Payment::class, 'order_id', 'id');
     }
 
-    public function paymentProvider(): BelongsTo
-    {
-        return $this->belongsTo(PaymentProvider::class, 'payment_provider_id','id');
-    }
+
 
     public function billingAddress(): BelongsTo
     {

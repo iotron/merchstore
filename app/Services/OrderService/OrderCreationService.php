@@ -64,7 +64,6 @@ class OrderCreationService
             'payment_success' => false,
             'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
             'customer_id' => $this->customer->id,
-            'payment_provider_id' => $this->paymentService->getProviderModel()->id,
             'customer_gstin' => null, // need data here
             'shipping_is_billing' => false,
             'billing_address_id' => $billing_address->id,
