@@ -2,11 +2,14 @@
 
 namespace App\Services\OrderService;
 
+use App\Models\Localization\Address;
 use App\Models\Order\Order;
+use App\Models\Order\OrderShipment;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use App\Models\Promotion\Voucher;
 use App\Models\Promotion\VoucherCode;
+use App\Models\Shipping\ShippingProvider;
 
 class OrderConfirmService
 {
@@ -16,6 +19,7 @@ class OrderConfirmService
     protected Order $order;
     protected ?VoucherCode $voucherCode=null;
     protected array $stockBag = [];
+    protected bool $isCod = false;
 
     public function __construct(Payment $payment)
     {
@@ -24,6 +28,7 @@ class OrderConfirmService
         $this->order = $this->payment->order;
         $this->order->loadMissing('orderProducts','orderProducts.product');
         $this->voucherCode = VoucherCode::firstWhere('code',$this->order->voucher);
+
     }
 
     public function getOrder()
@@ -38,7 +43,7 @@ class OrderConfirmService
         $this->updateUsageOfCouponIfPresent();
 
         // Left Jobs
-
+        $this->makeOrderShipmentWithInvoice($this->order->shippingAddress);
         // Return
         return $this->order->status == Order::CONFIRM;
     }
@@ -93,6 +98,40 @@ class OrderConfirmService
         {
             $this->voucherCode->times_used++;
             $this->voucherCode->save();
+        }
+
+    }
+
+
+
+
+    protected function makeOrderShipmentWithInvoice(Address $shippingAddress): void
+    {
+
+        $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
+        $customShippingProvider = ShippingProvider::firstWhere('url','custom');
+        foreach($AddressGroup as $key => $group)
+        {
+            foreach ($group as $value)
+            {
+                $orderShipment = $this->order->shipments()->create([
+                    'total_quantity' => $value['quantity'],
+                    'pickup_address' => empty($key) ? null : $value['model']->address_id,
+                    'delivery_address' => $shippingAddress->id,
+                    'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
+                    'cod' => $this->isCod,
+                    'status' => OrderShipment::PROCESSING
+                ]);
+
+                $orderInvoice = $this->order->invoices()->create([
+                    'order_shipment_id' => $orderShipment->id
+                ]);
+
+                $orderShipment->invoice_uid = $orderInvoice->id;
+                $orderShipment->save();
+
+            }
+
         }
 
     }

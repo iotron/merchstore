@@ -63,6 +63,7 @@ class Order extends Model
         'customer_gstin',
         'shipping_is_billing',
         'billing_address_id',
+        'shipping_address_id',
         'payment_provider_id',
 
     ];
@@ -94,6 +95,11 @@ class Order extends Model
     public function billingAddress(): BelongsTo
     {
         return $this->belongsTo(Address::class,'billing_address_id','id');
+    }
+
+    public function shippingAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class,'shipping_address_id','id');
     }
 
     public function orderProducts(): HasMany

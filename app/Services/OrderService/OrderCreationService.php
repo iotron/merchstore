@@ -43,7 +43,7 @@ class OrderCreationService
         $this->isCod = $this->paymentService->getProviderModel()->url == PaymentProvider::COD ;
     }
 
-    public function checkout(Address $billing_address)
+    public function checkout(Address $shippingAddress,Address $billing_address): \Illuminate\Http\JsonResponse|array
     {
         if ($this->cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $this->cart->getErrors()], 403);
@@ -68,7 +68,7 @@ class OrderCreationService
             'customer_gstin' => null, // need data here
             'shipping_is_billing' => false,
             'billing_address_id' => $billing_address->id,
-//                'address_id' => '', // need to check
+            'shipping_address_id' => $shippingAddress->id
         ]);
 
 
@@ -104,7 +104,7 @@ class OrderCreationService
 
         // Create Shipment  & Invoice Of ThisOrder
 
-        $this->makeOrderShipmentWithInvoice($billing_address);
+        $this->makeOrderShipmentWithInvoice($shippingAddress);
 
 
 
@@ -212,7 +212,7 @@ class OrderCreationService
     }
 
 
-    protected function makeOrderShipmentWithInvoice(Address $billing_address)
+    protected function makeOrderShipmentWithInvoice(Address $shippingAddress)
     {
 
         $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
@@ -224,7 +224,7 @@ class OrderCreationService
                 $orderShipment = $this->order->shipments()->create([
                     'total_quantity' => $value['quantity'],
                     'pickup_address' => empty($key) ? null : $value['model']->address_id,
-                    'delivery_address' => $billing_address->id,
+                    'delivery_address' => $shippingAddress->id,
                     'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
                     'cod' => $this->isCod,
                     'status' => OrderShipment::PROCESSING

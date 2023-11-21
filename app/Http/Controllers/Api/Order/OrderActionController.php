@@ -10,9 +10,13 @@ use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderConfirmService;
 use App\Services\OrderService\OrderCreationService;
 use App\Services\PaymentService\PaymentService;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Payment\Payment;
 use App\Http\Requests\Order\OrderConfirmRequest;
+use Illuminate\Routing\Redirector;
 
 class OrderActionController extends Controller
 {
@@ -37,7 +41,7 @@ class OrderActionController extends Controller
 
 
 
-    public function placeOrder(OrderStoreRequest $request, Cart $cart)
+    public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|array
     {
         $validate = $request->validated();
         $paymentProvider = PaymentProvider::firstWhere('id', $validate['payment_provider_id']);
@@ -52,13 +56,16 @@ class OrderActionController extends Controller
 
 
         // Validate Delivery Address (auth)
-        $deliveryAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['shipping_address_id']);
+        $shippingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['shipping_address_id']);
         // Validate Shipping Method
-        if (is_null($deliveryAddress)) {
+        if (is_null($shippingAddress)) {
             return response()->json(['status' => false, 'message' => 'shipping address does not exist'], 422);
         }
+        // Check Shipping Is Billing
         if ($validate['shipping_is_billing'])
         {
+            $billingAddress = $shippingAddress;
+        }else{
             $billingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['billing_address_id']);
         }
 
@@ -72,14 +79,14 @@ class OrderActionController extends Controller
         }
         $orderCreationService = new OrderCreationService($this->paymentService,$cart);
 
-        return $orderCreationService->checkout($deliveryAddress);
+        return $orderCreationService->checkout($shippingAddress,$billingAddress);
 
     }
 
 
 
 
-    public function confirmPayment(Payment $payment, OrderConfirmRequest $request)
+    public function confirmPayment(Payment $payment, OrderConfirmRequest $request): Application|JsonResponse|Redirector|RedirectResponse|\Illuminate\Contracts\Foundation\Application
     {
 
         $paymentVerified =
