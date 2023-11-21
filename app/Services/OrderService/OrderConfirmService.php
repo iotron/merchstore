@@ -43,7 +43,6 @@ class OrderConfirmService
         $this->updateUsageOfCouponIfPresent();
 
         // Left Jobs
-        $this->makeOrderShipmentWithInvoice($this->order->shippingAddress);
         // Return
         return $this->order->status == Order::CONFIRM;
     }
@@ -105,36 +104,6 @@ class OrderConfirmService
 
 
 
-    protected function makeOrderShipmentWithInvoice(Address $shippingAddress): void
-    {
-
-        $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
-        $customShippingProvider = ShippingProvider::firstWhere('url','custom');
-        foreach($AddressGroup as $key => $group)
-        {
-            foreach ($group as $value)
-            {
-                $orderShipment = $this->order->shipments()->create([
-                    'total_quantity' => $value['quantity'],
-                    'pickup_address' => empty($key) ? null : $value['model']->address_id,
-                    'delivery_address' => $shippingAddress->id,
-                    'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
-                    'cod' => $this->isCod,
-                    'status' => OrderShipment::PROCESSING
-                ]);
-
-                $orderInvoice = $this->order->invoices()->create([
-                    'order_shipment_id' => $orderShipment->id
-                ]);
-
-                $orderShipment->invoice_uid = $orderInvoice->id;
-                $orderShipment->save();
-
-            }
-
-        }
-
-    }
 
 
 }
