@@ -77,10 +77,10 @@ return [
     // Shipping Providers
 
     'shiprocket' => [
-        'key' => env('SHIP_ROCKET_EMAIL',''),
-        'secret' => env('SHIP_ROCKET_PASSWORD',''),
+        'key' => env('SHIPROCKET_EMAIL','your key'),
+        'secret' => env('SHIPROCKET_PASSWORD','your secret'),
 //        'default' => false,
-        'webhook' => env('SHIP_ROCKET_WEBHOOK',''),
+        'webhook' => env('SHIPROCKET_WEBHOOK',''),
     ],
 
 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('total_quantity');
             $table->string('tracking_id')->nullable();
+            $table->json('tracking_data')->nullable();
             $table->json('last_update')->nullable();
             $table->string('status')->default('processing');
             $table->string('invoice_uid')->nullable();

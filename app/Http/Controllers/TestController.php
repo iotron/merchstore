@@ -10,6 +10,7 @@ use App\Models\Product\Product;
 use App\Models\Promotion\Sale;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\PaymentService\PaymentService;
+use App\Services\ShippingService\ShippingService;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as SimpleQR;
 use App\Models\Customer\Customer;
@@ -19,14 +20,15 @@ class TestController extends Controller
 {
 
 
-    public function index(PaymentService $paymentService)
+    public function index(ShippingService $shippingService)
     {
 
+        dd($shippingService->provider('shiprocket')->order()->all());
 
       //  dd($paymentService->provider('razorpay')->order()->fetch('order_N2NOkMZ3higYO2'));
 
 
-        $this->loginDefaultCustomer();
+      //  $this->loginDefaultCustomer();
 
     }
 

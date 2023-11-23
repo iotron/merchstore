@@ -12,7 +12,8 @@ class ShippingProvider extends Model
 {
     use HasFactory;
 
-
+    public const CUSTOM = 'custom';
+    public const SHIPROCKET = 'shiprocket';
 
 
     public const AVAILABLE_PROVIDERS = [
