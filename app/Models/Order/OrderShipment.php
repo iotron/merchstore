@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Localization\Address;
 use App\Models\Shipping\ShippingProvider;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class OrderShipment extends Model
 {
@@ -44,27 +46,27 @@ class OrderShipment extends Model
 
 
 
-    public function pickupAddress()
+    public function pickupAddress(): BelongsTo
     {
         return $this->belongsTo(Address::class, 'pickup_address');
     }
 
-    public function deliveryAddress()
+    public function deliveryAddress(): BelongsTo
     {
         return $this->belongsTo(Address::class, 'delivery_address');
     }
 
-    public function orderProducts()
+    public function orderProducts(): BelongsToMany
     {
         return $this->belongsToMany(OrderProduct::class, 'product_shipments')->withPivot('product_quantity');
     }
 
-    public function order()
+    public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
-    public function shippingMethod()
+    public function shippingProvider(): BelongsTo
     {
         return $this->belongsTo(ShippingProvider::class);
     }
