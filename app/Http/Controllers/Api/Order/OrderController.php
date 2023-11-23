@@ -35,6 +35,10 @@ class OrderController extends Controller
     public function viewInvoice(Order $order)
     {
         $order->load('billingAddress','invoices','payment','shipments','orderProducts','orderProducts.product');
+
+
+//        dd($order);
+
         $redirectUrl = \App\Filament\Resources\Order\OrderResource::getUrl('view',['record' => $order->id]);
 
 

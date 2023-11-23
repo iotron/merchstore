@@ -74,43 +74,43 @@
                 </td>
                 <td class="unit">{{ $orderProduct->product->price->formatted() }}</td>
 
-{{--                <td class="center">{{ $orderProduct->tax_percent }}% </td>--}}
+                <td class="center">{{ $orderProduct->tax->formatted() }}</td>
 
                 <td class="qty">{{ $orderProduct->quantity }}</td>
-                {{--                <td class="total">{{$ticket->price->multiply($ticket->pivot->quantity)->formatted()}}</td>--}}
+                <td class="total">{{ $orderProduct->product->price->multiplyOnce($orderProduct->quantity)->formatted()}}</td>
 
 {{--                <td class="center">--}}
-{{--                    @if($ticket->pivot->base_amount instanceof \App\Helpers\Money\Money)--}}
-{{--                        {{$ticket->pivot->base_amount->formatted()}}--}}
+{{--                    @if( $orderProduct->amount instanceof \App\Helpers\Money\Money)--}}
+{{--                        {{$orderProduct->amount->formatted()}}--}}
 {{--                    @else--}}
-{{--                        {{\App\Helpers\Money\Money::format($ticket->pivot->base_amount)}}--}}
+{{--                        {{\App\Helpers\Money\Money::format($orderProduct->amount)}}--}}
 {{--                    @endif--}}
 {{--                </td>--}}
 
-{{--                <td class="center">--}}
-{{--                    @if($ticket->pivot->discount_amount instanceof \App\Helpers\Money\Money)--}}
-{{--                        {{$ticket->pivot->discount_amount->formatted()}}--}}
-{{--                    @else--}}
-{{--                        {{\App\Helpers\Money\Money::format($ticket->pivot->discount_amount)}}--}}
-{{--                    @endif--}}
-{{--                </td>--}}
+                <td class="center">
+                    @if($orderProduct->discount instanceof \App\Helpers\Money\Money)
+                        {{$orderProduct->discount->formatted()}}
+                    @else
+                        {{\App\Helpers\Money\Money::format($orderProduct->discount)}}
+                    @endif
+                </td>
 
-{{--                <td class="center">--}}
-{{--                    @if($ticket->pivot->tax_amount instanceof \App\Helpers\Money\Money)--}}
-{{--                        {{$ticket->pivot->tax_amount->formatted()}}--}}
-{{--                    @else--}}
-{{--                        {{\App\Helpers\Money\Money::format($ticket->pivot->tax_amount)}}--}}
-{{--                    @endif--}}
-{{--                </td>--}}
+                <td class="center">
+                    @if($orderProduct->tax instanceof \App\Helpers\Money\Money)
+                        {{$orderProduct->tax->formatted()}}
+                    @else
+                        {{\App\Helpers\Money\Money::format($orderProduct->tax)}}
+                    @endif
+                </td>
 
 
-{{--                <td class="total">--}}
-{{--                    @if($ticket->pivot->total_amount instanceof \App\Helpers\Money\Money)--}}
-{{--                        {{$ticket->pivot->total_amount->formatted()}}--}}
-{{--                    @else--}}
-{{--                        {{\App\Helpers\Money\Money::format($ticket->pivot->total_amount)}}--}}
-{{--                    @endif--}}
-{{--                </td>--}}
+                <td class="total">
+                    @if($orderProduct->total instanceof \App\Helpers\Money\Money)
+                        {{$orderProduct->total->formatted()}}
+                    @else
+                        {{\App\Helpers\Money\Money::format($orderProduct->total)}}
+                    @endif
+                </td>
 
 
 
@@ -163,7 +163,7 @@
 
 
         <div id="notices" >
-            <div><b><u>EVENT DETAILS:</u></b></div>
+{{--            <div><b><u>EVENT DETAILS:</u></b></div>--}}
 {{--            <span><b>Name :</b> {{ ucwords($booking->event->name) }}</span> <br />--}}
 {{--            <span style="display: flex;">--}}
 {{--                <span>--}}
