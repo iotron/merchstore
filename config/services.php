@@ -50,6 +50,9 @@ return [
         'order_cleanup_time_limit' => env('ORDER_EXPIRED_TIME_LIMIT_IN_MINUTE', 120),
     ],
 
+
+    // Payment Providers
+
     'razorpay' => [
         'api_key' => env('RAZORPAY_KEY'),
         'api_secret'=> env('RAZORPAY_SECRET'),
@@ -71,6 +74,14 @@ return [
     ],
 
 
+    // Shipping Providers
+
+    'shiprocket' => [
+        'key' => env('SHIP_ROCKET_EMAIL',''),
+        'secret' => env('SHIP_ROCKET_PASSWORD',''),
+//        'default' => false,
+        'webhook' => env('SHIP_ROCKET_WEBHOOK',''),
+    ],
 
 
 
