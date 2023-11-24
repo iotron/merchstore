@@ -43,12 +43,16 @@ class ViewOrder extends ViewRecord
                 Tabs::make('Label')
                     ->tabs([
                         Tabs\Tab::make('Order')
+                            ->columns(2)
                             ->schema($this->orderInfoSchema()),
                         Tabs\Tab::make('Product')
+                            ->columns(2)
                             ->schema($this->orderProductInfoSchema()),
                         Tabs\Tab::make('Payment')
+                            ->columns(2)
                             ->schema($this->orderPaymentInfoSchema()),
                         Tabs\Tab::make('Shipping')
+                            ->columns(2)
                             ->schema($this->orderShippingInfoSchema()),
 
                     ])->columnSpanFull()->contained(false),
@@ -153,6 +157,7 @@ class ViewOrder extends ViewRecord
         return [
 
             RepeatableEntry::make('orderProducts')
+
                 ->schema([
                     TextEntry::make('product.name'),
                     TextEntry::make('quantity'),
@@ -224,8 +229,19 @@ class ViewOrder extends ViewRecord
         return [
 
             RepeatableEntry::make('shipments')
+                ->hiddenLabel()
+                ->columnSpanFull()->contained(false)
+                ->columns(2)
                 ->schema([
-                    TextEntry::make('invoice_uid')
+                    TextEntry::make('invoice_uid'),
+                    TextEntry::make('total_quantity'),
+                    TextEntry::make('tracking_id'),
+                    TextEntry::make('last_update'),
+                    TextEntry::make('status'),
+                    IconEntry::make('cod')->default(false)->boolean(),
+                    TextEntry::make('pickupAddress.address_1'),
+                    TextEntry::make('deliveryAddress.address_1'),
+                    TextEntry::make('shippingProvider.name'),
                 ])
 
 

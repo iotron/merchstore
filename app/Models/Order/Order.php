@@ -103,7 +103,7 @@ class Order extends Model
         return $this->hasMany(OrderProduct::class, 'order_id', 'id');
     }
 
-    public function shipments()
+    public function shipments(): HasMany
     {
         return $this->hasMany(OrderShipment::class,'order_id','id');
     }

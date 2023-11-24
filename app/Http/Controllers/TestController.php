@@ -6,6 +6,7 @@ use App\Helpers\Promotion\Sales\ProductSaleHelper;
 use App\Models\Category\Category;
 use App\Models\Filter\Filter;
 use App\Models\Filter\FilterGroup;
+use App\Models\Order\Order;
 use App\Models\Product\Product;
 use App\Models\Promotion\Sale;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
@@ -23,7 +24,12 @@ class TestController extends Controller
     public function index(ShippingService $shippingService)
     {
 
-        dd($shippingService->provider('shiprocket')->order()->all());
+        $order = Order::first();
+
+
+        $result = $shippingService->provider()->order()->create($order->toArray());
+
+        dd($result);
 
       //  dd($paymentService->provider('razorpay')->order()->fetch('order_N2NOkMZ3higYO2'));
 

@@ -9,7 +9,20 @@ class OrderAction implements ShippingProviderActionContract
 
     public function create(array $data)
     {
-        // TODO: Implement create() method.
+
+        $added = [
+            "order_id" => 16161616,
+            "shipment_id" => 15151515,
+              "status" => "NEW",
+              "status_code" => 1,
+              "onboarding_completed_now" => 0,
+              "awb_code" => null,
+              "courier_company_id" => null,
+              "courier_name" => null
+        ];
+
+
+        return array_merge($added,$data);
     }
 
     public function all()
