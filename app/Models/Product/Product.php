@@ -56,24 +56,31 @@ class Product extends Model implements HasMedia
 //    protected $filterDataScope = 'ProductDataScope';
 
     protected $fillable = [
+        'sku',
         'type',
         'name',
-        'sku',
         'url',
+        'quantity',
+        'popularity',
+        'view_count',
         'featured',
-        'visible_individually',
         'status',
+        'visible_individually',
         'base_price',
+        'hsn_code',
+        'tax_percent',
+        'tax_amount',
         'price',
         'filter_group_id',
         'parent_id',
         'min_range',
-        'max_range'
+        'max_range',
     ];
 
     protected $casts = [
         'base_price' => MoneyCast::class,
         'price' => MoneyCast::class,
+        'tax_amount' => MoneyCast::class,
     ];
 
 

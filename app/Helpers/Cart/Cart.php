@@ -12,7 +12,8 @@ class Cart extends CartService
     {
         $cartCalculator = new CartCalculator($this);
         $cartCalculator->calculate();
-        $data = $this->meta;
+
+
 
         return  [
             'empty' => $this->isEmpty(),
@@ -30,7 +31,7 @@ class Cart extends CartService
             'discount_formatted' => !is_null($this->discountTotal) ? $this->discountTotal->formatted() :null,
             'total_formatted' => $this->total->formatted(),
             'error' => $this->getErrors(),
-            'products' => collect($this->meta)->get('product')
+            'products' => $this->meta
         ];
 
 

@@ -61,6 +61,7 @@ class CartCalculator implements CartCalculatorContract
                 $productTotalTax->add($product->base_price->multiplyOnce($product->pivot->quantity));
                 $totalTax->add($productTotalTax);
             }
+
             // return data
             return  [
                 $product->id => [
@@ -68,11 +69,16 @@ class CartCalculator implements CartCalculatorContract
                     'pivot_quantity' => $product->pivot->quantity,
                     'name' => $product->name,
                     'has_tax' => !empty($product->tax_percent),
-                    'base_price' => $product->base_price,
-                    'total_base_amount' => $productSubTotal,
-                    'tax_amount' => $product->tax_amount,
-                    'total_tax_amount' => $productTotalTax,
-                    'net_total' => $productSubTotal->addOnce($productTotalTax),
+                    'base_price' => $product->base_price->getAmount(),
+                    'base_price_formatted' => $product->base_price->formatted(),
+                    'total_base_amount' => $productSubTotal->getAmount(),
+                    'total_base_amount_formatted' => $productSubTotal->formatted(),
+                    'tax_amount' => $product->tax_amount->getAmount(),
+                    'tax_amount_formatted' => $product->tax_amount->formatted(),
+                    'total_tax_amount' => $productTotalTax->getAmount(),
+                    'total_tax_amount_formatted' => $productTotalTax->formatted(),
+                    'net_total' => $productSubTotal->addOnce($productTotalTax)->getAmount(),
+                    'net_total_formatted' => $productSubTotal->addOnce($productTotalTax)->formatted(),
                     'product' => $product
                 ]
             ];
