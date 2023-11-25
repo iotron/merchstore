@@ -28,7 +28,7 @@ class OrderAction implements ShippingProviderActionContract
             ->post($this->api->getBaseUrl().'orders/create/adhoc')
             ->throw()
             ->json();
-        $response->body();
+        return $response->body();
 
     }
 

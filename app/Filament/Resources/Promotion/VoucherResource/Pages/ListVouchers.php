@@ -31,6 +31,8 @@ class ListVouchers extends ListRecords
             ->columns([
                 TextColumn::make('name'),
 
+                TextColumn::make('customer_groups.name'),
+
                 TextColumn::make('starts_from')
                     ->date(),
                 TextColumn::make('ends_till')
@@ -54,6 +56,9 @@ class ListVouchers extends ListRecords
 //                    ->boolean(),
 //                IconColumn::make('free_shipping')
 //                    ->boolean(),
+
+
+
                 TextColumn::make('sort_order'),
                 TextColumn::make('created_at')
                     ->dateTime(),

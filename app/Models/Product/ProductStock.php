@@ -18,12 +18,13 @@ class ProductStock extends Model
         'sold_quantity',
         'in_stock',
         'priority',
+        'address_id'
     ];
 
-    protected static function booted()
-    {
-//        ProductStock::observe(ProductStockObserver::class);
-    }
+//    protected static function booted()
+//    {
+////        ProductStock::observe(ProductStockObserver::class);
+//    }
 
     //    public function address()
 //    {

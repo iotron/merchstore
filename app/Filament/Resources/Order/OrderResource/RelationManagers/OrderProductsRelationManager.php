@@ -33,20 +33,20 @@ class OrderProductsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')->label('Name'),
                 Tables\Columns\TextColumn::make('product.sku')->label('SKU'),
-                Tables\Columns\TextColumn::make('product.quantity')->label('Quantity'),
-                Tables\Columns\TextColumn::make('product.amount')->label('Amount')
+                Tables\Columns\TextColumn::make('quantity')->label('Quantity'),
+                Tables\Columns\TextColumn::make('amount')->label('Amount')
                     ->formatStateUsing(function ($state){
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),
-                Tables\Columns\TextColumn::make('product.discount')->label('Discount')
+                Tables\Columns\TextColumn::make('discount')->label('Discount')
                     ->formatStateUsing(function ($state){
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),
-                Tables\Columns\TextColumn::make('product.tax')->label('Tax')
+                Tables\Columns\TextColumn::make('tax')->label('Tax')
                     ->formatStateUsing(function ($state){
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),
-                Tables\Columns\TextColumn::make('product.total')->label('Total')
+                Tables\Columns\TextColumn::make('total')->label('Total')
                     ->formatStateUsing(function ($state){
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),

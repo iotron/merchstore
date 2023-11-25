@@ -187,6 +187,7 @@ class OrderCreationService
             $productAllStock = $productModel->availableStocks()->get();
 
 
+
             foreach($productAllStock as $stock)
             {
                 if ($totalQuantity != 0)
@@ -198,6 +199,8 @@ class OrderCreationService
                         $stock->save();
                         $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
                         $totalQuantity = 0;
+
+
                     }elseif($stock->in_stock){
                         // Partially Update Stock From Each Stock
                         $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
@@ -229,7 +232,7 @@ class OrderCreationService
                     'delivery_address' => $shippingAddress->id,
                     'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
                     'cod' => $this->isCod,
-                    'status' => OrderShipment::PROCESSING
+                    'status' => OrderShipment::PROCESSING,
                 ]);
 
                 $orderInvoice = $this->order->invoices()->create([

@@ -4,9 +4,12 @@ namespace App\Services\ShippingService\Providers\ShipRocket\Actions;
 
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderTrackingContract;
 use App\Services\ShippingService\Providers\ShipRocket\ShipRocketApi;
+use App\Services\ShippingService\Providers\ShipRocket\Support\hasTrackingStatus;
+use GuzzleHttp\Psr7\Utils;
 
 class TrackingAction implements ShippingProviderTrackingContract
 {
+    use hasTrackingStatus;
 
     protected ShipRocketApi $api;
 
@@ -30,9 +33,8 @@ class TrackingAction implements ShippingProviderTrackingContract
         }
 
         $response = $this->api->http()
-            ->withHeaders(['application/json'])
-            ->get($buildUrl);
-        return
+            ->get($buildUrl)->json();
+        return $this->updateStatusViaCode($response->body());
     }
 
     /**
@@ -41,6 +43,23 @@ class TrackingAction implements ShippingProviderTrackingContract
      */
     public function shipment(int|string $shipment_id): string|object|null
     {
-        // TODO: Implement shipment() method.
+        $response =  $this->api->http()
+            ->get($this->api->getBaseUrl().'courier/track/shipment/'.$shipment_id);
+        return $this->updateStatusViaCode($response->body());
+    }
+
+    /**
+     * @param array $tracking_ids
+     * @return mixed
+     */
+    public function all(array $tracking_ids): mixed
+    {
+        $response = $this->api->http()
+            ->withBody(Utils::streamFor(json_encode(['awbs' => $tracking_ids])))
+            ->post($this->api->getBaseUrl().'courier/track/awbs')
+            ->json();
+
+        return $response->body();
+
     }
 }

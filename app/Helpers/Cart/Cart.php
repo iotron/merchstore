@@ -14,8 +14,7 @@ class Cart extends CartService
 
         $data = $cartCalculator->calculate();
 
-
-        return [
+        return  [
             'empty' => $this->isEmpty(),
             'changed' => $this->changed,
             'coupon' => $this->couponCode,
@@ -35,9 +34,41 @@ class Cart extends CartService
         ];
 
 
+
     }
 
 
+    public function getMetaData(): array
+    {
+
+        //        if ($this->couponCode)
+//        {
+//            $this->meta = $result;
+//            $this->meta['subTotal'] = $this->meta['subtotal'];
+//            $this->meta['totalQuantity'] = $this->meta['quantity'];
+////            $voucherService = new VoucherCartService($this->couponCode,$this);
+////            dd($voucherService->validate());
+////            if ($voucherService->validate())
+////            {
+////                return true;
+////            }
+//        }
+//
+//        return $result;
+
+
+
+        return $this->meta;
+
+
+    }
+
+
+//    public function resolveCartMeta()
+//    {
+//        $resolver = new CartResolver($this);
+//        $resolver->resolve();
+//    }
 
 
 }

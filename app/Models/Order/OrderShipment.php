@@ -2,6 +2,7 @@
 
 namespace App\Models\Order;
 
+use App\Observers\Order\ShipmentTrackActivityObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Localization\Address;
@@ -33,15 +34,31 @@ class OrderShipment extends Model
     ];
 
     protected $fillable = [
-        'invoice_uid',
         'total_quantity',
+        'last_update',
+        'status',
+        'invoice_uid',
+        'cod',
+
+        'tracking_id',
+        'tracking_data',
+
+        'provider_order_id',
+        'shipment_id',
+        'shipment_track_activities',
+        'shipping_provider_id',
+        'details',
+
         'pickup_address',
         'delivery_address',
-        'tracking_id',
-        'shipping_provider_id',
-        'last_update',
-        'cod',
-        'status',
+
+    ];
+
+    protected $casts = [
+        'tracking_data' => 'array',
+        'shipment_track_activities' => 'array',
+        'details' => 'array',
+
     ];
 
 

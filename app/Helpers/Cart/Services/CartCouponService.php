@@ -4,7 +4,6 @@ namespace App\Helpers\Cart\Services;
 
 use App\Helpers\Cart\Contracts\CartCouponServiceContract;
 use App\Helpers\Cart\Contracts\CartServiceContract;
-use App\Helpers\Cart\Services\Voucher\VoucherCartService;
 use App\Models\Promotion\VoucherCode;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +14,7 @@ class CartCouponService implements CartCouponServiceContract
     private CartServiceContract $cartService;
     private ?string $couponCode=null;
     protected bool $isValid=false;
-    protected ?Model $couponModel=null;
+    protected ?VoucherCode $couponModel=null;
 
     public function __construct(CartServiceContract $cartService)
     {
@@ -103,6 +102,7 @@ class CartCouponService implements CartCouponServiceContract
         {
             $this->isValid = true;
             $this->cartService->setCouponStatus(true);
+            $this->cartService->setCouponModel($this->couponModel);
             session(['coupon' => $coupon_code]);
             return true;
         }

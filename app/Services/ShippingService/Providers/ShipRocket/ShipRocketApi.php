@@ -22,7 +22,7 @@ class ShipRocketApi
 
     public function http(): PendingRequest
     {
-        return Http::withToken($this->apiToken);
+        return Http::withToken($this->apiToken)->contentType('application/json');
     }
 
     public function getToken():string

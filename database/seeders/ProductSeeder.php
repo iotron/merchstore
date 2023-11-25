@@ -6,6 +6,7 @@ use App\Models\Category\Category;
 use App\Models\Category\Theme;
 use App\Models\Filter\Filter;
 use App\Models\Filter\FilterGroup;
+use App\Models\Localization\Address;
 use App\Models\Product\Product;
 use App\Models\Product\ProductFlat;
 use App\Models\Product\ProductStock;
@@ -59,11 +60,28 @@ class ProductSeeder extends Seeder
                     $themes = $selectedParentTheme->children->random(2);
                     $product->themes()->attach($themes);
 
+
                     // Add Stock
                     $stock = $product->stocks()->create([
                         'init_quantity' => fake()->numberBetween(200, 600),
                         'sold_quantity' => 0,
                     ]);
+                    $stock->addresses()->create([
+                        'name' => fake()->word.' Address',
+                        'contact' => fake()->numerify('##########'),
+                        'alternate_contact' => '',
+                        'type' => 'Home',
+                        'address_1' => fake()->address,
+                        'address_2' => 'Line Two',
+                        'landmark' => '',
+                        'city' => 'Kolkata',
+                        'postal_code' => 700001,
+                        'state' => 'wb',
+                        'default' => 1,
+                        'priority' => 1,
+                        'country_code' => 'IN',
+                    ]);;
+
 
                     $stock2 = $product->stocks()->create([
                         'init_quantity' => fake()->numberBetween(200, 600),

@@ -2,7 +2,9 @@
 
 namespace App\Helpers\Cart\Contracts;
 
+use App\Helpers\Money\Money;
 use App\Models\Customer\Customer;
+use App\Models\Promotion\VoucherCode;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -12,12 +14,17 @@ interface CartServiceContract
     public function getCustomer(): Customer|Authenticatable;
 
     public function getCouponCode(): ?string;
+    public function getCouponModel():?VoucherCode;
 
     public function hasChanged(): bool;
 
     public function setError(string $msg):void;
 
     public function getErrors():array;
+
+    public function setSubTotal(Money $subTotal);
+
+    public function getAttribute($attribute);
 
 
     public function getProduct();

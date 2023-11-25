@@ -7,6 +7,7 @@ use App\Filament\Resources\Order\OrderResource\RelationManagers;
 use App\Helpers\Money\Money;
 use App\Models\Order\Order;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -32,8 +33,8 @@ class OrderResource extends Resource
                     ->numeric(),
                 Forms\Components\Select::make('billing_address_id')
                     ->relationship('billingAddress', 'id'),
-                Forms\Components\TextInput::make('address_id')
-                    ->numeric(),
+                Forms\Components\Select::make('shipping_address_id')
+                    ->relationship('shippingAddress', 'id'),
                 Forms\Components\TextInput::make('uuid')
                     ->label('UUID')
                     ->required()

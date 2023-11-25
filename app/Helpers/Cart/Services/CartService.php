@@ -3,7 +3,9 @@
 namespace App\Helpers\Cart\Services;
 
 use App\Helpers\Cart\Contracts\CartServiceContract;
+use App\Helpers\Money\Money;
 use App\Models\Customer\Customer;
+use App\Models\Promotion\VoucherCode;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
@@ -17,6 +19,14 @@ abstract class CartService implements CartServiceContract
     protected ?string $couponCode = null;
     public int $totalQuantity = 0;
     protected bool $validCoupon=false;
+    protected ?VoucherCode $couponModel = null;
+
+    protected ?Money $subTotal = null;
+    protected ?Money $taxTotal = null;
+    protected ?Money $total = null;
+
+
+    protected array $meta = [];
 
     public function __construct(Customer|Authenticatable $customer, ?string $couponCode = null)
     {
@@ -36,6 +46,11 @@ abstract class CartService implements CartServiceContract
         return $this->couponCode;
     }
 
+    public function getCouponModel():?VoucherCode
+    {
+        return $this->couponModel;
+    }
+
     public function hasChanged(): bool
     {
         return $this->changed;
@@ -50,6 +65,42 @@ abstract class CartService implements CartServiceContract
     {
         return $this->errors;
     }
+
+    public function setSubTotal(Money $subTotal)
+    {
+        $this->subTotal = $subTotal;
+    }
+
+
+    public function setTaxTotal(Money $taxTotal)
+    {
+        $this->taxTotal = $taxTotal;
+    }
+
+    public function setTotal(Money $total)
+    {
+        $this->total = $total;
+    }
+
+    public function setMeta(array $meta=[])
+    {
+        $this->meta = $meta;
+    }
+
+
+
+    public function getAttribute($attribute)
+    {
+        if (property_exists($this, $attribute))
+        {
+            return $this->$attribute;
+        }else{
+            $this->setError($attribute.' not present in CartService');
+            return null;
+        }
+    }
+
+
 
     public function isEmpty(): bool
     {
@@ -81,6 +132,7 @@ abstract class CartService implements CartServiceContract
 
     public function getTotalQuantity(): int
     {
+
         $this->totalQuantity = $this->products()->sum('pivot.quantity');
         return $this->totalQuantity;
     }
@@ -88,7 +140,6 @@ abstract class CartService implements CartServiceContract
     public function checkStock(): void
     {
         $this->customer->cart->each(function ($product) {
-
             $quantity = $product->minStock($product->pivot->quantity);
             $this->changed = $quantity != $product->pivot->quantity;
             if ($this->changed) {
@@ -108,6 +159,7 @@ abstract class CartService implements CartServiceContract
     {
 
         $existIDs = $this->customer->cart->pluck('id')->toArray();
+
         if (in_array($itemID,$existIDs))
         {
             // Update Exist Product/Item Id Quantity In Cart
@@ -191,6 +243,10 @@ abstract class CartService implements CartServiceContract
         return $this->validCoupon;
     }
 
+    public function setCouponModel(?VoucherCode $voucherCode=null)
+    {
+        $this->couponModel = $voucherCode;
+    }
 
      /**
       * @param string $code
@@ -204,6 +260,8 @@ abstract class CartService implements CartServiceContract
          if (!$couponService->isValid())
          {
              $this->errors[] = 'coupon code not applicable';
+         }else{
+             $this->couponCode = $code;
          }
      }
 

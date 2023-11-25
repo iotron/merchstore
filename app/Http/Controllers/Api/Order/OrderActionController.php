@@ -44,6 +44,22 @@ class OrderActionController extends Controller
     public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|array
     {
         $validate = $request->validated();
+
+        // Check If Coupon Presence (Voucher)
+
+        if (isset($validate['coupon']) && !empty($validate['coupon']))
+        {
+
+            // Apply Coupon In Cart
+            $cart->addCoupon($validate['coupon']);
+            dd($cart->getMeta());
+
+        }
+
+
+
+
+
         $paymentProvider = PaymentProvider::firstWhere('id', $validate['payment_provider_id']);
         // Validate Payment Method
         if (is_null($paymentProvider)) {

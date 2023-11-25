@@ -16,10 +16,6 @@ class ShipmentsRelationManager extends RelationManager
     protected static string $relationship = 'shipments';
 
 
-    public function isReadOnly(): bool
-    {
-        return false;
-    }
 
     public function form(Form $form): Form
     {
@@ -44,8 +40,21 @@ class ShipmentsRelationManager extends RelationManager
                         ->relationship('shippingProvider','name')
                         ->required(),
 
+
                 Forms\Components\KeyValue::make('tracking_data'),
+
                 Forms\Components\KeyValue::make('last_update'),
+
+                Forms\Components\Repeater::make('shipment_track_activities')
+                    ->label('Track Activities')
+                    ->required()
+                    ->columnSpanFull()
+                    ->schema([
+                        Forms\Components\DateTimePicker::make('date')->required()->seconds(false),
+                        Forms\Components\TextInput::make('activity')->required(),
+                        Forms\Components\TextInput::make('location')->required(),
+
+                    ]),
 
             ]);
     }

@@ -103,6 +103,7 @@ class ListOrders extends ListRecords
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at','desc')
             ->filters([
                 //
             ])

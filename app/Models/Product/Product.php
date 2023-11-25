@@ -168,7 +168,8 @@ class Product extends Model implements HasMedia
 
     public function minStock($count)
     {
-        $availableMinStock = $this->availableStocks()->min('in_stock_quantity');
+        //dd($this->availableStocks->pluck('in_stock_quantity'));
+        $availableMinStock = $this->availableStocks()->sum('in_stock_quantity');
         return min($availableMinStock ?? 0, $count);
     }
 

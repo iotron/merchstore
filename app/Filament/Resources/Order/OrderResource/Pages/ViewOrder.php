@@ -230,7 +230,8 @@ class ViewOrder extends ViewRecord
 
             RepeatableEntry::make('shipments')
                 ->hiddenLabel()
-                ->columnSpanFull()->contained(false)
+                ->columnSpanFull()
+                //->contained(false)
                 ->columns(2)
                 ->schema([
                     TextEntry::make('invoice_uid'),

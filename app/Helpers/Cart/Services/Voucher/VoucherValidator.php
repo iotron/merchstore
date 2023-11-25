@@ -3,26 +3,31 @@
 namespace App\Helpers\Cart\Services\Voucher;
 
 use App\Helpers\Cart\Contracts\CartServiceContract;
+use App\Helpers\Cart\Services\CartService;
 use App\Helpers\Money\Money;
 use App\Models\Product\Product;
 use App\Models\Promotion\Voucher;
-use Illuminate\Support\Str;
+use App\Models\Promotion\VoucherCode;
 
-class VoucherCartService
+class VoucherValidator
 {
 
+    protected array $backListCartAttributes = ['postcode', 'state', 'country', 'shipping_method', 'payment_method'];
 
-    private Voucher $voucher;
-    private array $conditions = [];
-    private CartServiceContract $cartService;
-    private VoucherConditionValidator $conditionValidator;
+    protected CartServiceContract $cartService;
+    protected ?VoucherCode $voucherCode=null;
+    protected ?Voucher $voucher = null;
+    protected array $conditions = [];
+    private ConditionValidator $conditionValidator;
 
-    public function __construct(Voucher $voucher,CartServiceContract $cartService)
+
+    public function __construct(CartServiceContract $cartService)
     {
-        $this->voucher = $voucher;
-        $this->conditions = $this->voucher->conditions;
         $this->cartService = $cartService;
-        $this->conditionValidator = new VoucherConditionValidator();
+        $this->voucherCode = $this->cartService->getCouponModel();
+        $this->voucher = $this->voucherCode->voucher;
+        $this->conditions = $this->voucher->conditions;
+        $this->conditionValidator = new ConditionValidator($this->cartService);
     }
 
     public function validate():bool
@@ -30,9 +35,14 @@ class VoucherCartService
         if (empty($this->conditions)) {
             return true;
         }
+
+        return $this->validateConditions();
+//        dd($this,$this->cartService);
+    }
+
+    protected function validateConditions():bool
+    {
         $validConditionCount = 0;
-
-
 
         foreach ($this->conditions as $condition)
         {
@@ -62,8 +72,8 @@ class VoucherCartService
                 }
                 return false;
             }
-        }
 
+        }
 
         // Validate Valid Condition Count
         if ($this->voucher->condition_type == Voucher::MATCH_ALL) {
@@ -71,11 +81,7 @@ class VoucherCartService
         } else {
             return $validConditionCount > 0;
         }
-
-
     }
-
-
 
 
     public function checkCondition(array $condition):bool
@@ -95,12 +101,16 @@ class VoucherCartService
             }
 
 
+
+
+
         });
 
-        return $this->conditionValidator->validate($condition);
+//        dd('sdds',$this->conditions);
+        return true;
+
+        //return $this->conditionValidator->validate($condition);
     }
-
-
 
     protected function getAttributeValue(array $condition, Product $product)
     {
@@ -109,8 +119,6 @@ class VoucherCartService
         $attributeNameChunks = explode('::', $chunks[1]);
 
         $attributeCode = (\count($attributeNameChunks) > 1) ? $attributeNameChunks[\count($attributeNameChunks) - 1] : $attributeNameChunks[0];
-
-        //dd(current($chunks),$chunks,$attributeCode,$condition);
 
         // Compare and Validate
         switch (current($chunks)) {
@@ -131,72 +139,59 @@ class VoucherCartService
         }
     }
 
-
     protected function getCartAttributeValue(string $attributeCode)
     {
-        if (!in_array($attributeCode, ['postcode', 'state', 'country', 'shipping_method', 'payment_method']))
+        if (!in_array($attributeCode, $this->backListCartAttributes))
         {
-
-          //  dd($this->cartService);
-
-            if($this->cartService->{$attributeCode} instanceof Money)
-            {
-                return $this->cartService->{$attributeCode}->getAmount();
-            }else{
-                return $this->cartService->{$attributeCode};
-            }
+//            if($this->cartService->getAttribute($attributeCode) instanceof Money)
+//            {
+//                return $this->cartService->getAttribute($attributeCode)->getAmount();
+//            }else{
+//                return $this->cartService->getAttribute($attributeCode);
+//            }
+            return $this->cartService->getAttribute($attributeCode);
         }
-        return null;
     }
 
     protected function getCartItemAttributeValue(string $attributeCode, Product $product)
     {
-        return $product->pivot->{$attributeCode};
+        return isset($product->pivot->{$attributeCode}) ? $product->pivot->{$attributeCode} : null;
     }
-
-
 
     protected function getProductAttributeValue(string $attributeCode, Product $product, array $condition)
     {
         if ($attributeCode == 'category_id') {
             return  $product->categories()->pluck('id')->toArray();
-        } else {
-            // Product with Flat Join need
-            $value = '';
-            $product = $this->populateProduct($product);
-
-            if (isset($product[$attributeCode])) {
-                $value = $product[$attributeCode];
-            }
-            if (isset($product[Str::ucfirst($attributeCode)])) {
-                $value = $product[Str::ucfirst($attributeCode)];
+        }else{
+            $value = null;
+            if (isset($product->{$attributeCode}))
+            {
+                $value = $product->{$attributeCode};
+            }elseif (isset($product->{ucfirst($attributeCode)}))
+            {
+                $value = $product->{ucfirst($attributeCode)};
             }
 
             if ($value) {
-                $chunk = explode(',', $value);
-                if (isset($chunk[1]) && ! empty($chunk[1])) {
-                    return $chunk;
-                } else {
-                    return $chunk[0];
+
+                if (!is_string($value))
+                {
+                    return $value;
+                }else{
+                    $chunk = explode(',', $value);
+
+                    if (isset($chunk[1]) && ! empty($chunk[1])) {
+                        return $chunk;
+                    } else {
+                        return $chunk[0];
+                    }
                 }
+
             }
+
         }
+        return null;
     }
-
-
-    protected function populateProduct(Product $product)
-    {
-        $products = $product->toArray();
-        $productFlat = $product->flat->toArray();
-        $productFilterAttributes = $productFlat['filter_attributes'] ?? [];
-        $productPivot = $product->pivot->toArray();
-
-        return array_merge($products, $productFlat, $productFilterAttributes, $productPivot);
-    }
-
-
-
-
 
 
 }

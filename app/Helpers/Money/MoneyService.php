@@ -104,6 +104,11 @@ class MoneyService
         return clone $this->rawMoney;
     }
 
+    public function getMoney(): LaravelMoney
+    {
+        return clone $this->laravelMoney;
+    }
+
     public static function resolveCurrency(?string $currency = null): Currency
     {
         return new Currency($currency ?? config('services.defaults.currency'));
