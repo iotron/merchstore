@@ -25,12 +25,13 @@ class Voucher extends Model
     public const ACTION_BY_FIXED = 'by_fixed';
     public const ACTION_CART_FIXED = 'cart_fixed';
     public const ACTION_BY_X_GET_Y = 'buy_x_get_y';
+    public const ACTION_CART_PERCENTAGE = 'cart_percent';
 
     public const ACTION_TYPES = [
         self::ACTION_BY_PERCENTAGE => 'Percentage of Product Price',
         self::ACTION_BY_FIXED => 'Fixed Amount',
         self::ACTION_CART_FIXED => 'Fixed Amount to Whole Cart',
-        self::ACTION_BY_X_GET_Y => 'Buy X Get Y Free',
+        self::ACTION_CART_PERCENTAGE => 'Cart Percentage',
     ];
 
     public const SHIPPING_TRUE = 1;
@@ -52,6 +53,7 @@ class Voucher extends Model
         self::END_OTHER_RULE_FALSE => 'No',
         self::END_OTHER_RULE_TRUE => 'Yes'
     ];
+
 
 
 

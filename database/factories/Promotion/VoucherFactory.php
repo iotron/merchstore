@@ -2,6 +2,7 @@
 
 namespace Database\Factories\Promotion;
 
+use App\Models\Promotion\Voucher;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -29,7 +30,7 @@ class VoucherFactory extends Factory
             'times_used' => 0,
             'condition_type' => 1,
             'end_other_rules' => fake()->boolean,
-            'action_type' => 'by_percent',
+            'action_type' => fake()->randomElement(array_flip(Voucher::ACTION_TYPES)),
 
             'discount_amount' => fake()->numberBetween(2000,6000),
             'discount_quantity' => fake()->numberBetween(5,6),
@@ -52,6 +53,16 @@ class VoucherFactory extends Factory
             [
                 "attribute" =>"cart|totalQuantity",
                 "value" => "2",
+                "operator" => ">"
+            ],
+            [
+                "attribute" =>"cart_item|quantity",
+                "value" => "2",
+                "operator" => "=="
+            ],
+            [
+                "attribute" =>"product|quantity",
+                "value" => "1",
                 "operator" => ">"
             ]
         ];

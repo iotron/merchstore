@@ -45,9 +45,7 @@ class OrderCreationService
 
     public function checkout(Address $shippingAddress,Address $billing_address): \Illuminate\Http\JsonResponse|array
     {
-        if ($this->cart->getErrors()) {
-            return response()->json(['success' => false, 'message' => $this->cart->getErrors()], 403);
-        }
+
 
         $uuid = self::getUniqueOrderID($this->customer->orders);
         // Create An Pending Order Based On Newly Created Payment
