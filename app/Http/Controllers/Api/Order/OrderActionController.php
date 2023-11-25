@@ -49,11 +49,8 @@ class OrderActionController extends Controller
 
         if (isset($validate['coupon']) && !empty($validate['coupon']))
         {
-
             // Apply Coupon In Cart
             $cart->addCoupon($validate['coupon']);
-            dd($cart->getMeta());
-
         }
 
 

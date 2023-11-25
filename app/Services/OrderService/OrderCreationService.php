@@ -3,6 +3,7 @@
 namespace App\Services\OrderService;
 
 use App\Helpers\Cart\Cart;
+use App\Helpers\Money\Money;
 use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Order\Order;
@@ -11,6 +12,7 @@ use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\OrderService\Supports\Order\OrderBuilder;
+use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -47,17 +49,25 @@ class OrderCreationService
     {
 
 
-        $uuid = self::getUniqueOrderID($this->customer->orders);
+        $uuid = $this->generateUniqueID();
+        if (is_null($uuid))
+        {
+            return response()->json([
+                'success' => true,
+                'message' => 'unable to generate unique order id, try again!',
+            ],409);
+        }
+
         // Create An Pending Order Based On Newly Created Payment
         $this->order =  $this->customer->orders()->create([
             'uuid' => $uuid,
             'voucher' => $this->cartMeta['coupon'] ?? '',
             'quantity' => $this->cartMeta['quantity'],
-            'amount' => $this->cartMeta['total']->getAmount(),
-            'subtotal' => $this->cartMeta['subtotal']->getAmount(),
-            'discount' => $this->cartMeta['discount']->getAmount(),
-            'tax' => $this->cartMeta['tax']->getAmount(),
-            'total' => $this->cartMeta['total']->getAmount(),
+            'amount' => $this->cartMeta['total'],
+            'subtotal' => $this->cartMeta['subtotal'],
+            'discount' => $this->cartMeta['discount'],
+            'tax' => $this->cartMeta['tax'],
+            'total' => $this->cartMeta['total'],
             'status' => (!$this->isCod) ? Order::PENDING : Order::CONFIRM,
             'payment_success' => false,
             'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
@@ -142,10 +152,10 @@ class OrderCreationService
             'provider_class' => $this->provider,
             'promo_code' => $this->cartMeta['coupon'] ?? '',
             'quantity' => $this->cartMeta['quantity'],
-            'subtotal' => $this->cartMeta['subtotal']->getAmount(),
-            'discount' => $this->cartMeta['discount']->getAmount(),
-            'tax' => $this->cartMeta['tax']->getAmount(),
-            'total' => $this->cartMeta['total']->getAmount(),
+            'subtotal' => ($this->cartMeta['subtotal'] instanceof  Money) ? $this->cartMeta['subtotal']->getAmount() : $this->cartMeta['subtotal'],
+            'discount' => ($this->cartMeta['discount'] instanceof  Money) ? $this->cartMeta['discount']->getAmount() : $this->cartMeta['discount'],
+            'tax' => ($this->cartMeta['tax'] instanceof Money) ? $this->cartMeta['tax']->getAmount() : $this->cartMeta['tax'],
+            'total' => ($this->cartMeta['total'] instanceof Money) ? $this->cartMeta['total']->getAmount() : $this->cartMeta['total'],
             'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
             'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
             'payment_provider_id' => $this->paymentService->getProviderModel()->id,
@@ -160,12 +170,15 @@ class OrderCreationService
             $records = [];
             foreach ($this->cartMeta['products'] as $item)
             {
+               $discountAmnt = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
+
+
                 $records [] = [
                     'quantity' => $item['pivot_quantity'],
-                    'amount' => $item['total_base_amount']->getAmount(),
-                    'discount' => $item['total_discount_amount']->getAmount(),
-                    'tax' => $item['total_tax_amount']->getAmount(),
-                    'total' => $item['net_total']->getAmount(),
+                    'amount' => ($item['total_base_amount'] instanceof  Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
+                    'discount' => ($discountAmnt instanceof  Money) ? $discountAmnt->getAmount() : $discountAmnt,
+                    'tax' => ($item['total_tax_amount'] instanceof  Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
+                    'total' => ($item['net_total'] instanceof  Money) ? $item['net_total']->getAmount() : $item['net_total'],
                     'product_id' => $item['id']
                 ];
             }
@@ -261,16 +274,31 @@ class OrderCreationService
 
     protected function getProductArray()
     {
-        return $this->cartMeta['products']->keyBy('id')->map(function ($item) {
+        return collect($this->cartMeta['products'])->keyBy('id')->map(function ($item) {
             return ['quantity' => $item['pivot_quantity']];
         })->toArray();
     }
 
-    protected static function getUniqueOrderID(object $orderArray): string
-    {
-        $uid = ucwords(Str::random(6));
-        $result = $orderArray->contains('uuid', $uid);
-        return (!$result) ? $uid : self::getUniqueOrderID($orderArray);
+
+
+    protected function generateUniqueID() {
+        $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
+        $prefix = now()->format('dHis'); // Timestamp prefix
+        $maxAttempts = 10;
+        $attempt = 0;
+
+        do {
+            $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
+            $id = $prefix . $random;
+            $attempt++;
+        } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
+
+        if ($attempt == $maxAttempts) {
+            //throw new Exception('Unable to generate unique ID');
+            return null;
+        }
+
+        return $id;
     }
 
 

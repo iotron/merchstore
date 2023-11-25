@@ -115,7 +115,7 @@ class CodOrder implements OrderBuilderContract
 //                'event_id' => $this->subjectModel->id,
 //                'event_name' => $this->subjectModel->name,
 //                'event_url' => $this->subjectModel->url,
-                'products_ids' => implode(',', $this->cartMeta['products']->pluck('id')->toArray()),
+                'products_ids' => implode(',', collect($this->cartMeta['products'])->pluck('id')->toArray()),
                 'products_details' => json_encode($this->items),
                 // Currently Not Necessary (Remove When Update Livewire)
                 'voucher' => $this->cartMeta['coupon'] ?? '',

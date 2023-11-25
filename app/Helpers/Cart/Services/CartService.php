@@ -33,7 +33,10 @@ abstract class CartService implements CartServiceContract
     {
         $this->customer = $customer;
         $this->couponCode = $couponCode;
-
+        $this->subTotal = new Money(0.00);
+        $this->taxTotal = new Money(0.00);
+        $this->discountTotal = new Money(0.00);
+        $this->total = new Money(0.00);
     }
 
 

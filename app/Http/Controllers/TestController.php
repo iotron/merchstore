@@ -24,19 +24,49 @@ class TestController extends Controller
     public function index(ShippingService $shippingService)
     {
 
-        $order = Order::first();
+
+        dd($this->generateUniqueID());
 
 
-        $result = $shippingService->provider()->order()->create($order->toArray());
-
-        dd($result);
-
-      //  dd($paymentService->provider('razorpay')->order()->fetch('order_N2NOkMZ3higYO2'));
+//
+//
+//        $order = Order::first();
+//
+//
+//        $result = $shippingService->provider()->order()->create($order->toArray());
+//
+//        dd($result);
+//
+//      //  dd($paymentService->provider('razorpay')->order()->fetch('order_N2NOkMZ3higYO2'));
 
 
       //  $this->loginDefaultCustomer();
 
     }
+
+
+    protected function generateUniqueID() {
+        $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
+        $prefix = now()->format('dHis'); // Timestamp prefix 8
+        $maxAttempts = 10;
+        $attempt = 0;
+
+        do {
+            $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
+
+            $id = $prefix . $random;
+            $attempt++;
+        } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
+
+        if ($attempt == $maxAttempts) {
+            //throw new Exception('Unable to generate unique ID');
+            return null;
+        }
+
+        return $id;
+    }
+
+
 
 
     private function loginDefaultCustomer()
