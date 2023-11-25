@@ -23,6 +23,7 @@ abstract class CartService implements CartServiceContract
 
     protected ?Money $subTotal = null;
     protected ?Money $taxTotal = null;
+    protected ?Money $discountTotal = null;
     protected ?Money $total = null;
 
 
@@ -98,6 +99,12 @@ abstract class CartService implements CartServiceContract
             $this->setError($attribute.' not present in CartService');
             return null;
         }
+    }
+
+    public function setAttribute(int|string $attribute, mixed $data):void
+    {
+        throw_unless(property_exists($this, $attribute),$attribute.' not present in CartService');
+        $this->$attribute = $data;
     }
 
 

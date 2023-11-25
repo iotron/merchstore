@@ -25,6 +25,7 @@ interface CartServiceContract
     public function setSubTotal(Money $subTotal);
 
     public function getAttribute($attribute);
+    public function setAttribute(int|string $attribute, mixed $data):void;
 
 
     public function getProduct();

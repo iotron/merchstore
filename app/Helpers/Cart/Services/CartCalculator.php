@@ -13,8 +13,8 @@ class CartCalculator implements CartCalculatorContract
 {
 
 
-    private CartServiceContract $cartService;
-    private CartCouponService $couponService;
+    private ?CartServiceContract $cartService = null;
+    private ?CartCouponService $couponService = null;
     protected array $collectionBag=[];
     protected bool $hasCoupon = false;
     protected bool $validCoupon = false;
@@ -40,10 +40,10 @@ class CartCalculator implements CartCalculatorContract
 
     public function getCouponModel(): ?Model
     {
-        return $this->couponService->getModel();
+        return !is_null($this->couponService) ? $this->couponService->getModel() : null;
     }
 
-    public function calculate():array
+    public function calculate()
     {
 
         // Base Calculation
@@ -83,6 +83,8 @@ class CartCalculator implements CartCalculatorContract
         $this->cartService->setTotal($subTotal->addOnce($totalTax));
         $this->cartService->setMeta($collectionBag->toArray());
 
+        $totalDiscount = new Money(0.0);
+
         // Calculate Discount If Present
         if ($this->hasCoupon & $this->validCoupon)
         {
@@ -90,10 +92,26 @@ class CartCalculator implements CartCalculatorContract
             $voucherValidator = new VoucherValidator($this->cartService);
             if ($voucherValidator->validate())
             {
-                dd('validate');
-                // Here we can calculate Discount For Products
-            }
+                $result = $voucherValidator->getDiscount();
+                if ($result->count())
+                {
+                    // Here we can calculate Discount For Products
+                    $cartMeta = $this->cartService->getAttribute('meta');
 
+                    foreach ($cartMeta as $item)
+                    {
+                        $totalDiscount->add($item['discount']);
+                    }
+                }
+            }
+        }
+
+        if ($totalDiscount->getAmount() > 0)
+        {
+            $this->cartService->setAttribute('discountTotal',$totalDiscount);
+            $totalWillBe = new Money(0.0);
+            $totalWillBe->add($subTotal)->add($totalTax)->subtract($totalDiscount);
+            $this->cartService->setAttribute('total',$totalWillBe);
         }
 
 

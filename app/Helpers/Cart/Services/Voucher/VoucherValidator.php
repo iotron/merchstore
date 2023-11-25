@@ -19,6 +19,9 @@ class VoucherValidator
     protected ?Voucher $voucher = null;
     protected array $conditions = [];
     private ConditionValidator $conditionValidator;
+    protected DiscountCalculator $discountCalculator;
+
+    protected array $statusBag = [];
 
 
     public function __construct(CartServiceContract $cartService)
@@ -28,6 +31,7 @@ class VoucherValidator
         $this->voucher = $this->voucherCode->voucher;
         $this->conditions = $this->voucher->conditions;
         $this->conditionValidator = new ConditionValidator($this->cartService);
+        $this->discountCalculator = new DiscountCalculator($this->cartService,$this);
     }
 
     public function validate():bool
@@ -38,6 +42,21 @@ class VoucherValidator
 
         return $this->validateConditions();
 //        dd($this,$this->cartService);
+    }
+
+    public function setStatus(string $product_sku,bool $status): void
+    {
+        $this->statusBag[$product_sku] = $status;
+    }
+
+    public function getStatus(?string $product_sku = null):array|bool
+    {
+        return is_null($product_sku) ? $this->statusBag : $this->statusBag[$product_sku];
+    }
+
+    public function getVoucher():?Voucher
+    {
+        return $this->voucher;
     }
 
     protected function validateConditions():bool
@@ -93,18 +112,22 @@ class VoucherValidator
             if (empty($attributeValue))
             {
                 $this->cartService->setError($condition['attribute']."'s value not resolved");
+                $this->statusBag [$product->sku] = false;
+            }else{
+                $this->statusBag [$product->sku] = true;
             }
 
-            if ($this->conditionValidator->validate($condition,$attributeValue,$product))
+            if (!$this->conditionValidator->validate($condition,$attributeValue,$product))
             {
-
+                $this->cartService->setError($condition['attribute']."'s value not resolved");
+                $this->statusBag [$product->sku] = false;
+            }else{
+                $this->statusBag [$product->sku] = true;
             }
-
-
-
 
 
         });
+
 
 //        dd('sdds',$this->conditions);
         return true;
@@ -191,6 +214,21 @@ class VoucherValidator
 
         }
         return null;
+    }
+
+
+    public function getDiscount()
+    {
+        return $this->cartService->products()->each(function (Product $product)  {
+            return match ($this->voucher->action_type) {
+                'by_percent' => $this->discountCalculator->byProductPercentage($product),
+                'by_fixed' => $this->discountCalculator->byProductFixed($product),
+                'cart_fixed' => $this->discountCalculator->byCartFixed($product),
+                'cart_percent' => $this->discountCalculator->byCartPercentage($product),
+                default => new Money(0),
+            };
+        });
+
     }
 
 

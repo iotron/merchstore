@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 interface CartCalculatorContract
 {
 
-    public function calculate(): array;
+    public function calculate();
 
     public function getCouponModel(): ?Model;
 

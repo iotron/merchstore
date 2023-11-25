@@ -11,26 +11,26 @@ class Cart extends CartService
     public function getMeta(): array
     {
         $cartCalculator = new CartCalculator($this);
-
-        $data = $cartCalculator->calculate();
+        $cartCalculator->calculate();
+        $data = $this->meta;
 
         return  [
             'empty' => $this->isEmpty(),
             'changed' => $this->changed,
             'coupon' => $this->couponCode,
             'validCoupon' => $this->validCoupon,
-            'couponModel' => $cartCalculator->getCouponModel(),
-            'subtotal' =>  $data['subTotal'],
-            'tax' => $data['tax'],
-            'discount' => $data['discount'],
-            'total' => $data['amount'],
+            'couponModel' => $this->couponModel,
+            'subtotal' =>  $this->subTotal->getAmount(),
+            'tax' => $this->taxTotal->getAmount(),
+            'discount' => !is_null($this->discountTotal) ? $this->discountTotal->getAmount() : null,
+            'total' => $this->total->getAmount(),
             'quantity' => $this->getTotalQuantity(),
-            'subtotal_formatted' => $data['subTotal']->formatted(),
-            'tax_formatted' => $data['tax']->formatted(),
-            'discount_formatted' => $data['discount']->formatted(),
-            'total_formatted' => $data['amount']->formatted(),
+            'subtotal_formatted' => $this->subTotal->formatted(),
+            'tax_formatted' => $this->taxTotal->formatted(),
+            'discount_formatted' => !is_null($this->discountTotal) ? $this->discountTotal->formatted() :null,
+            'total_formatted' => $this->total->formatted(),
             'error' => $this->getErrors(),
-            'products' => collect($data['product'])
+            'products' => collect($this->meta)->get('product')
         ];
 
 
