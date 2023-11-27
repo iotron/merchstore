@@ -245,25 +245,47 @@ class OrderCreationService
 
         $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
         $customShippingProvider = ShippingProvider::firstWhere('code','custom');
+        $orderProducts = $this->order->orderProducts;
         foreach($AddressGroup as $key => $group)
         {
             foreach ($group as $value)
             {
-                $orderShipment = $this->order->shipments()->create([
-                    'total_quantity' => $value['quantity'],
-                    'pickup_address' => empty($key) ? null : $value['model']->address_id,
-                    'delivery_address' => $shippingAddress->id,
-                    'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
-                    'cod' => $this->isCod,
-                    'status' => OrderShipment::PROCESSING,
-                ]);
+                foreach ($orderProducts as $item)
+                {
 
-                $orderInvoice = $this->order->invoices()->create([
-                    'order_shipment_id' => $orderShipment->id
-                ]);
+//                    $orderShipment = $item->shipment()->create([
+//                        'total_quantity' => $value['quantity'],
+//                        'pickup_address' => empty($key) ? null : $value['model']->address_id,
+//                        'delivery_address' => $shippingAddress->id,
+//                        'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
+//                        'cod' => $this->isCod,
+//                        'status' => OrderShipment::PROCESSING,
+//                    ]);
 
-                $orderShipment->invoice_uid = $orderInvoice->id;
-                $orderShipment->save();
+
+                    $orderShipment = $item->shipment()->create([
+                        'order_id' => $this->order->id,
+                        'total_quantity' => $value['quantity'],
+                        'pickup_address' => empty($key) ? null : $value['model']->address_id,
+                        'delivery_address' => $shippingAddress->id,
+                        'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
+                        'cod' => $this->isCod,
+                        'status' => OrderShipment::PROCESSING,
+                    ]);
+
+
+
+                    $orderInvoice = $orderShipment->invoice()->create([
+                        'order_id' => $this->order->id
+                    ]);
+
+                    $orderShipment->invoice_uid = $orderInvoice->id;
+                    $orderShipment->save();
+
+
+                }
+
+
 
             }
 
