@@ -3,15 +3,17 @@
 namespace App\Services\PaymentService\Providers\Stripe\Actions;
 
 use App\Models\Customer\Payment;
+use App\Models\Order\Order;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
+use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentServiceContract;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\PaymentIntent;
 use Stripe\StripeClient;
 
-class OrderAction implements PaymentProviderMethodContract
+class OrderAction implements PaymentProviderOrderContract
 {
 
     protected StripeClient $api;
@@ -32,8 +34,9 @@ class OrderAction implements PaymentProviderMethodContract
      * @return Session|PaymentIntent|null
      * @throws ApiErrorException
      */
-    public function create(array $data): Session|null|PaymentIntent
+    public function create(Order $order): Session|null|PaymentIntent
     {
+
 
         // Process Payment Intent
         if ($this->paymentProvider->isIntent())

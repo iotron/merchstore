@@ -2,11 +2,14 @@
 
 namespace App\Services\PaymentService\Providers\CashOnDelivery\Actions;
 
+use App\Models\Order\Order;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
+use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
+use App\Services\PaymentService\Support\PaymentServiceHelper;
 use Illuminate\Support\Str;
 
-class OrderAction implements PaymentProviderMethodContract
+class OrderAction implements PaymentProviderOrderContract
 {
     protected PaymentProviderContract $paymentProvider;
 
@@ -16,13 +19,30 @@ class OrderAction implements PaymentProviderMethodContract
     }
 
 
-    /**
-     * @param array $data
-     * @return mixed
-     */
-    public function create(array $data)
+
+    public function create(Order $order):mixed
     {
-        return array_merge($data,['id' => 'order_'.Str::random(5)]);
+        $receipt = PaymentServiceHelper::newReceipt();
+
+        return [
+            'id' => 'order_'.Str::replace('receipt_','',$receipt),
+            'receipt' => $receipt,
+            'amount' => $order->total->getAmount(),
+            'currency' => $order->total->getCurrency()->getCurrency(),
+
+            'notes' => [
+                'customer_name' => $order->customer->name,
+                'customer_email' => $order->customer->email,
+                'customer_contact' => $order->customer->contact,
+                // column
+                'voucher' => $order->voucher,
+                'quantity' => $order->quantity,
+                'subtotal' => $order->subtotal->getAmount(),
+                'discount' => $order->discount->getAmount(),
+                'tax' => $order->tax->getAmount(),
+                'total' => $order->total->getAmount(),
+            ],
+        ];
     }
 
     /**

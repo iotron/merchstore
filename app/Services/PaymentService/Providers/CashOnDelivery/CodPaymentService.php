@@ -4,6 +4,7 @@ namespace App\Services\PaymentService\Providers\CashOnDelivery;
 
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
+use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderPayoutContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderRefundContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationContract;
@@ -51,10 +52,6 @@ class CodPaymentService implements PaymentProviderContract
         return $this->error;
     }
 
-    public function order(): PaymentProviderMethodContract
-    {
-        return new OrderAction($this);
-    }
 
     public function payment(): PaymentProviderMethodContract
     {
@@ -76,4 +73,11 @@ class CodPaymentService implements PaymentProviderContract
         // TODO: Implement payout() method.
     }
 
+    /**
+     * @return PaymentProviderOrderContract
+     */
+    public function order(): PaymentProviderOrderContract
+    {
+        return new OrderAction($this);
+    }
 }

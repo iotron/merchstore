@@ -6,6 +6,7 @@ use App\Helpers\Cart\Cart;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\OrderStoreRequest;
 use App\Models\Localization\Address;
+use App\Models\Order\Order;
 use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderConfirmService;
 use App\Services\OrderService\OrderCreationService;
@@ -91,8 +92,39 @@ class OrderActionController extends Controller
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         }
         $orderCreationService = new OrderCreationService($this->paymentService,$cart);
+        $uuid = $this->generateUniqueID();
+        if (is_null($uuid))
+        {
+            return response()->json([
+                'success' => true,
+                'message' => 'unable to generate unique order id, try again!',
+            ],409);
+        }
+        $orderCreationService->checkout($uuid,$shippingAddress,$billingAddress);
 
-        return $orderCreationService->checkout($shippingAddress,$billingAddress);
+
+        // redirect instead json response
+        if (app()->isLocal())
+        {
+            // return Application Checkout link Route
+            return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
+                'success' => true,
+                'message' => 'order placed successfully',
+                'payment_provider' => [
+                    'name' => $this->paymentService->getProviderModel()->name,
+                    'code' => $this->paymentService->getProviderModel()->code,
+                ],
+                'order' => [
+                    'uuid' => $orderCreationService->getOrder()->uuid,
+                    'status' => $orderCreationService->getOrder()->status,
+                ],
+                'redirect' => ($orderCreationService->isCod) ?
+                    config('app.client_url').'/orders/'. $orderCreationService->getOrder()->uuid : route('payment.visit', ['payment' => $orderCreationService->getOrder()->payment->receipt]),
+            ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $orderCreationService->getOrder()->payment()];
+
+        }else{
+            // redirect urls
+        }
 
     }
 
@@ -131,6 +163,31 @@ class OrderActionController extends Controller
 
 
 
+    }
+
+
+
+
+
+
+    protected function generateUniqueID() {
+        $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
+        $prefix = now()->format('dHis'); // Timestamp prefix
+        $maxAttempts = 10;
+        $attempt = 0;
+
+        do {
+            $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
+            $id = $prefix . $random;
+            $attempt++;
+        } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
+
+        if ($attempt == $maxAttempts) {
+            //throw new Exception('Unable to generate unique ID');
+            return null;
+        }
+
+        return $id;
     }
 
 

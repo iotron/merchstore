@@ -4,6 +4,7 @@ namespace App\Services\PaymentService\Providers\Stripe;
 
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
+use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderPayoutContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderRefundContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationContract;
@@ -140,9 +141,9 @@ class StripePaymentService implements PaymentProviderContract,StripePaymentServi
 
 
     /**
-     * @return PaymentProviderMethodContract
+     * @return PaymentProviderOrderContract
      */
-    public function order(): PaymentProviderMethodContract
+    public function order(): PaymentProviderOrderContract
     {
         return new OrderAction($this->api,$this);
     }

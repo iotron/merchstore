@@ -11,6 +11,7 @@ use App\Models\Product\Product;
 use App\Models\Promotion\Sale;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\PaymentService\PaymentService;
+use App\Services\PaymentService\Support\PaymentServiceHelper;
 use App\Services\ShippingService\ShippingService;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as SimpleQR;
@@ -25,7 +26,7 @@ class TestController extends Controller
     {
 
 
-        dd($this->generateUniqueID());
+        dd(PaymentServiceHelper::newReceipt());
 
 
 //

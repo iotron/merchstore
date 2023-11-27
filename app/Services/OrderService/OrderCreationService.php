@@ -30,7 +30,7 @@ class OrderCreationService
     protected Authenticatable|Customer $customer;
     protected string $provider;
     protected ?Order $order=null;
-    protected bool $isCod = false;
+    public bool $isCod = false;
     protected array $stockBag = [];
 
     public function __construct(PaymentServiceContract|null $paymentService, Cart $cart)
@@ -45,18 +45,26 @@ class OrderCreationService
         $this->isCod = $this->paymentService->getProviderModel()->code == PaymentProvider::COD ;
     }
 
-    public function checkout(Address $shippingAddress,Address $billing_address): \Illuminate\Http\JsonResponse|array
+
+    public function isCod ():bool
+    {
+        return $this->isCod;
+    }
+
+    public function getOrder(): ?Order
+    {
+        return $this->order;
+    }
+
+
+
+
+
+    public function checkout(string $uu_id,Address $shippingAddress,Address $billing_address): \Illuminate\Http\JsonResponse|array
     {
 
 
-        $uuid = $this->generateUniqueID();
-        if (is_null($uuid))
-        {
-            return response()->json([
-                'success' => true,
-                'message' => 'unable to generate unique order id, try again!',
-            ],409);
-        }
+        $uuid = $uu_id;
 
         // Create An Pending Order Based On Newly Created Payment
         $this->order =  $this->customer->orders()->create([
@@ -81,20 +89,24 @@ class OrderCreationService
 
 
 
-        // Prepare An Order Array (Provider Case) (code shorten)
-        $orderBuilder = new OrderBuilder($this->paymentService);
-        $orderArray = $orderBuilder
-            ->model(null)
-            ->receipt($this->receipt)
-            ->items($this->getProductArray())
-            ->cartMeta($this->cartMeta)
-            ->bookingName($this->customer->name)
-            ->bookingEmail($this->customer->email)
-            ->bookingContact($this->customer->contact)
-            ->getArray();
+
+
+//        // Prepare An Order Array (Provider Case) (code shorten)
+//        $orderBuilder = new OrderBuilder($this->paymentService);
+//        $orderArray = $orderBuilder
+//            ->model(null)
+//            ->receipt($this->receipt)
+//            ->items($this->getProductArray())
+//            ->cartMeta($this->cartMeta)
+//            ->bookingName($this->customer->name)
+//            ->bookingEmail($this->customer->email)
+//            ->bookingContact($this->customer->contact)
+//            ->getArray();
 
         // Create New Order Via Payment Provider Based On Order Array (Provider Case)
-        $newOrder = $this->paymentService->provider()->order()->create($orderArray);
+        $newOrder = $this->paymentService->provider()->order()->create($this->order);
+
+
 
         // Create An Pending Payment Based On Provider New Order Data (DB Case)
         $payment = $this->createAnPendingPayment($newOrder);

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services\OrderService\Supports\Order\Provider;
+namespace App\Services\PaymentService\Providers\Stripe\Support;
 
+use App\Services\OrderService\Supports\Order\OrderBuilderContract;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentServiceContract;
-use App\Services\OrderService\Supports\Order\OrderBuilderContract;
 use Illuminate\Database\Eloquent\Model;
 
-class StripeOrder implements OrderBuilderContract
+class StripeOrder
 {
 
     protected ?string $receipt = null;
