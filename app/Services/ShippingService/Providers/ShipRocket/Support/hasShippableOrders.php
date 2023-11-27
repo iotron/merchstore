@@ -2,10 +2,94 @@
 
 namespace App\Services\ShippingService\Providers\ShipRocket\Support;
 
+use App\Models\Order\Order;
+use App\Models\Order\OrderShipment;
 use Illuminate\Support\Facades\Validator;
 
 trait hasShippableOrders
 {
+
+
+
+    public function format(OrderShipment $orderShipment)
+    {
+        dd($this->getOrderableArrayFromOrderModel($orderShipment));
+    }
+
+
+    protected function getOrderableArrayFromOrderModel(OrderShipment $orderShipment):array
+    {
+        $orderShipment->loadMissing([
+           'order',
+            'order.billingAddress',
+            'order.billingAddress.country',
+            'pickupAddress',
+            'pickupAddress.country',
+            'deliveryAddress',
+            'deliveryAddress.country',
+            'orderProducts',
+           // 'shippingProvider'
+        ]);
+
+        dd($orderShipment);
+
+        $order = $orderShipment->order;
+        //$order->loadMissing('customer','orderProducts','billingAddress','billingAddress.country','shippingAddress','shippingAddress.country');
+
+
+
+        $orderItems = $orderShipment->orderProducts->map(function ($item){
+                return [
+                    'name'          => $item->product->name,
+                    'sku'           => $item->product->sku,
+                    'units'         => $item->quantity,
+                    'selling_price' => $item->total->getAmount(),
+                    'discount'      => $item->discount->getAmount(),
+                    'tax'           => $item->tax->getAmount()
+                ];
+        })->toArray();
+
+
+        return [
+            'order_id'                  => $order->id,
+            'order_date'                => $order->created_at->format('Y-m-d H:i'),
+            'order_items'               => $orderItems,
+
+            // From Shipment
+            'pickup_location'           => $orderShipment->pickupAddress->address_1,
+
+
+
+            // Billing
+            'billing_customer_name'     => $order->billingAddress->name,
+            'billing_last_name'         => '',
+            'billing_email'             => $order->customer->email,
+            'billing_phone'             => $order->billingAddress->contact,
+            'billing_address'           => $order->billingAddress->address_1,
+            'billing_address_2'         => $order->billingAddress->address_2,
+            'billing_city'              => $order->billingAddress->city,
+            'billing_pincode'           => $order->billingAddress->postal_code,
+            'billing_state'             => $order->billingAddress->state,
+            'billing_country'           => $order->billingAddress->country->name,
+            // Shipping Is Billing
+            'shipping_is_billing'       => $order->shipping_is_billing,
+            // Shipping
+            'shipping_customer_name'    => $order->shippingAddress->name,
+            'shipping_last_name'        => '',
+            'shipping_email'            => $order->customer->email,
+            'shipping_phone'            => $order->deliveryAddress->contact,
+            'shipping_address'          => $order->deliveryAddress->address_1,
+            'shipping_address_2'        => $order->deliveryAddress->address_2,
+            'shipping_city'             => $order->deliveryAddress->city,
+            'shipping_pincode'          => $order->deliveryAddress->postal_code,
+            'shipping_state'            => $order->deliveryAddress->state,
+            'shipping_country'          => $order->deliveryAddress->country->name,
+
+        ];
+    }
+
+
+
 
 
 
