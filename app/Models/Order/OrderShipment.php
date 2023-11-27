@@ -51,6 +51,7 @@ class OrderShipment extends Model
 
         'pickup_address',
         'delivery_address',
+        'order_id'
 
     ];
 
@@ -65,17 +66,17 @@ class OrderShipment extends Model
 
     public function pickupAddress(): BelongsTo
     {
-        return $this->belongsTo(Address::class, 'pickup_address');
+        return $this->belongsTo(Address::class, 'pickup_address','id');
     }
 
     public function deliveryAddress(): BelongsTo
     {
-        return $this->belongsTo(Address::class, 'delivery_address');
+        return $this->belongsTo(Address::class, 'delivery_address','id');
     }
 
     public function orderProducts(): BelongsToMany
     {
-        return $this->belongsToMany(OrderProduct::class, 'product_shipments')->withPivot('product_quantity');
+        return $this->belongsToMany(OrderProduct::class, 'shipment_products','order_shipment_id')->withPivot('order_id');
     }
 
     public function order(): BelongsTo
@@ -85,7 +86,12 @@ class OrderShipment extends Model
 
     public function shippingProvider(): BelongsTo
     {
-        return $this->belongsTo(ShippingProvider::class);
+        return $this->belongsTo(ShippingProvider::class,'shipping_provider_id','id');
+    }
+
+    public function invoice()
+    {
+        return $this->belongsTo(OrderInvoice::class,'order_shipment_id','id');
     }
 
 

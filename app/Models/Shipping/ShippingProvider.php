@@ -2,6 +2,7 @@
 
 namespace App\Models\Shipping;
 
+use App\Models\Order\OrderShipment;
 use App\Services\ShippingService\Providers\Custom\CustomShippingService;
 use App\Services\ShippingService\Providers\Pickrr\PickrrShippingService;
 use App\Services\ShippingService\Providers\ShipRocket\ShipRocketShippingService;
@@ -38,6 +39,10 @@ class ShippingProvider extends Model
     ];
 
 
+    public function shipments()
+    {
+        return $this->hasMany(OrderShipment::class,'shipping_provider_id','id');
+    }
 
 
 

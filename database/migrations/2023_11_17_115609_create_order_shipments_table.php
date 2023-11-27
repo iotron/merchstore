@@ -39,6 +39,16 @@ return new class extends Migration
             $table->foreignId('shipping_provider_id')->nullable()->constrained('shipping_providers')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
+
+
+
+        Schema::create('shipment_products', function (Blueprint $table) {
+            $table->foreignId('order_shipment_id')->constrained('order_shipments')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('order_product_id')->constrained('order_products')->cascadeOnUpdate()->cascadeOnDelete();
+        });
+
+
+
     }
 
     /**
@@ -47,5 +57,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('order_shipments');
+        Schema::dropIfExists('shipment_products');
     }
 };

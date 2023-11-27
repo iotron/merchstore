@@ -25,7 +25,7 @@ class OrderInvoice extends Model
 
     public function shipment()
     {
-        return $this->belongsTo(OrderShipment::class);
+        return $this->belongsTo(OrderShipment::class,'order_shipment_id','id');
     }
 
 

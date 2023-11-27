@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property $address_1;
+ * @property $address_2;
+ */
 class Address extends Model
 {
     use HasFactory;
@@ -56,7 +60,7 @@ class Address extends Model
 
     public function country(): BelongsTo
     {
-        return $this->belongsTo(Country::class, 'iso_code_2', 'country_code');
+        return $this->belongsTo(Country::class,  'country_code','iso_code_2');
     }
 
 

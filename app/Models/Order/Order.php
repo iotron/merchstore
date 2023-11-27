@@ -15,6 +15,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\Order\OrderShipment;
 use App\Models\Order\OrderInvoice;
 
+/**
+ * @property $shipping_is_billing;
+ * @property $created_at;
+ * @property $id;
+ */
 class Order extends Model
 {
     use HasFactory;

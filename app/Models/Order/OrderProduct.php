@@ -43,4 +43,10 @@ class OrderProduct extends Model
     }
 
 
+    public function shipment()
+    {
+        return $this->belongsToMany(OrderShipment::class, 'shipment_products','order_product_id')->withPivot('order_id');
+    }
+
+
 }
