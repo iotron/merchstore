@@ -26,8 +26,12 @@ return new class extends Migration
             $table->boolean('featured')->default(false);
             $table->string('status')->default('draft');
 
+            $table->boolean('is_returnable')->default(false);
+            $table->dateTime('return_window')->nullable();
+
+
             // visibility control for vendor
-            $table->boolean('visible_individually')->default(false);
+           // $table->boolean('visible_individually')->default(false);
 
             $table->float('base_price', 10, 2, true)->default(0.00);
 

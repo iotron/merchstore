@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('uuid')->unique();
+            $table->string('uuid');
             $table->integer('amount');
             $table->integer('subtotal'); // subtotal  base_price
             $table->integer('discount'); // subtotal discount
@@ -37,6 +37,7 @@ return new class extends Migration
             // delivery/shipping address
             $table->foreignId('shipping_address_id')->nullable()->constrained('addresses')->cascadeOnUpdate()->cascadeOnDelete();
 
+            $table->unique(['uuid','customer_id']);
 
 
             $table->timestamps();
