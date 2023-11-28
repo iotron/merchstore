@@ -18,7 +18,7 @@ class AddressFactory extends Factory
     {
         return [
             'name' => fake()->name,
-            'contact' => fake()->phoneNumber,
+            'contact' => fake()->numerify('##########'),
             'alternate_contact' => fake()->optional()->phoneNumber,
             'type' => fake()->randomElement(['Home', 'Work', 'Other']),
             'address_1' => fake()->streetAddress,
@@ -29,7 +29,7 @@ class AddressFactory extends Factory
             'state' => fake()->state,
             'default' => fake()->boolean,
             'priority' => fake()->numberBetween(1, 10),
-            'country_code' => fake()->optional()->countryCode,
+            'country_code' => 'IN',
         ];
     }
 }

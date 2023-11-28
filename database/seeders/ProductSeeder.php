@@ -62,25 +62,12 @@ class ProductSeeder extends Seeder
 
 
                     // Add Stock
-                    $stock = $product->stocks()->create([
+                    $stock1 = $product->stocks()->create([
                         'init_quantity' => fake()->numberBetween(200, 600),
                         'sold_quantity' => 0,
                     ]);
-                    $stock->addresses()->create([
-                        'name' => fake()->word.' Address',
-                        'contact' => fake()->numerify('##########'),
-                        'alternate_contact' => '',
-                        'type' => 'Home',
-                        'address_1' => fake()->address,
-                        'address_2' => 'Line Two',
-                        'landmark' => '',
-                        'city' => 'Kolkata',
-                        'postal_code' => 700001,
-                        'state' => 'wb',
-                        'default' => 1,
-                        'priority' => 1,
-                        'country_code' => 'IN',
-                    ]);;
+                    $stock1Address = $stock1->addresses()->create(Address::factory()->raw());
+                    $stock1->update(['address_id' => $stock1Address->id]);
 
 
                     $stock2 = $product->stocks()->create([
@@ -88,10 +75,15 @@ class ProductSeeder extends Seeder
                         'sold_quantity' => 0,
                     ]);
 
+                    $stock2Address = $stock2->addresses()->create(Address::factory()->raw());
+                    $stock2->update(['address_id' => $stock2Address->id]);
+
                     $stock3 = $product->stocks()->create([
                         'init_quantity' => fake()->numberBetween(200, 600),
                         'sold_quantity' => 0,
                     ]);
+                    $stock3Address = $stock3->addresses()->create(Address::factory()->raw());
+                    $stock3->update(['address_id' => $stock3Address->id]);
 
 
                     // Attach Filter Options
