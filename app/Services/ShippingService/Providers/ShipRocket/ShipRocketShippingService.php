@@ -3,7 +3,9 @@
 namespace App\Services\ShippingService\Providers\ShipRocket;
 
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
+use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
+use App\Services\ShippingService\Providers\ShipRocket\Actions\CourierAction;
 use App\Services\ShippingService\Providers\ShipRocket\Actions\OrderAction;
 
 class ShipRocketShippingService implements ShippingProviderContract
@@ -55,9 +57,9 @@ class ShipRocketShippingService implements ShippingProviderContract
         return new OrderAction($this->api);
     }
 
-    public function courier()
+    public function courier():ShippingProviderCourierContract
     {
-        // TODO: Implement courier() method.
+        return new CourierAction($this->api);
     }
 
     public function return()

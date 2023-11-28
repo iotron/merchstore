@@ -2,6 +2,8 @@
 
 namespace App\Services\ShippingService\Providers\ShipRocket\Actions;
 
+use App\Models\Order\Order;
+use App\Models\Order\OrderShipment;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Providers\ShipRocket\ShipRocketApi;
 use App\Services\ShippingService\Providers\ShipRocket\Support\hasShippableOrders;
@@ -21,21 +23,21 @@ class OrderAction implements ShippingProviderActionContract
     /**
      * @throws RequestException
      */
-    public function create(array $data)
+    public function create(OrderShipment $orderShipment)
     {
-        $response = $this->api->http()
-            ->withBody([],'application/json')
-            ->post($this->api->getBaseUrl().'orders/create/adhoc')
+
+
+        $response = $this->api->httpPost('orders/create/adhoc',$this->format($orderShipment))
             ->throw()
             ->json();
-        return $response->body();
+        return $response;
 
     }
 
     public function all(): string
     {
         $response = $this->api->http()->get($this->api->getBaseUrl().'orders');
-        return $response->body();
+        return $response->json();
     }
 
     public function fetch(int|string $id): string

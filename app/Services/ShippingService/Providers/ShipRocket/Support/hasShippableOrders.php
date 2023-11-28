@@ -11,32 +11,32 @@ trait hasShippableOrders
 
 
 
-    public function format(OrderShipment $orderShipment)
+    public function format(OrderShipment $orderShipment):array
     {
-        dd($this->getOrderableArrayFromOrderModel($orderShipment));
+        return $this->getOrderableArrayFromOrderModel($orderShipment);
     }
 
 
     protected function getOrderableArrayFromOrderModel(OrderShipment $orderShipment):array
     {
-        $orderShipment->loadMissing([
-           'order',
-            'order.billingAddress',
-            'order.billingAddress.country',
-            'pickupAddress',
-            'pickupAddress.country',
-            'deliveryAddress',
-            'deliveryAddress.country',
-            'orderProducts',
-           // 'shippingProvider'
-        ]);
+//        $orderShipment->loadMissing([
+//           'order',
+//            'order.billingAddress',
+//            'order.billingAddress.country',
+//            'pickupAddress',
+//            'pickupAddress.country',
+//            'deliveryAddress',
+//            'deliveryAddress.country',
+//            'orderProducts',
+//           // 'shippingProvider'
+//        ]);
+//
+//        dd($orderShipment);
 
-        dd($orderShipment);
+        $orderShipment->loadMissing('order','orderProducts','orderProducts.product','deliveryAddress','deliveryAddress.country');
 
         $order = $orderShipment->order;
-        //$order->loadMissing('customer','orderProducts','billingAddress','billingAddress.country','shippingAddress','shippingAddress.country');
-
-
+        $order->loadMissing('customer','orderProducts','billingAddress','billingAddress.country');
 
         $orderItems = $orderShipment->orderProducts->map(function ($item){
                 return [
@@ -49,15 +49,25 @@ trait hasShippableOrders
                 ];
         })->toArray();
 
-
         return [
             'order_id'                  => $order->id,
             'order_date'                => $order->created_at->format('Y-m-d H:i'),
             'order_items'               => $orderItems,
+            'payment_method'            => ($orderShipment->cod) ? 'COD' : 'Prepaid',
+            'shipping_charges'          => $orderShipment->charge->getAmount(),
+            'giftwrap_charges'          => 0.00,
+            'transaction_charges'       => 0.00,
+            'total_discount'            => $order->discount->getAmount(),
+            'sub_total'                 => $order->subtotal->getAmount() ,
 
             // From Shipment
             'pickup_location'           => $orderShipment->pickupAddress->address_1,
-
+            //'channel_id'                => $order->channel_id,
+            'comment'                   => '',
+            'length'                    => $orderShipment->length,
+            'breadth'                   => $orderShipment->breadth,
+            'height'                    => $orderShipment->height,
+            'weight'                    => $orderShipment->weight ,
 
 
             // Billing
@@ -74,16 +84,16 @@ trait hasShippableOrders
             // Shipping Is Billing
             'shipping_is_billing'       => $order->shipping_is_billing,
             // Shipping
-            'shipping_customer_name'    => $order->shippingAddress->name,
+            'shipping_customer_name'    => $orderShipment->deliveryAddress->name,
             'shipping_last_name'        => '',
             'shipping_email'            => $order->customer->email,
-            'shipping_phone'            => $order->deliveryAddress->contact,
-            'shipping_address'          => $order->deliveryAddress->address_1,
-            'shipping_address_2'        => $order->deliveryAddress->address_2,
-            'shipping_city'             => $order->deliveryAddress->city,
-            'shipping_pincode'          => $order->deliveryAddress->postal_code,
-            'shipping_state'            => $order->deliveryAddress->state,
-            'shipping_country'          => $order->deliveryAddress->country->name,
+            'shipping_phone'            => $orderShipment->deliveryAddress->contact,
+            'shipping_address'          => $orderShipment->deliveryAddress->address_1,
+            'shipping_address_2'        => $orderShipment->deliveryAddress->address_2,
+            'shipping_city'             => $orderShipment->deliveryAddress->city,
+            'shipping_pincode'          => $orderShipment->deliveryAddress->postal_code,
+            'shipping_state'            => $orderShipment->deliveryAddress->state,
+            'shipping_country'          => $orderShipment->deliveryAddress->country->name,
 
         ];
     }

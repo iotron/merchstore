@@ -3,7 +3,9 @@
 namespace App\Services\ShippingService\Providers\Custom;
 
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
+use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
+use App\Services\ShippingService\Providers\Custom\Actions\CourierAction;
 use App\Services\ShippingService\Providers\Custom\Actions\OrderAction;
 
 class CustomShippingService implements ShippingProviderContract
@@ -46,9 +48,10 @@ class CustomShippingService implements ShippingProviderContract
         return new OrderAction();
     }
 
-    public function courier()
+
+    public function courier(): ShippingProviderCourierContract
     {
-        // TODO: Implement courier() method.
+        return new CourierAction();
     }
 
     public function return()

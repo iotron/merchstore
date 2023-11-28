@@ -11,6 +11,7 @@ use App\Models\Product\Product;
 use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\ShippingService;
 use Filament\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
@@ -26,6 +27,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -254,6 +257,13 @@ class EditOrder extends EditRecord
                                 ->hint('Max: 100')
                                 ->maxLength(100),
                             Placeholder::make('charge')
+//                                ->hintAction(
+//                                    Action::make('fetchRate')
+//                                        ->requiresConfirmation()
+//                                        ->action(function (){
+//                                            dd("sdfsdf");
+//                                        })
+//                                )
                                 ->content(function ($state){
                                     return ($state instanceof Money) ? $state->formatted() : Money::format($state ?? 0.00) ;
                                 }),
@@ -337,21 +347,21 @@ class EditOrder extends EditRecord
 //
 ////                        Placeholder::make('charge')
 ////                            ->content(function (Model $record,Get $get,ShippingService $shippingService){
-////                                if (!is_null($get('weight')) && !is_null($get('length')) && !is_null($get('breadth')) && !is_null($get('height')))
-////                                {
-////                                    $shippingProviderModel = ShippingProvider::firstWhere('id',$get('shipping_provider_id'));
-////                                    $record->load([
-////                                        'pickupAddress',
-////                                        'deliveryAddress'
-////                                    ]);
-////                                    $pickUpPostalCode = $record->pickupAddress->postal_code;
-////                                    $deliveryPostalCode = $record->deliveryAddress->postal_code;
-//////                                $result = $shippingService->provider($shippingProviderModel->code)->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode);
-////                                    $result = $shippingService->provider('shiprocket')->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode,$get('weight'));
-////                                    return $result;
-////                                }else{
-////                                    return 'Please fill weight,length,breadth,height';
-////                                }
+//                                if (!is_null($get('weight')) && !is_null($get('length')) && !is_null($get('breadth')) && !is_null($get('height')))
+//                                {
+//                                    $shippingProviderModel = ShippingProvider::firstWhere('id',$get('shipping_provider_id'));
+//                                    $record->load([
+//                                        'pickupAddress',
+//                                        'deliveryAddress'
+//                                    ]);
+//                                    $pickUpPostalCode = $record->pickupAddress->postal_code;
+//                                    $deliveryPostalCode = $record->deliveryAddress->postal_code;
+////                                $result = $shippingService->provider($shippingProviderModel->code)->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode);
+//                                    $result = $shippingService->provider('shiprocket')->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode,$get('weight'));
+//                                    return $result;
+//                                }else{
+//                                    return 'Please fill weight,length,breadth,height';
+//                                }
 ////
 ////
 ////                            })

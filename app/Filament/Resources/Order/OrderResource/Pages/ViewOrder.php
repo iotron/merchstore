@@ -5,27 +5,110 @@ namespace App\Filament\Resources\Order\OrderResource\Pages;
 use App\Filament\Resources\Order\OrderResource;
 use App\Helpers\Money\Money;
 use App\Models\Order\Order;
+use App\Services\OrderService\OrderShippedService;
+use App\Services\ShippingService\ShippingService;
 use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Enums\FontWeight;
 use Filament\Infolists\Components\Tabs;
+use Illuminate\Database\Eloquent\Model;
 
 class ViewOrder extends ViewRecord
 {
     protected static string $resource = OrderResource::class;
+    public array $chargeInfo = [];
 
     protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),
+//            Action::make('calculate_charge')
+//                ->fillForm(function (?Model $record){
+//                    $record->load('shipments');
+//                    $data = $record->toArray();
+//                    $data['amount'] = ($data['amount'] instanceof Money) ? $data['amount']->getAmount() : $data['amount'];
+//                    $data['subtotal'] = ($data['subtotal'] instanceof Money) ? $data['subtotal']->getAmount() : $data['subtotal'];
+//                    $data['discount'] = ($data['discount'] instanceof Money) ? $data['discount']->getAmount() : $data['discount'];
+//                    $data['tax'] = ($data['tax'] instanceof Money) ? $data['tax']->getAmount() : $data['tax'];
+//                    $data['total'] = ($data['total'] instanceof Money) ? $data['total']->getAmount() : $data['total'];
+//                   return $data;
+//                })
+//                ->form([
+//                    TextInput::make('shipments.weight')
+//
+//
+//                ])
+//                ->action(function (array $data){
+//                    dd($data);
+//                })
+//                ->modalHeading('Shipping Charge Calculator'),
+
+//
+            Actions\Action::make('makeShipping')
+                ->color('success')
+                ->action(function (ShippingService $shippingService){
+                    $orderShipService = new OrderShippedService($this->record,$shippingService);
+                    if ($orderShipService->send())
+                    {
+                        // Successfully All Shipment Of This Order Are Placed Booking On Provider
+
+                    }else{
+                        Notification::make()
+                            ->title('Opps! Order not shipped..')
+                            ->body($orderShipService->getError())
+                            ->send();
+                    }
+                }),
+           Actions\Action::make('returnOrder')->color('danger')
+//               ->action(function (ShippingService $shippingService){
+//                   $orderReturnService = new OrderReturnService($this->record,$shippingService);
+//                   if ($orderReturnService->return())
+//                   {
+//                       // Successfully Return
+//
+//                   }else{
+//                       Notification::make()
+//                           ->title('Return Not Made!')
+//                           ->body($orderReturnService->getError())
+//                           ->send();
+//                   }
+//               }),
+
         ];
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public function mount(int|string $record): void
@@ -231,22 +314,133 @@ class ViewOrder extends ViewRecord
             RepeatableEntry::make('shipments')
                 ->hiddenLabel()
                 ->columnSpanFull()
-                //->contained(false)
-                ->columns(2)
                 ->schema([
-                    TextEntry::make('invoice_uid'),
-                    TextEntry::make('total_quantity'),
-                    TextEntry::make('tracking_id'),
-                    TextEntry::make('last_update'),
-                    TextEntry::make('status'),
-                    IconEntry::make('cod')->default(false)->boolean(),
-                    TextEntry::make('pickupAddress.address_1'),
-                    TextEntry::make('deliveryAddress.address_1'),
-                    TextEntry::make('shippingProvider.name'),
+
+
+                    Split::make([
+
+                        ViewEntry::make('pickup')
+                            ->view('filament-custom.forms.address-placeholder')
+                            ->getStateUsing(function (Model $record){
+                                return $record->pickupAddress()->first()->toArray();
+                            })
+                            ->viewData([
+                                'label' => 'Pickup Address',
+                                'textAlign' => 'right'
+                            ]),
+
+
+                        Section::make([
+                            TextEntry::make('total_quantity')->inlineLabel(),
+                            TextEntry::make('invoice_uid')->inlineLabel(),
+                            TextEntry::make('tracking_id')->inlineLabel()->default('--not found--'),
+                            TextEntry::make('status')->badge()->inlineLabel(),
+                        ])->columns(1),
+
+                        ViewEntry::make('delivery')
+                            ->view('filament-custom.forms.address-placeholder')
+                            ->getStateUsing(function (Model $record){
+                                return $record->deliveryAddress()->first()->toArray();
+                            })
+                            ->viewData([
+                                'label' => 'Delivery Address',
+                            ]),
+                    ]),
+
+                    TextEntry::make('shippingProvider.name')
+                        ->inlineLabel(),
+                    IconEntry::make('cod')
+                        ->inlineLabel()
+                        ->default(false)->boolean(),
+                    TextEntry::make('last_update')->inlineLabel(),
+
+                    Section::make('Package Info')
+                        ->columns(4)
+                        ->schema([
+                            TextEntry::make('weight')->default('0.00'),
+                            TextEntry::make('length')->default('0.00'),
+                            TextEntry::make('breadth')->default('0.00'),
+                            TextEntry::make('height')->default('0.00'),
+                            TextEntry::make('cost')
+                                ->hintAction(\Filament\Infolists\Components\Actions\Action::make('sdfads')
+                                    ->fillForm(function (?Model $record){
+                                        $data = $record->toArray();
+                                        $data['charge'] = ($data['charge'] instanceof Money) ? $data['charge']->getAmount() : $data['charge'];
+                                        return $data;
+                                    })
+                                    ->form([
+                                        TextInput::make('weight'),
+                                        TextInput::make('length'),
+                                        TextInput::make('breadth'),
+                                        TextInput::make('height'),
+                                    ])
+                                    ->action(function (array $data, ?Model $record,ShippingService $shippingService) use (&$chargeInfo){
+                                        $record->load('shippingProvider','pickupAddress','deliveryAddress');
+//                                        $service = $shippingService->provider($record->shippingProvider->code);
+                                        $service = $shippingService->provider('shiprocket');
+                                        $pickUpPostalCode = $record->pickupAddress->postal_code;
+                                        $deliveryPostalCode = $record->deliveryAddress->postal_code;
+//                                        $chargeInfo = $service->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode,$data);
+                                        $chargeInfo = $service->courier()->getCharge(711401,$deliveryPostalCode,$data,$record->cod);
+
+                                        $this->chargeInfo = $chargeInfo;
+                                    })
+                                    ->requiresConfirmation()
+
+                                ),
+
+
+                            $this->getCourierDisplayerInfoSchema()
+
+                        ]),
+
+
+
                 ])
 
 
         ];
+    }
+
+    private function getCourierDisplayerInfoSchema()
+    {
+        $bag = [];
+        if (!empty($this->chargeInfo))
+        {
+            foreach ($this->chargeInfo['data']['available_courier_companies'] as $company)
+            {
+
+             $bag[] =  Section::make('Courier Company Info')
+                        ->description('Charges Will Be')
+                        ->state($company)
+                        ->columns(3)
+
+                        ->schema([
+                                TextEntry::make('call_before_delivery')->state($company['call_before_delivery']),
+                                TextEntry::make('charge_weight')->state($company['charge_weight']),
+                                TextEntry::make('cod')->state($company['cod']),
+                                TextEntry::make('cod_charges')->state($company['cod_charges'])->hint(Money::format($company['cod_charges'])),
+                                TextEntry::make('cod_multiplier')->state($company['cod_multiplier']),
+                                TextEntry::make('courier_name')->state($company['courier_name']),
+                                TextEntry::make('coverage_charges')->state($company['coverage_charges'])->hint(Money::format($company['coverage_charges'])),
+                                TextEntry::make('estimated_delivery_days')->state($company['estimated_delivery_days']),
+                                TextEntry::make('etd')->state($company['etd']),
+                                TextEntry::make('etd_hours')->state($company['etd_hours']),
+                                TextEntry::make('freight_charge')->state($company['freight_charge'])->hint(Money::format($company['freight_charge'])),
+                                IconEntry::make('is_surface')->boolean(),
+                                TextEntry::make('message')->state($company['message']),
+                                TextEntry::make('min_weight')->state($company['min_weight']),
+                                TextEntry::make('rating')->badge()->state($company['rating']),
+                                TextEntry::make('rto_charges')->state($company['rto_charges'])->hint(Money::format($company['rto_charges'])),
+                                TextEntry::make('seconds_left_for_pickup')->state($company['seconds_left_for_pickup'])
+                        ]);
+
+            }
+
+        }
+
+        return Section::make($bag);
+
     }
 
 

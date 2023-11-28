@@ -51,6 +51,20 @@ class ShipRocketApi
     }
 
 
+    public function httpGet($url,?string $query = null)
+    {
+        $url = $this->getBaseUrl().$url;
+        return $this->http()->get($url,$query);
+
+    }
+
+
+    public function httpPost(string $url,array $data)
+    {
+        $url = $this->getBaseUrl().$url;
+        return $this->http()->post($url,$data);
+    }
+
 
 
 

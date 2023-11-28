@@ -2,6 +2,7 @@
 
 namespace App\Models\Order;
 
+use App\Helpers\Money\MoneyCast;
 use App\Observers\Order\ShipmentTrackActivityObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,7 +52,12 @@ class OrderShipment extends Model
 
         'pickup_address',
         'delivery_address',
-        'order_id'
+        'order_id',
+        'weight',
+        'length',
+        'breadth',
+        'height',
+        'charge',
 
     ];
 
@@ -59,7 +65,7 @@ class OrderShipment extends Model
         'tracking_data' => 'array',
         'shipment_track_activities' => 'array',
         'details' => 'array',
-
+        'charge' => MoneyCast::class
     ];
 
 
@@ -76,7 +82,7 @@ class OrderShipment extends Model
 
     public function orderProducts(): BelongsToMany
     {
-        return $this->belongsToMany(OrderProduct::class, 'shipment_products','order_shipment_id')->withPivot('order_id');
+        return $this->belongsToMany(OrderProduct::class, 'shipment_products','order_shipment_id');
     }
 
     public function order(): BelongsTo
