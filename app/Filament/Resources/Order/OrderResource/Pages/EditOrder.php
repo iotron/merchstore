@@ -9,14 +9,21 @@ use App\Models\Localization\Address;
 use App\Models\Order\OrderShipment;
 use App\Models\Product\Product;
 use App\Models\Shipping\ShippingProvider;
+use App\Services\ShippingService\ShippingService;
 use Filament\Actions;
 use Filament\Forms\Components\Builder;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Pages\EditRecord;
@@ -44,6 +51,8 @@ class EditOrder extends EditRecord
         $data['tax'] = ($data['tax'] instanceof Money) ? $data['tax']->getAmount() : $data['tax'];
         $data['total'] = ($data['total'] instanceof Money) ? $data['total']->getAmount() : $data['total'];
         $this->form->fill($data);
+
+
     }
 
 
@@ -151,10 +160,6 @@ class EditOrder extends EditRecord
 
                     TextInput::make('amount'),
                     TextInput::make('discount'),
-                    Toggle::make('has_tax')
-                        ->inline()
-                        ->default(false)
-                        ->lazy(),
                     TextInput::make('tax')
                         ->visible(function (Get $get){
                             return $get('has_tax');
@@ -173,73 +178,187 @@ class EditOrder extends EditRecord
     {
         return [
 
-            Select::make('billing_address_id')
-                ->relationship('billingAddress', 'name')
-                ->getOptionLabelFromRecordUsing(function ($record){
-                    return $record->name.' [ Address :- '.$record->address_1.' - (Type:-'.$record->type.' Postal:-'.$record->postal_code.' City :-'.$record->city.')]';
-                }),
 
-            Toggle::make('shipping_is_billing')
-                ->lazy()
-                ->default(function (?Model $record){
-                    if ($record)
-                    {
-                        return (bool) $record->shipping_address_id;
-                    }else{
-                        return false;
-                    }
-                }),
+            ViewField::make('billing_address_id')
+                ->view('filament-custom.forms.billing-shipping-order-address'),
 
-            Select::make('shipping_address_id')
-                ->relationship('shippingAddress', 'name')
-                ->getOptionLabelFromRecordUsing(function ($record){
-                    return $record->name.' [ Address :- '.$record->address_1.' - (Type:-'.$record->type.' Postal:-'.$record->postal_code.' City :-'.$record->city.')]';
-                })
-                ->lazy()
-                ->visible(function (Get $get){
-                    return $get('shipping_is_billing');
-                }),
 
 
             Repeater::make('shipments')
-                ->relationship('shipments')
+                ->label('List Of Shipments')
+                ->addable(false)
+                ->relationship('shipments',function ($query){
+                    return $query->with([
+                        'pickupAddress',
+                        'deliveryAddress',
+                        'shippingProvider'
+                    ]);
+                })
                 ->columns(2)
                 ->schema([
 
-                    TextInput::make('total_quantity')
-                        ->required()
-                        ->integer(),
+                    TextInput::make('tracking_id')
+                        ->label('Tracking ID')
+                        ->columnSpanFull()
+                        ->inlineLabel()
+                        ->placeholder('Enter Tracking Id/Code')
+                        ->hint('Max: 200')
+                        ->maxLength(200),
+
 
                     Select::make('status')
+                        ->inlineLabel()
                         ->options(OrderShipment::StatusOptions)
+                        ->columnSpanFull()
                         ->required(),
-                    TextInput::make('invoice_uid')
-                        ->maxLength(255),
-                    TextInput::make('tracking_id')
-                        ->maxLength(255),
 
-                    Select::make('shipping_provider_id')
-                        ->options(ShippingProvider::where('status',true)->get()->pluck('name','id')),
+                    Grid::make('left_bar')
+                        ->columnSpan(1)
+                        ->schema([
+                            Placeholder::make('shipping_provider')
+                                ->hiddenLabel()
+                                ->content(function (Model $record){
+                                    return 'Quantity : '.$record->total_quantity.' |Shipping Provider : '.$record->shippingProvider->name . '  ( Code: '.$record->shippingProvider->code.')';
+                                }),
 
-                    Select::make('pickup_address')
-                        ->options(Address::all()->pluck('name','id')),
 
-                    Select::make('delivery_address')
-                        ->options(function (Get $get){
-                            if ($get('customer_id'))
-                            {
-                                $customer = Customer::with('addresses')->firstWhere('id',$get('customer_id'));
-//                                if ($get('shipping_is_billing'))
-//                                {
-//                                    return $customer->addresses->where('id',$get('billing_address_id'))->pluck('name','id');
-//                                }else{
-//                                    return $customer->addresses->where('id',$get('shipping_address_id'))->pluck('name','id');
-//                                }
-                                return $customer->addresses->pluck('name','id');
-                            }else{
-                                return Address::all()->pluck('name','id');
-                            }
-                        }),
+                            TextInput::make('weight')
+                                ->inputMode('decimal')
+                                ->numeric()
+                                ->hint('Max: 100')
+                                ->placeholder('Enter package weight')
+                                ->required()
+                                ->maxLength(100),
+
+                            TextInput::make('length')
+                                ->inputMode('decimal')
+                                ->numeric()
+                                ->placeholder('Enter package length')
+                                ->required()
+                                ->hint('Max: 100')
+                                ->maxLength(100),
+
+                            TextInput::make('breadth')
+                                ->inputMode('decimal')
+                                ->numeric()
+                                ->required()
+                                ->placeholder('Enter package breadth')
+                                ->hint('Max: 100')
+                                ->maxLength(100),
+
+                            TextInput::make('height')
+                                ->inputMode('decimal')
+                                ->numeric()
+                                ->required()
+                                ->placeholder('Enter package height')
+                                ->hint('Max: 100')
+                                ->maxLength(100),
+                            Placeholder::make('charge')
+                                ->content(function ($state){
+                                    return ($state instanceof Money) ? $state->formatted() : Money::format($state ?? 0.00) ;
+                                }),
+
+
+
+                        ]),
+
+
+
+
+                    Grid::make('right_bar')
+                        ->columnSpan(1)
+                        ->schema([
+                            ViewField::make('pickup')
+                                ->view('filament-custom.forms.address-placeholder')
+                                ->columnSpan(1)
+                                ->formatStateUsing(function (Model $record){
+                                    return $record->pickupAddress->toArray();
+                                })
+                                ->viewData([
+                                    'label' => 'Pickup Address',
+                                    'textAlign' => 'right'
+                                ]),
+
+                            ViewField::make('delivery')
+                                ->view('filament-custom.forms.address-placeholder')
+                                ->columnSpan(1)
+                                ->formatStateUsing(function (Model $record){
+                                    return $record->deliveryAddress->toArray();
+                                })
+                                ->viewData([
+                                    'label' => 'Delivery Address',
+                                    'textAlign' => 'right'
+                                ]),
+
+
+
+                        ]),
+
+
+
+
+                    Repeater::make('shipment_track_activities')
+                        ->label('Shipment Tracking Activity')
+                        ->hint('Tell Your Customer About This  Order Shipment Activity')
+                        ->addActionLabel('Add Activity')
+                        ->columnSpanFull()
+                        ->columns(2)
+                        ->schema([
+                            DateTimePicker::make('date')
+                                ->seconds(false)
+                                ->required()
+                                ->hint('Activity Update On')
+                                ->default(now()),
+                            TextInput::make('location')
+                                ->required()
+                                ->placeholder('Enter Shipment Location')
+                                ->hint('Max: 100')
+                                ->maxLength(100),
+                            TextInput::make('activity')
+                                ->required()
+                                ->placeholder('Enter Activity')
+                                ->maxLength(255)
+                                ->hint('Max: 255')
+                                ->columnSpanFull(),
+                        ]),
+
+
+
+
+//                    Section::make('Package Details')
+//                        ->aside()
+//                        ->columnSpan(1)
+//                        ->schema([
+////                        Select::make('shipping_provider_id')
+////                        ->relationship('shippingProvider','name'),
+//
+//
+//
+//
+////                        Placeholder::make('charge')
+////                            ->content(function (Model $record,Get $get,ShippingService $shippingService){
+////                                if (!is_null($get('weight')) && !is_null($get('length')) && !is_null($get('breadth')) && !is_null($get('height')))
+////                                {
+////                                    $shippingProviderModel = ShippingProvider::firstWhere('id',$get('shipping_provider_id'));
+////                                    $record->load([
+////                                        'pickupAddress',
+////                                        'deliveryAddress'
+////                                    ]);
+////                                    $pickUpPostalCode = $record->pickupAddress->postal_code;
+////                                    $deliveryPostalCode = $record->deliveryAddress->postal_code;
+//////                                $result = $shippingService->provider($shippingProviderModel->code)->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode);
+////                                    $result = $shippingService->provider('shiprocket')->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode,$get('weight'));
+////                                    return $result;
+////                                }else{
+////                                    return 'Please fill weight,length,breadth,height';
+////                                }
+////
+////
+////                            })
+//                        ]),
+
+
+
 
                 ]),
 
@@ -247,6 +366,11 @@ class EditOrder extends EditRecord
         ];
 
     }
+
+
+
+
+
 
 
 }

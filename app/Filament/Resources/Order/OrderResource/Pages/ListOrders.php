@@ -95,12 +95,12 @@ class ListOrders extends ListRecords
 
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date("F j, Y, g:i a")
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
                     ->sortable()
+                    ->date("F j, Y, g:i a")
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at','desc')
