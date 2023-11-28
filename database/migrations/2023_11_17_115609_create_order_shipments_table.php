@@ -24,6 +24,13 @@ return new class extends Migration
             $table->string('tracking_id')->nullable();
             $table->json('tracking_data')->nullable();
 
+            $table->string('weight')->nullable();
+            $table->string('length')->nullable();
+            $table->string('breadth')->nullable();
+            $table->string('height')->nullable();
+            $table->float('charge', 10, 2, true)->default(0.00);
+
+
             $table->string('provider_order_id')->nullable();
             $table->string('shipment_id')->nullable();
             $table->json('shipment_track_activities')->nullable();
