@@ -197,6 +197,13 @@ class EditOrder extends EditRecord
                         'shippingProvider'
                     ]);
                 })
+                ->mutateRelationshipDataBeforeFillUsing(function ($data){
+                    if (isset($data['charge']) && $data['charge'] instanceof Money)
+                    {
+                        $data['charge'] = $data['charge']->getAmount();
+                    }
+                    return $data;
+                })
                 ->columns(2)
                 ->schema([
 

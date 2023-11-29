@@ -315,8 +315,6 @@ class ViewOrder extends ViewRecord
                 ->hiddenLabel()
                 ->columnSpanFull()
                 ->schema([
-
-
                     Split::make([
 
                         ViewEntry::make('pickup')
@@ -330,13 +328,6 @@ class ViewOrder extends ViewRecord
                             ]),
 
 
-                        Section::make([
-                            TextEntry::make('total_quantity')->inlineLabel(),
-                            TextEntry::make('invoice_uid')->inlineLabel(),
-                            TextEntry::make('tracking_id')->inlineLabel()->default('--not found--'),
-                            TextEntry::make('status')->badge()->inlineLabel(),
-                        ])->columns(1),
-
                         ViewEntry::make('delivery')
                             ->view('filament-custom.forms.address-placeholder')
                             ->getStateUsing(function (Model $record){
@@ -346,6 +337,10 @@ class ViewOrder extends ViewRecord
                                 'label' => 'Delivery Address',
                             ]),
                     ]),
+                    TextEntry::make('total_quantity')->inlineLabel(),
+                    TextEntry::make('invoice_uid')->inlineLabel(),
+                    TextEntry::make('tracking_id')->inlineLabel()->default('--not found--'),
+                    TextEntry::make('status')->badge()->inlineLabel(),
 
                     TextEntry::make('shippingProvider.name')
                         ->inlineLabel(),
@@ -354,45 +349,41 @@ class ViewOrder extends ViewRecord
                         ->default(false)->boolean(),
                     TextEntry::make('last_update')->inlineLabel(),
 
-                    Section::make('Package Info')
-                        ->columns(4)
-                        ->schema([
-                            TextEntry::make('weight')->default('0.00'),
-                            TextEntry::make('length')->default('0.00'),
-                            TextEntry::make('breadth')->default('0.00'),
-                            TextEntry::make('height')->default('0.00'),
-                            TextEntry::make('cost')
-                                ->hintAction(\Filament\Infolists\Components\Actions\Action::make('sdfads')
-                                    ->fillForm(function (?Model $record){
-                                        $data = $record->toArray();
-                                        $data['charge'] = ($data['charge'] instanceof Money) ? $data['charge']->getAmount() : $data['charge'];
-                                        return $data;
-                                    })
-                                    ->form([
-                                        TextInput::make('weight'),
-                                        TextInput::make('length'),
-                                        TextInput::make('breadth'),
-                                        TextInput::make('height'),
-                                    ])
-                                    ->action(function (array $data, ?Model $record,ShippingService $shippingService) use (&$chargeInfo){
-                                        $record->load('shippingProvider','pickupAddress','deliveryAddress');
+                    TextEntry::make('weight')->default('0.00'),
+                    TextEntry::make('length')->default('0.00'),
+                    TextEntry::make('breadth')->default('0.00'),
+                    TextEntry::make('height')->default('0.00'),
+                    TextEntry::make('cost')
+                        ->hintAction(\Filament\Infolists\Components\Actions\Action::make('calculate')
+                            ->label('Calculate Cost')
+                            ->fillForm(function (?Model $record){
+                                $data = $record->toArray();
+                                $data['charge'] = ($data['charge'] instanceof Money) ? $data['charge']->getAmount() : $data['charge'];
+                                return $data;
+                            })
+                            ->form([
+                                TextInput::make('weight'),
+                                TextInput::make('length'),
+                                TextInput::make('breadth'),
+                                TextInput::make('height'),
+                            ])
+                            ->action(function (array $data, ?Model $record,ShippingService $shippingService) use (&$chargeInfo){
+                                $record->load('shippingProvider','pickupAddress','deliveryAddress');
 //                                        $service = $shippingService->provider($record->shippingProvider->code);
-                                        $service = $shippingService->provider('shiprocket');
-                                        $pickUpPostalCode = $record->pickupAddress->postal_code;
-                                        $deliveryPostalCode = $record->deliveryAddress->postal_code;
+                                $service = $shippingService->provider('shiprocket');
+                                $pickUpPostalCode = $record->pickupAddress->postal_code;
+                                $deliveryPostalCode = $record->deliveryAddress->postal_code;
 //                                        $chargeInfo = $service->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode,$data);
-                                        $chargeInfo = $service->courier()->getCharge(711401,$deliveryPostalCode,$data,$record->cod);
+                                $chargeInfo = $service->courier()->getCharge(711401,$deliveryPostalCode,$data,$record->cod);
 
-                                        $this->chargeInfo = $chargeInfo;
-                                    })
-                                    ->requiresConfirmation()
+                                $this->chargeInfo = $chargeInfo;
+                            })
+                            ->requiresConfirmation()
 
-                                ),
+                        ),
 
 
-                            $this->getCourierDisplayerInfoSchema()
-
-                        ]),
+                    $this->getCourierDisplayerInfoSchema()
 
 
 

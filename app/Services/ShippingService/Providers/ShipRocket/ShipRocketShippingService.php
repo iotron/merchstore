@@ -4,9 +4,11 @@ namespace App\Services\ShippingService\Providers\ShipRocket;
 
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
+use App\Services\ShippingService\Contracts\Provider\ShippingProviderTrackingContract;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
 use App\Services\ShippingService\Providers\ShipRocket\Actions\CourierAction;
 use App\Services\ShippingService\Providers\ShipRocket\Actions\OrderAction;
+use App\Services\ShippingService\Providers\ShipRocket\Actions\TrackingAction;
 
 class ShipRocketShippingService implements ShippingProviderContract
 {
@@ -72,9 +74,9 @@ class ShipRocketShippingService implements ShippingProviderContract
         // TODO: Implement shipment() method.
     }
 
-    public function tracking()
+    public function tracking():ShippingProviderTrackingContract
     {
-        // TODO: Implement tracking() method.
+        return new TrackingAction($this->api);
     }
 
 

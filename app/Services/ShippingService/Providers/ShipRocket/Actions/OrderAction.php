@@ -25,22 +25,19 @@ class OrderAction implements ShippingProviderActionContract
      */
     public function create(OrderShipment $orderShipment)
     {
-
-
         $response = $this->api->httpPost('orders/create/adhoc',$this->format($orderShipment))
             ->throw()
             ->json();
         return $response;
-
     }
 
-    public function all(): string
+    public function all()
     {
         $response = $this->api->http()->get($this->api->getBaseUrl().'orders');
         return $response->json();
     }
 
-    public function fetch(int|string $id): string
+    public function fetch(int|string $id)
     {
         $response = $this->api->http()->get($this->api->getBaseUrl().'orders/show/'.$id);
         return $response->body();

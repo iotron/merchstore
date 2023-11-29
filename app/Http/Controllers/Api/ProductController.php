@@ -120,10 +120,12 @@ class ProductController extends Controller implements  CanBeSortableContract
 
     public function showProductsByCategory(Category $category,Request $request)
     {
-
         $category->load('children','media');
         // base query
-        $query = Product::where('status', Product::PUBLISHED)->whereHas('categories', function ($query) use ($category) {
+        $query = Product::with([
+            'media',
+            'availableStocks'
+        ])->where('status', Product::PUBLISHED)->whereHas('categories', function ($query) use ($category) {
             $query->with('media')->where('categories.id', $category->id);
         });
         // finding all the filters before pagination
@@ -143,7 +145,7 @@ class ProductController extends Controller implements  CanBeSortableContract
             ->flatten();
 
         // additional information
-        $query->with('media');
+       // $query->with('media');
 
 
 

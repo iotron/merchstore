@@ -7,6 +7,7 @@ use App\Helpers\Money\Money;
 use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Order\Order;
+use App\Models\Order\OrderProduct;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
@@ -60,7 +61,7 @@ class OrderCreationService
 
 
 
-    public function checkout(string $uu_id,Address $shippingAddress,Address $billing_address): \Illuminate\Http\JsonResponse|array
+    public function checkout(string $uu_id,Address $shippingAddress,Address $billing_address)
     {
 
 
@@ -112,40 +113,44 @@ class OrderCreationService
         $payment = $this->createAnPendingPayment($newOrder);
 
 
-        if($this->isCod)
-        {
-            // Update Product Stock
-            $this->updateProductStock();
-        }
+        $this->process($shippingAddress);
 
-        // Attaching Products To Order
-        $this->attachProductsToOrder();
 
-        // Create Shipment  & Invoice Of ThisOrder
-
-        $this->makeOrderShipmentWithInvoice($shippingAddress);
-
+//
+//        if($this->isCod)
+//        {
+//            // Update Product Stock
+//            $this->updateProductStock();
+//        }
+//
+//        // Attaching Products To Order
+//        $this->attachProductsToOrder();
+//
+//        // Create Shipment  & Invoice Of ThisOrder
+//
+//        $this->makeOrderShipmentWithInvoice($shippingAddress);
+//
 
 
 
         // Clean Up Cart
         $this->cart->reset();
 
-        // return Application Checkout link Route
-        return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
-            'success' => true,
-            'message' => 'order placed successfully',
-            'payment_provider' => [
-                'name' => $this->paymentService->getProviderModel()->name,
-                'code' => $this->paymentService->getProviderModel()->code,
-            ],
-            'order' => [
-                'uuid' => $this->order->uuid,
-                'status' => $this->order->status,
-            ],
-            'redirect' => ($this->isCod) ?
-                        config('app.client_url').'/orders/'.$this->order->uuid : route('payment.visit', ['payment' => $payment->receipt]),
-        ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $payment];
+//        // return Application Checkout link Route
+//        return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
+//            'success' => true,
+//            'message' => 'order placed successfully',
+//            'payment_provider' => [
+//                'name' => $this->paymentService->getProviderModel()->name,
+//                'code' => $this->paymentService->getProviderModel()->code,
+//            ],
+//            'order' => [
+//                'uuid' => $this->order->uuid,
+//                'status' => $this->order->status,
+//            ],
+//            'redirect' => ($this->isCod) ?
+//                        config('app.client_url').'/orders/'.$this->order->uuid : route('payment.visit', ['payment' => $payment->receipt]),
+//        ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $payment];
 
 
 
@@ -174,6 +179,170 @@ class OrderCreationService
             'customer_id' => $this->customer->id,
         ]);
     }
+
+
+
+    protected function process(Address $shippingAddress)
+    {
+        foreach ($this->cartMeta['products'] as $item)
+        {
+            $orderProduct = $this->attachIntoOrderProduct($item);
+            $product = $item['product'];
+            $product->loadMissing('availableStocks');
+            if($this->isCod)
+            {
+                $this->updateStock($product,$shippingAddress,$orderProduct);
+            }else{
+
+               // $allStockQuantity = $product->availableStocks->sum('in_stock_quantity');
+                $this->makeShipmentAndInvoice($shippingAddress,$orderProduct,$product,null,null);
+            }
+
+            // Update Quantity Of Order Product As Per Stock Use In Shipment
+            $usedQuantity = $orderProduct->shipment->sum('total_quantity');
+            if ($orderProduct->quantity != $usedQuantity)
+            {
+                $orderProduct->quantity = $usedQuantity;
+                $orderProduct->save();
+            }
+
+
+        }
+
+    }
+
+
+    protected function attachIntoOrderProduct(array $item): Model
+    {
+        $discountAmnt = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
+
+
+        $records  = [
+            'quantity' => $item['pivot_quantity'],
+            'amount' => ($item['total_base_amount'] instanceof  Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
+            'discount' => ($discountAmnt instanceof  Money) ? $discountAmnt->getAmount() : $discountAmnt,
+            'tax' => ($item['total_tax_amount'] instanceof  Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
+            'total' => ($item['net_total'] instanceof  Money) ? $item['net_total']->getAmount() : $item['net_total'],
+            'product_id' => $item['id']
+        ];
+        return $this->order->orderProducts()->create($records);
+    }
+
+    protected function updateStock(Product $product, Address $shippingAddress, OrderProduct|Model $orderProduct)
+    {
+        $requiredQuantity = $product->pivot->quantity;
+        $quantityFulfilled = 0;
+
+        foreach ($product->availableStocks as $stock) {
+         // dump($quantityFulfilled);
+            if ($stock->in_stock_quantity >= $requiredQuantity - $quantityFulfilled) {
+                // Deducted Stock Quantity & Update Product Stock
+                $quantityToDeduct = $requiredQuantity - $quantityFulfilled;
+
+                $stock->sold_quantity += $quantityToDeduct;
+                $stock->save();
+
+                $pickUpAddress = $stock->addresses()->first();
+
+                $this->makeShipmentAndInvoice($shippingAddress, $orderProduct, $product, $pickUpAddress, $quantityToDeduct);
+
+                // Update the quantity fulfilled
+                $quantityFulfilled += $quantityToDeduct;
+
+                // Break the loop since the required quantity is fulfilled
+                break;
+            } else {
+                $pickUpAddress = $stock->addresses()->first();
+                $quantityToDeduct = $stock->in_stock_quantity;
+
+                $stock->sold_quantity += $quantityToDeduct;
+                $stock->save();
+
+                $this->makeShipmentAndInvoice($shippingAddress, $orderProduct, $product, $pickUpAddress, $quantityToDeduct);
+
+                // Update the quantity fulfilled
+                $quantityFulfilled += $quantityToDeduct;
+            }
+
+        }
+       // dd($quantityFulfilled,$requiredQuantity);
+    }
+
+
+    protected function makeShipmentAndInvoice(Address $shippingAddress,OrderProduct|Model $orderProduct,Product $product,?Address $pickupAddress,?int $quantity = null)
+    {
+
+
+        if (!is_null($pickupAddress) && $this->isCod && !is_null($quantity))
+        {
+            // Cod Case
+            $orderShipment = $this->newShipmentCreation($quantity,$shippingAddress,$pickupAddress,$orderProduct,$product);
+        }else{
+            // Normal Case
+            $requiredQuantity = $product->pivot->quantity;
+            $quantityFulfilled = 0;
+
+            foreach ($product->availableStocks as $stock) {
+                if ($stock->in_stock_quantity >= $requiredQuantity - $quantityFulfilled) {
+                    // Deducted Stock Quantity & Update Product Stock
+                    $quantityToDeduct = $requiredQuantity - $quantityFulfilled;
+                    $pickUpAddress = $stock->addresses()->first();
+                    $orderShipment =   $this->newShipmentCreation($quantityToDeduct,$shippingAddress,$pickUpAddress,$orderProduct,$product);
+                    // Update the quantity fulfilled
+                    $quantityFulfilled += $quantityToDeduct;
+                    break;
+                } else {
+                    $pickUpAddress = $stock->addresses()->first();
+                    $quantityToDeduct = $stock->in_stock_quantity;
+                    $orderShipment =   $this->newShipmentCreation($quantityToDeduct,$shippingAddress,$pickUpAddress,$orderProduct,$product);
+                    // Update the quantity fulfilled
+                    $quantityFulfilled += $quantityToDeduct;
+                }
+            }
+        }
+    }
+
+    protected function newShipmentCreation(int $quantity,Address $shippingAddress,Address $pickupAddress,OrderProduct $orderProduct,Product $product): Model
+    {
+        $customShippingProvider = ShippingProvider::firstWhere('code','custom');
+
+        $orderShipment = $orderProduct->shipment()->create([
+            'order_id' => $this->order->id,
+            'total_quantity' => $quantity,
+            'pickup_address' => $pickupAddress->id,
+            'delivery_address' => $shippingAddress->id,
+            'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
+            'cod' => $this->isCod,
+            'status' => OrderShipment::PROCESSING,
+        ]);
+
+
+        $orderInvoice = $orderShipment->invoice()->create([
+            'order_id' => $this->order->id
+        ]);
+
+        $orderShipment->invoice_uid = $orderInvoice->id;
+        $orderShipment->save();
+        return $orderShipment;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -4,9 +4,11 @@ namespace App\Services\ShippingService\Providers\Custom;
 
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
+use App\Services\ShippingService\Contracts\Provider\ShippingProviderTrackingContract;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
 use App\Services\ShippingService\Providers\Custom\Actions\CourierAction;
 use App\Services\ShippingService\Providers\Custom\Actions\OrderAction;
+use App\Services\ShippingService\Providers\Custom\Actions\TrackingAction;
 
 class CustomShippingService implements ShippingProviderContract
 {
@@ -64,9 +66,9 @@ class CustomShippingService implements ShippingProviderContract
         // TODO: Implement shipment() method.
     }
 
-    public function tracking()
+    public function tracking():ShippingProviderTrackingContract
     {
-        // TODO: Implement tracking() method.
+        return new TrackingAction();
     }
 
 

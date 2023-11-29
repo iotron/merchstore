@@ -19,7 +19,7 @@ class ProductIndexResource extends JsonResource
         'name' => $this->name,
         'url' => $this->url,
         'sku' => $this->sku,
-        'quantity' => $this->quantity,
+        'quantity' => ($this->quantity != 0) ? $this->quantity : $this->availableStocks->sum('in_stock_quantity'),
         'popularity' => $this->popularity,
         'view_count' => $this->view_count,
         'price' => $this->price->formatted(),

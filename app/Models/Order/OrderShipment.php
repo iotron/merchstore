@@ -64,6 +64,7 @@ class OrderShipment extends Model
     protected $casts = [
         'tracking_data' => 'array',
         'shipment_track_activities' => 'array',
+        'last_update' => 'array',
         'details' => 'array',
         'charge' => MoneyCast::class
     ];
