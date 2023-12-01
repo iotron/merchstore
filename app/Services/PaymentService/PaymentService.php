@@ -109,34 +109,38 @@ class PaymentService implements PaymentServiceContract
         // Activating Given Providers
         foreach ($providers_name as $provider)
         {
-            $providerModel = $this->allPaymentProviders->firstWhere('code',$provider);
-            throw_unless($providerModel->exists,'no provider records  found in Database for '.$provider );
+            if ($provider != PaymentProviderModel::RAZORPAYX)
+            {
+                $providerModel = $this->allPaymentProviders->firstWhere('code',$provider);
+                throw_unless($providerModel->exists,'no provider records  found in Database for '.$provider );
 
 
-            // Prepare Instance
-            $providerClass = $providerModel->service_provider;
-            $providerApi = null;
-            if ($providerModel->has_api)
-            {
-                $providerApi = $this->getProviderApi($provider);
-                throw_if(is_null($providerApi),'no api data found for '.$provider);
-            }
+                // Prepare Instance
+                $providerClass = $providerModel->service_provider;
+                $providerApi = null;
+                if ($providerModel->has_api)
+                {
+                    $providerApi = $this->getProviderApi($provider);
+                    throw_if(is_null($providerApi),'no api data found for '.$provider);
+                }
 
-            if ($provider == PaymentProviderModel::RAZORPAY && in_array(PaymentProviderModel::RAZORPAYX,$providers_name))
-            {
-                // Activate And Get Provider Instance
-                $providerInstance = new $providerClass($providerApi,true);
-            }else{
-                // Activate And Get Provider Instance
-                $providerInstance = new $providerClass($providerApi);
-            }
-            throw_unless($providerInstance instanceof PaymentProviderContract,$providerClass.' must implement App\Services\PaymentService\Contracts\PaymentProviderContract');
-            // Add Provider Service In Providers List
-            $this->providers[$provider] = $providerInstance;
-            // Set Default Primary Provider
-            if ($providerModel->is_primary && is_null($this->provider))
-            {
-                $this->provider = $providerInstance;
+
+                if ($provider == PaymentProviderModel::RAZORPAY && in_array(PaymentProviderModel::RAZORPAYX,$providers_name))
+                {
+                    // Activate And Get Provider Instance
+                    $providerInstance = new $providerClass($providerModel,$providerApi,true);
+                }else{
+                    // Activate And Get Provider Instance
+                    $providerInstance = new $providerClass($providerModel,$providerApi);
+                }
+                throw_unless($providerInstance instanceof PaymentProviderContract,$providerClass.' must implement App\Services\PaymentService\Contracts\PaymentProviderContract');
+                // Add Provider Service In Providers List
+                $this->providers[$provider] = $providerInstance;
+                // Set Default Primary Provider
+                if ($providerModel->is_primary && is_null($this->provider))
+                {
+                    $this->provider = $providerInstance;
+                }
             }
 
         }

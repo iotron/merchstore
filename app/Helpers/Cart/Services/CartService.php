@@ -8,12 +8,13 @@ use App\Models\Customer\Customer;
 use App\Models\Promotion\VoucherCode;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
 abstract class CartService implements CartServiceContract
 {
 
-    protected Customer|Authenticatable $customer;
+    protected Customer|Authenticatable|Model $customer;
     protected bool $changed = false;
     protected array $errors = [];
     protected ?string $couponCode = null;
@@ -29,7 +30,7 @@ abstract class CartService implements CartServiceContract
 
     protected array $meta = [];
 
-    public function __construct(Customer|Authenticatable $customer, ?string $couponCode = null)
+    public function __construct(Customer|Authenticatable|Model $customer, ?string $couponCode = null)
     {
         $this->customer = $customer;
         $this->couponCode = $couponCode;

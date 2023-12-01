@@ -2,6 +2,7 @@
 
 namespace App\Services\PaymentService\Contracts;
 
+use App\Models\Payment\PaymentProvider;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderPayoutContract;
@@ -14,6 +15,9 @@ interface PaymentProviderContract
     public function getApi():object;
     public function getProviderName():string;
     public function getClass():string;
+    public function getModel():?PaymentProvider;
+
+    public function getProvider():static|PaymentProviderContract;
 
     public function setError(string $error):void;
     public function getError():?string;

@@ -11,6 +11,7 @@ use App\Models\Order\OrderProduct;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
+use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use App\Services\OrderService\Supports\Order\OrderBuilder;
 use Exception;
@@ -26,6 +27,7 @@ class OrderCreationService
 
     protected Cart $cart;
     protected ?PaymentServiceContract $paymentService;
+    protected ?PaymentProviderContract $paymentProvider;
     protected string $receipt;
     protected array $cartMeta = [];
     protected Authenticatable|Customer $customer;
@@ -34,16 +36,20 @@ class OrderCreationService
     public bool $isCod = false;
     protected array $stockBag = [];
 
-    public function __construct(PaymentServiceContract|null $paymentService, Cart $cart)
+    public function __construct(PaymentProviderContract|null $paymentProvider, Cart $cart)
     {
-        $this->paymentService = $paymentService;
+        $this->paymentProvider = $paymentProvider;
         $this->cart = $cart;
         $this->cartMeta = $this->cart->getMeta();
         $this->cart->getCustomer()->loadMissing('payments');
         $this->receipt = self::getUniqueReceiptID($this->cart->getCustomer()->payments);
         $this->customer  = $this->cart->getCustomer();
-        $this->provider = $this->paymentService->provider()->getClass();
-        $this->isCod = $this->paymentService->getProviderModel()->code == PaymentProvider::COD ;
+        $this->provider = $this->paymentProvider->getClass();
+        if (!is_null($this->paymentProvider->getModel()))
+        {
+            $this->isCod = $this->paymentProvider->getModel()->code == PaymentProvider::CUSTOM;
+        }
+
     }
 
 
@@ -82,38 +88,33 @@ class OrderCreationService
             'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
             'customer_id' => $this->customer->id,
             'customer_gstin' => null, // need data here
-            'shipping_is_billing' => false,
+            'shipping_is_billing' => $shippingAddress->id == $billing_address->id,
             'billing_address_id' => $billing_address->id,
-            'shipping_address_id' => $shippingAddress->id
+            'shipping_address_id' => $shippingAddress->id,
+            'is_cod'  => $this->isCod,
         ]);
 
 
 
 
-
-
-//        // Prepare An Order Array (Provider Case) (code shorten)
-//        $orderBuilder = new OrderBuilder($this->paymentService);
-//        $orderArray = $orderBuilder
-//            ->model(null)
-//            ->receipt($this->receipt)
-//            ->items($this->getProductArray())
-//            ->cartMeta($this->cartMeta)
-//            ->bookingName($this->customer->name)
-//            ->bookingEmail($this->customer->email)
-//            ->bookingContact($this->customer->contact)
-//            ->getArray();
-
-        // Create New Order Via Payment Provider Based On Order Array (Provider Case)
-        $newOrder = $this->paymentService->provider()->order()->create($this->order);
-
-
-
+        // Now Make AN Order On Payment Provider Based On This Order
+        $newOrder = $this->paymentProvider->order()->create($this->order);
         // Create An Pending Payment Based On Provider New Order Data (DB Case)
         $payment = $this->createAnPendingPayment($newOrder);
 
 
+        // Left Job
         $this->process($shippingAddress);
+
+        // Finally Update Order Quantity From Its Order Product Quantities
+        $allQuantityUsed = $this->order->orderProducts->sum('quantity');
+        if ($this->order->quantity != $allQuantityUsed)
+        {
+            $this->order->quantity = $allQuantityUsed;
+            $this->order->save();
+        }
+
+
 
 
 //
@@ -136,24 +137,6 @@ class OrderCreationService
         // Clean Up Cart
         $this->cart->reset();
 
-//        // return Application Checkout link Route
-//        return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
-//            'success' => true,
-//            'message' => 'order placed successfully',
-//            'payment_provider' => [
-//                'name' => $this->paymentService->getProviderModel()->name,
-//                'code' => $this->paymentService->getProviderModel()->code,
-//            ],
-//            'order' => [
-//                'uuid' => $this->order->uuid,
-//                'status' => $this->order->status,
-//            ],
-//            'redirect' => ($this->isCod) ?
-//                        config('app.client_url').'/orders/'.$this->order->uuid : route('payment.visit', ['payment' => $payment->receipt]),
-//        ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $payment];
-
-
-
     }
 
 
@@ -163,11 +146,12 @@ class OrderCreationService
      */
     protected function createAnPendingPayment(array|object $newOrder):Payment|Model
     {
+
         return $this->order->payment()->create([
             'receipt' => $this->receipt,
             'provider_gen_id' => $newOrder['id'],
             'provider_class' => $this->provider,
-            'promo_code' => $this->cartMeta['coupon'] ?? '',
+            'voucher' => $this->cartMeta['coupon'] ?? '',
             'quantity' => $this->cartMeta['quantity'],
             'subtotal' => ($this->cartMeta['subtotal'] instanceof  Money) ? $this->cartMeta['subtotal']->getAmount() : $this->cartMeta['subtotal'],
             'discount' => ($this->cartMeta['discount'] instanceof  Money) ? $this->cartMeta['discount']->getAmount() : $this->cartMeta['discount'],
@@ -175,29 +159,29 @@ class OrderCreationService
             'total' => ($this->cartMeta['total'] instanceof Money) ? $this->cartMeta['total']->getAmount() : $this->cartMeta['total'],
             'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
             'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
-            'payment_provider_id' => $this->paymentService->getProviderModel()->id,
+            'payment_provider_id' => $this->paymentProvider->getModel()->id,
             'customer_id' => $this->customer->id,
         ]);
     }
 
 
 
-    protected function process(Address $shippingAddress)
+    protected function process(Address $shippingAddress): void
     {
         foreach ($this->cartMeta['products'] as $item)
         {
             $orderProduct = $this->attachIntoOrderProduct($item);
             $product = $item['product'];
             $product->loadMissing('availableStocks');
+            // If Cod We Update Product Stock
             if($this->isCod)
             {
                 $this->updateStock($product,$shippingAddress,$orderProduct);
             }else{
-
-               // $allStockQuantity = $product->availableStocks->sum('in_stock_quantity');
+                // If Not Cod We Just Make Shipment And Invoice
                 $this->makeShipmentAndInvoice($shippingAddress,$orderProduct,$product,null,null);
             }
-
+            // Finally
             // Update Quantity Of Order Product As Per Stock Use In Shipment
             $usedQuantity = $orderProduct->shipment->sum('total_quantity');
             if ($orderProduct->quantity != $usedQuantity)
@@ -206,7 +190,6 @@ class OrderCreationService
                 $orderProduct->save();
             }
 
-
         }
 
     }
@@ -214,13 +197,13 @@ class OrderCreationService
 
     protected function attachIntoOrderProduct(array $item): Model
     {
-        $discountAmnt = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
+        $discountAmount = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
 
 
         $records  = [
             'quantity' => $item['pivot_quantity'],
             'amount' => ($item['total_base_amount'] instanceof  Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
-            'discount' => ($discountAmnt instanceof  Money) ? $discountAmnt->getAmount() : $discountAmnt,
+            'discount' => ($discountAmount instanceof  Money) ? $discountAmount->getAmount() : $discountAmount,
             'tax' => ($item['total_tax_amount'] instanceof  Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
             'total' => ($item['net_total'] instanceof  Money) ? $item['net_total']->getAmount() : $item['net_total'],
             'product_id' => $item['id']
@@ -269,7 +252,7 @@ class OrderCreationService
     }
 
 
-    protected function makeShipmentAndInvoice(Address $shippingAddress,OrderProduct|Model $orderProduct,Product $product,?Address $pickupAddress,?int $quantity = null)
+    protected function makeShipmentAndInvoice(Address $shippingAddress,OrderProduct|Model $orderProduct,Product $product,?Address $pickupAddress,?int $quantity = null): void
     {
 
 
@@ -344,109 +327,109 @@ class OrderCreationService
 
 
 
-
-
-    protected function attachProductsToOrder(): void
-    {
-            $records = [];
-            foreach ($this->cartMeta['products'] as $item)
-            {
-               $discountAmnt = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
-
-
-                $records [] = [
-                    'quantity' => $item['pivot_quantity'],
-                    'amount' => ($item['total_base_amount'] instanceof  Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
-                    'discount' => ($discountAmnt instanceof  Money) ? $discountAmnt->getAmount() : $discountAmnt,
-                    'tax' => ($item['total_tax_amount'] instanceof  Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
-                    'total' => ($item['net_total'] instanceof  Money) ? $item['net_total']->getAmount() : $item['net_total'],
-                    'product_id' => $item['id']
-                ];
-            }
-
-            $this->order->orderProducts()->createMany($records);
-    }
-
-
-    protected function updateProductStock()
-    {
-
-
-        foreach ($this->cartMeta['products'] as $item)
-        {
-            $productModel = $item['product'];
-            $totalQuantity = $productModel->pivot->quantity;
-            $productAllStock = $productModel->availableStocks()->get();
-
-
-
-            foreach($productAllStock as $stock)
-            {
-                if ($totalQuantity != 0)
-                {
-                    if($stock->in_stock_quantity >= $totalQuantity)
-                    {
-                        // Update Product Stock
-                        $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
-                        $stock->save();
-                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-                        $totalQuantity = 0;
-
-
-                    }elseif($stock->in_stock){
-                        // Partially Update Stock From Each Stock
-                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-                        $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
-                        // Update Product Stock
-                        $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
-                        $stock->save();
-
-                    }
-                }
-            }
-
-        }
-    }
-
-
-    protected function makeOrderShipmentWithInvoice(Address $shippingAddress): void
-    {
-
-        $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
-
-        $customShippingProvider = ShippingProvider::firstWhere('code','custom');
-
-        $orderProducts = $this->order->orderProducts;
-        foreach($AddressGroup as $key => $group)
-        {
-            foreach ($group as $value)
-            {
-                foreach ($orderProducts as $item)
-                {
-                    $stockAddress = $value['model']->addresses()->first();
-
-                    $orderShipment = $item->shipment()->create([
-                        'order_id' => $this->order->id,
-                        'total_quantity' => $value['quantity'],
-                        'pickup_address' => $stockAddress->id,
-                        'delivery_address' => $shippingAddress->id,
-                        'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
-                        'cod' => $this->isCod,
-                        'status' => OrderShipment::PROCESSING,
-                    ]);
-
-
-                    $orderInvoice = $orderShipment->invoice()->create([
-                        'order_id' => $this->order->id
-                    ]);
-
-                    $orderShipment->invoice_uid = $orderInvoice->id;
-                    $orderShipment->save();
-                }
-
-            }
-        }
-    }
+//
+//
+//    protected function attachProductsToOrder(): void
+//    {
+//            $records = [];
+//            foreach ($this->cartMeta['products'] as $item)
+//            {
+//               $discountAmnt = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
+//
+//
+//                $records [] = [
+//                    'quantity' => $item['pivot_quantity'],
+//                    'amount' => ($item['total_base_amount'] instanceof  Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
+//                    'discount' => ($discountAmnt instanceof  Money) ? $discountAmnt->getAmount() : $discountAmnt,
+//                    'tax' => ($item['total_tax_amount'] instanceof  Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
+//                    'total' => ($item['net_total'] instanceof  Money) ? $item['net_total']->getAmount() : $item['net_total'],
+//                    'product_id' => $item['id']
+//                ];
+//            }
+//
+//            $this->order->orderProducts()->createMany($records);
+//    }
+//
+//
+//    protected function updateProductStock()
+//    {
+//
+//
+//        foreach ($this->cartMeta['products'] as $item)
+//        {
+//            $productModel = $item['product'];
+//            $totalQuantity = $productModel->pivot->quantity;
+//            $productAllStock = $productModel->availableStocks()->get();
+//
+//
+//
+//            foreach($productAllStock as $stock)
+//            {
+//                if ($totalQuantity != 0)
+//                {
+//                    if($stock->in_stock_quantity >= $totalQuantity)
+//                    {
+//                        // Update Product Stock
+//                        $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
+//                        $stock->save();
+//                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
+//                        $totalQuantity = 0;
+//
+//
+//                    }elseif($stock->in_stock){
+//                        // Partially Update Stock From Each Stock
+//                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
+//                        $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
+//                        // Update Product Stock
+//                        $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
+//                        $stock->save();
+//
+//                    }
+//                }
+//            }
+//
+//        }
+//    }
+//
+//
+//    protected function makeOrderShipmentWithInvoice(Address $shippingAddress): void
+//    {
+//
+//        $AddressGroup = collect($this->stockBag)->groupBy('address_id')->toArray();
+//
+//        $customShippingProvider = ShippingProvider::firstWhere('code','custom');
+//
+//        $orderProducts = $this->order->orderProducts;
+//        foreach($AddressGroup as $key => $group)
+//        {
+//            foreach ($group as $value)
+//            {
+//                foreach ($orderProducts as $item)
+//                {
+//                    $stockAddress = $value['model']->addresses()->first();
+//
+//                    $orderShipment = $item->shipment()->create([
+//                        'order_id' => $this->order->id,
+//                        'total_quantity' => $value['quantity'],
+//                        'pickup_address' => $stockAddress->id,
+//                        'delivery_address' => $shippingAddress->id,
+//                        'shipping_provider_id' => ($this->isCod) ? $customShippingProvider->id : null,
+//                        'cod' => $this->isCod,
+//                        'status' => OrderShipment::PROCESSING,
+//                    ]);
+//
+//
+//                    $orderInvoice = $orderShipment->invoice()->create([
+//                        'order_id' => $this->order->id
+//                    ]);
+//
+//                    $orderShipment->invoice_uid = $orderInvoice->id;
+//                    $orderShipment->save();
+//                }
+//
+//            }
+//        }
+//    }
 
 
 
@@ -470,25 +453,25 @@ class OrderCreationService
 
 
 
-    protected function generateUniqueID() {
-        $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
-        $prefix = now()->format('dHis'); // Timestamp prefix
-        $maxAttempts = 10;
-        $attempt = 0;
-
-        do {
-            $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
-            $id = $prefix . $random;
-            $attempt++;
-        } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
-
-        if ($attempt == $maxAttempts) {
-            //throw new Exception('Unable to generate unique ID');
-            return null;
-        }
-
-        return $id;
-    }
+//    protected function generateUniqueID() {
+//        $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
+//        $prefix = now()->format('dHis'); // Timestamp prefix
+//        $maxAttempts = 10;
+//        $attempt = 0;
+//
+//        do {
+//            $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
+//            $id = $prefix . $random;
+//            $attempt++;
+//        } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
+//
+//        if ($attempt == $maxAttempts) {
+//            //throw new Exception('Unable to generate unique ID');
+//            return null;
+//        }
+//
+//        return $id;
+//    }
 
 
 

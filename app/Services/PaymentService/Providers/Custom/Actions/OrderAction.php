@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\PaymentService\Providers\CashOnDelivery\Actions;
+namespace App\Services\PaymentService\Providers\Custom\Actions;
 
 use App\Models\Order\Order;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
@@ -25,7 +25,7 @@ class OrderAction implements PaymentProviderOrderContract
         $receipt = PaymentServiceHelper::newReceipt();
 
         return [
-            'id' => 'order_'.Str::replace('receipt_','',$receipt),
+            'id' => 'custom_order_'.Str::replace('receipt_','',$receipt),
             'receipt' => $receipt,
             'amount' => $order->total->getAmount(),
             'currency' => $order->total->getCurrency()->getCurrency(),

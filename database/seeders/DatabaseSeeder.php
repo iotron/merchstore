@@ -40,7 +40,8 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             SaleSeeder::class,
             VoucherSeeder::class,
-            ProductFeedbackSeeder::class
+            ProductFeedbackSeeder::class,
+            OrderSeeder::class
         ];
     }
 

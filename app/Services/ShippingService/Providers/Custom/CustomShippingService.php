@@ -4,10 +4,12 @@ namespace App\Services\ShippingService\Providers\Custom;
 
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
+use App\Services\ShippingService\Contracts\Provider\ShippingProviderReturnContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderTrackingContract;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
 use App\Services\ShippingService\Providers\Custom\Actions\CourierAction;
 use App\Services\ShippingService\Providers\Custom\Actions\OrderAction;
+use App\Services\ShippingService\Providers\Custom\Actions\ReturnAction;
 use App\Services\ShippingService\Providers\Custom\Actions\TrackingAction;
 
 class CustomShippingService implements ShippingProviderContract
@@ -26,6 +28,11 @@ class CustomShippingService implements ShippingProviderContract
     public function getClass(): string
     {
         return get_class($this);
+    }
+
+    public function getProvider(): ShippingProviderContract
+    {
+        return $this;
     }
 
     /**
@@ -56,9 +63,9 @@ class CustomShippingService implements ShippingProviderContract
         return new CourierAction();
     }
 
-    public function return()
+    public function return():ShippingProviderReturnContract
     {
-        // TODO: Implement return() method.
+        return new ReturnAction();
     }
 
     public function shipment()

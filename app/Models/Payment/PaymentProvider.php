@@ -3,7 +3,7 @@
 namespace App\Models\Payment;
 
 use App\Models\Order\Order;
-use App\Services\PaymentService\Providers\CashOnDelivery\CodPaymentService;
+use App\Services\PaymentService\Providers\Custom\CustomPaymentService;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayPaymentService;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,17 +16,17 @@ class PaymentProvider extends Model
     public const RAZORPAY = 'razorpay';
     public const RAZORPAYX = 'razorpay-x';
     public const STRIPE = 'stripe';
-    public const COD = 'cod';
+    public const CUSTOM = 'custom';
 
     public const CODE_OPTIONS = [
-        self::COD       => 'Cash On Delivery',
+        self::CUSTOM       => 'Custom',
         self::RAZORPAY  => 'Razorpay',
         self::RAZORPAYX => 'Razorpay X',
         self::STRIPE    => 'Stripe',
     ];
 
     public const AVAILABLE_PROVIDERS = [
-        CodPaymentService::class       => 'Cash On Delivery Payment Provider',
+        CustomPaymentService::class       => 'Cash On Delivery Payment Provider',
         RazorpayPaymentService::class  => 'Razorpay Payment Provider',
         StripePaymentService::class    => 'Stripe Payment Provider',
     ];

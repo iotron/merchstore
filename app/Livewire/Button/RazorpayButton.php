@@ -15,12 +15,16 @@ class RazorpayButton extends Component
 
     public function mount(Payment $payment)
     {
+        $payment->loadMissing('customer');
 
         $this->payment = $payment;
+
 
         $this->provider = $this->payment->provider->name;
 
         $this->options = $this->getProviderConfig();
+
+        //dd($this->options);
 
 
         $this->payable = $this->payment->status == Payment::PENDING;
@@ -46,9 +50,9 @@ class RazorpayButton extends Component
             'callback_url' => route('confirm.payment', ['payment' => $this->payment->receipt]),
 
             'prefill' => [
-                'name' => $paymentNotes['booking_name'],
-                'email' => $paymentNotes['booking_email'],
-                'contact' => $paymentNotes['booking_contact']
+                'name' => $this->payment->customer->name,
+                'email' => $this->payment->customer->email,
+                'contact' => $this->payment->customer->contact
             ],
             'notes' => $paymentNotes,
             'theme' => [

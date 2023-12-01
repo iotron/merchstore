@@ -1,0 +1,107 @@
+<?php
+
+namespace App\Services\OrderService\Shipping;
+
+use App\Models\Order\OrderShipment;
+use App\Models\Shipping\ShippingProvider;
+use App\Services\ShippingService\Contracts\ShippingProviderContract;
+use Filament\Notifications\Notification;
+
+class OrderShipmentShippingService
+{
+
+    protected ?string $error = null;
+    protected OrderShipment $orderShipment;
+    protected ShippingProviderContract $shippingProvider;
+
+    public function __construct(OrderShipment $orderShipment, ShippingProviderContract $shippingProvider)
+    {
+        $this->orderShipment = $orderShipment;
+        $this->shippingProvider = $shippingProvider;
+    }
+
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+
+    public function shipped():void
+    {
+        $newProviderOrder = $this->shippingProvider->order()->create($this->orderShipment);
+
+        if (!$this->isFailed($newProviderOrder))
+        {
+            // Fetch Full Order Details From Provider
+            $orderDetails = $this->shippingProvider->order()->fetch($newProviderOrder['order_id']);
+            // Fetch Full Tracking Details From Provider
+            $trackingInfo =  $this->shippingProvider->tracking()->shipment($newProviderOrder['shipment_id']);
+
+            // Get Tracking ID
+            $trackingId = null;
+            if (isset($trackingInfo[0]['tracking_data']['shipment_track'][0]['awb_code']))
+            {
+                $trackingId = $trackingInfo[0]['tracking_data']['shipment_track'][0]['awb_code'];
+            }
+            // Get Tracking Activities
+            $shipmentTrackActivities = null;
+            if (isset($trackingInfo[0]['tracking_data']['shipment_track_activities'])) {
+                $shipmentTrackActivities = $trackingInfo[0]['tracking_data']['shipment_track_activities'];
+            }
+
+            // Fetch Order Channel Id From Provider
+            $channelID = ($this->shippingProvider->getProviderName() == ShippingProvider::CUSTOM)
+                ? $orderDetails['data']['channel_id']
+                : $orderDetails[0]['data']['channel_id'];
+
+            $insertableData = [
+                'details' => $orderDetails,
+                'provider_order_id' => $newProviderOrder['order_id'],
+                'shipment_id' => $newProviderOrder['shipment_id'],
+                'tracking_data' => $trackingInfo,
+                'tracking_id' => $trackingId,
+                'shipment_track_activities' => $shipmentTrackActivities,
+                'provider_payment_method' => $newProviderOrder['payment_method'],
+                'provider_channel_id' => $channelID,
+                'status' => OrderShipment::READYTOSHIP,
+                'last_update' => now(),
+            ];
+
+            $this->orderShipment->fill($insertableData)->save();
+
+            // Send A Notification
+            Notification::make()
+                ->success()
+                ->title('OrderShipment ID:'.$this->orderShipment->id.' Ready For Shipped!')
+                ->body('Shipping Request Placed By '.ucfirst($this->shippingProvider->getProviderName()).' Shipping Service')
+                ->send();
+
+
+        }
+    }
+
+
+    protected function isFailed(array $newProviderOrder):bool
+    {
+        if (isset($newProviderOrder['message']))
+        {
+            // has error
+            // Pickup location need to added.. in shiprocket.. Wrong Pickup location entered. Please choose one location from the data given
+            $this->error = $newProviderOrder['message'];
+            // Throw a Notification (Filament)
+//            Notification::make()
+//                ->danger()
+//                ->title('OrderShipment ID:'.$this->orderShipment->id.' Failed For Shipped!')
+//                ->body('Shipping Request Try To Placed With '.ucwords($this->shippingProvider->getProviderName()))
+//                ->send();
+        }
+        return !is_null($this->error);
+    }
+
+
+
+
+
+
+
+}

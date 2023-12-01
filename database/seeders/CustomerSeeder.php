@@ -29,22 +29,9 @@ class CustomerSeeder extends Seeder
         ]);
 
         // Create Customer Address
-        $demoCustomer->addresses()->create([
-            'name' => fake()->word.' Address',
-            'contact' => fake()->numerify('##########'),
-            'alternate_contact' => '',
-            'type' => 'Home',
-            'address_1' => fake()->address,
-            'address_2' => 'Line Two',
-            'landmark' => '',
-            'city' => 'Kolkata',
-            'postal_code' => 700001,
-            'state' => 'wb',
-            'default' => 1,
-            'priority' => 1,
-            'country_code' => 'IN',
-        ]);
-        $demoCustomer->save();
+        $demoCustomer->addresses()->create($this->getAddressArray());
+        $demoCustomer->addresses()->create($this->getAddressArray());
+        $demoCustomer->addresses()->create($this->getAddressArray());
 
 
 
@@ -57,22 +44,28 @@ class CustomerSeeder extends Seeder
             ->each(function (Customer $customer){
 
                 // Create Customer Address
-                $customer->addresses()->create([
-                    'name' => fake()->word.' Address',
-                    'contact' => fake()->numerify('##########'),
-                    'alternate_contact' => '',
-                    'type' => 'Home',
-                    'address_1' => fake()->address,
-                    'address_2' => 'Line Two',
-                    'landmark' => '',
-                    'city' => 'Kolkata',
-                    'postal_code' => 700001,
-                    'state' => 'wb',
-                    'default' => 1,
-                    'priority' => 1,
-                    'country_code' => 'IN',
-                ]);
-                $customer->save();
+                $customer->addresses()->create($this->getAddressArray());
             });
     }
+
+
+    public function getAddressArray():array
+    {
+        return [
+            'name' => fake()->word.' Address',
+            'contact' => fake()->numerify('##########'),
+            'alternate_contact' => '',
+            'type' => 'Home',
+            'address_1' => fake()->address,
+            'address_2' => 'Line Two',
+            'landmark' => '',
+            'city' => fake()->randomElement(['Delhi','Kolkata','Mumbai']),
+            'postal_code' => 700055,
+            'state' => fake()->randomElement(['del','wb','mum']),
+            'default' => 1,
+            'priority' => 1,
+            'country_code' => 'IN',
+        ];
+    }
+
 }

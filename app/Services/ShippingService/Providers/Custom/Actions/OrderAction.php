@@ -4,7 +4,9 @@ namespace App\Services\ShippingService\Providers\Custom\Actions;
 
 use App\Models\Order\OrderShipment;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
+use App\Services\ShippingService\Providers\Custom\Support\OrderHandler;
 use App\Services\ShippingService\Providers\ShipRocket\Support\hasShippableOrders;
+use Illuminate\Support\Str;
 
 class OrderAction implements ShippingProviderActionContract
 {
@@ -14,8 +16,8 @@ class OrderAction implements ShippingProviderActionContract
     {
 
         $added = [
-            "order_id" => 16161616,
-            "shipment_id" => 15151515,
+//            "order_id" => random_int(11111111,99999999),
+            "shipment_id" => random_int(11111111,99999999),
             "status" => "NEW",
             "status_code" => 1,
             "onboarding_completed_now" => 0,
@@ -23,7 +25,10 @@ class OrderAction implements ShippingProviderActionContract
             "courier_company_id" => null,
             "courier_name" => null
         ];
-        return array_merge($added,$this->format($orderShipment));
+        $result =  array_merge($added,$this->format($orderShipment));
+        $result['order_id'] = random_int(11111111,99999999);
+        $result['payment_method'] = 'COD';
+        return $result;
     }
 
     public function all()
@@ -33,7 +38,7 @@ class OrderAction implements ShippingProviderActionContract
 
     public function fetch(int|string $id)
     {
-        // TODO: Implement fetch() method.
+        return OrderHandler::getOrderDetailArray($id);
     }
 
     public function verify(): bool

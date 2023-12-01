@@ -83,6 +83,8 @@ class Product extends Model implements HasMedia
         'base_price' => MoneyCast::class,
         'price' => MoneyCast::class,
         'tax_amount' => MoneyCast::class,
+        'is_returnable' => 'boolean',
+        'return_window' => 'datetime'
     ];
 
 

@@ -3,6 +3,8 @@
 namespace App\Services\OrderService;
 
 use App\Models\Order\Order;
+use App\Models\Order\OrderShipment;
+use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\ShippingService;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
@@ -17,13 +19,16 @@ class OrderShippedService
 
     public function __construct(Order|Model $order, ShippingService $shippingService)
     {
-        $order->load('shipments','shipments.shippingProvider');
         $this->order = $order;
         $this->shippingService = $shippingService;
     }
 
     public function send():bool
     {
+
+        $this->order->loadMissing('shipments','shipments.shippingProvider');
+
+
         foreach ($this->order->shipments as $shipment)
         {
             $shippingProvider = $shipment->shippingProvider->code;
@@ -56,20 +61,52 @@ class OrderShippedService
                         $shipmentTrackActivities = $trackingInfo[0]['tracking_data']['shipment_track_activities'];
                     }
 
+                    // Fetch Order Details From Provider
+                    $orderDetails = $this->shippingService->provider($shippingProvider)->order()->fetch($newOrderOnProvider['order_id']);
+
+                    $channelID = null;
+                    if ($shippingProvider == ShippingProvider::CUSTOM)
+                    {
+                        $channelID = $orderDetails['data']['channel_id'];
+
+                    }else{
+                        $channelID = $orderDetails[0]['data']['channel_id'];
+                    }
+
+
+
+                    $insertableData = [
+                        'details' => $orderDetails,
+                        'provider_order_id' => $newOrderOnProvider['order_id'],
+                        'shipment_id' => $newOrderOnProvider['shipment_id'],
+                        'tracking_data' => $trackingInfo,
+                        'tracking_id' => $trackingId,
+                        'shipment_track_activities' => $shipmentTrackActivities,
+                        'provider_payment_method' => $newOrderOnProvider['payment_method'],
+                        'provider_channel_id' => $channelID
+                    ];
+
+                   // dd($insertableData);
+
+
+
                     // Update OrderShipment Model
-                    $shipment->details = $newOrderOnProvider;
-                    $shipment->provider_order_id = $newOrderOnProvider['order_id'];
-                    $shipment->shipment_id = $newOrderOnProvider['shipment_id'];
-                    $shipment->tracking_data = $trackingInfo;
-                    $shipment->tracking_id = $trackingId;
-                    $shipment->shipment_track_activities = $shipmentTrackActivities;
-                    $shipment->save();
+//                    $shipment->details = $orderDetails;
+//                    $shipment->provider_order_id = $newOrderOnProvider['order_id'];
+//                    $shipment->shipment_id = $newOrderOnProvider['shipment_id'];
+//                    $shipment->tracking_data = $trackingInfo;
+//                    $shipment->tracking_id = $trackingId;
+//                    $shipment->shipment_track_activities = $shipmentTrackActivities;
+//                    $shipment->provider_payment_method = $newOrderOnProvider['payment_method'];
+//                    $shipment->provider_channel_id = $channelID;
+
+                    $shipment->fill($insertableData)->save();
 
                     // Throw a Notification (Filament)
                     Notification::make()
                         ->success()
                         ->title('OrderShipment ID:'.$shipment->id.' Ready For Shipped!')
-                        ->body('Shipping Request Placed On'.$shipment->shippingProvider->name)
+                        ->body('Shipping Request Placed By '.$shipment->shippingProvider->name.' Shipping Service')
                         ->send();
 
 
@@ -80,9 +117,12 @@ class OrderShippedService
         return is_null($this->error);
     }
 
+
+
     public function getError(): ?string
     {
         return $this->error;
     }
+
 
 }

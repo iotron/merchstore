@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('total'); // subtotal final price
             $table->integer('quantity'); // total quantity
             $table->string('voucher')->nullable();
-
+            $table->boolean('is_cod')->default(false);
             $table->string('tracking_id')->nullable(); // can be deleted
 
             $table->string('status')->default('pending');

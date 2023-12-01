@@ -21,7 +21,8 @@ return new class extends Migration
             $table->integer('tax');      // subtotal tax
             $table->integer('total');      // subtotal final price
             $table->boolean('has_tax')->storedAs('IF(tax > 0, true, false)');
-
+//            $table->string('status');
+//            $table->text('status_feedback')->nullable();
             $table->timestamps();
         });
     }

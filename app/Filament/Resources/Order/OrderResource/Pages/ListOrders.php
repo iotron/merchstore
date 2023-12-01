@@ -19,7 +19,7 @@ class ListOrders extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            //Actions\CreateAction::make(),
         ];
     }
 
@@ -49,6 +49,9 @@ class ListOrders extends ListRecords
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('UUID')
                     ->searchable(),
+
+
+
                 Tables\Columns\TextColumn::make('tracking_id')
                     ->label(__('Tracking'))
                     ->copyable()
@@ -61,7 +64,7 @@ class ListOrders extends ListRecords
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('voucher')
-                    ->default('--none--')
+                    ->default('--not found--')
                     ->searchable(),
 
 
@@ -74,9 +77,14 @@ class ListOrders extends ListRecords
 
                 Tables\Columns\TextColumn::make('customer.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('paymentProvider.name')
-                    ->label('Provider')
+                Tables\Columns\TextColumn::make('payment.provider.name')
+                    ->label('Payment Provider')
+                    ->default('--not found--')
                     ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_cod')
+                    ->label('COD')
+                    ->default(false)->boolean(),
 
                 Tables\Columns\TextColumn::make('status')
                     ->formatStateUsing(function ($state){

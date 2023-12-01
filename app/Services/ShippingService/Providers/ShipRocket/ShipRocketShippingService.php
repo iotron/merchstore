@@ -4,10 +4,12 @@ namespace App\Services\ShippingService\Providers\ShipRocket;
 
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
+use App\Services\ShippingService\Contracts\Provider\ShippingProviderReturnContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderTrackingContract;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
 use App\Services\ShippingService\Providers\ShipRocket\Actions\CourierAction;
 use App\Services\ShippingService\Providers\ShipRocket\Actions\OrderAction;
+use App\Services\ShippingService\Providers\ShipRocket\Actions\ReturnAction;
 use App\Services\ShippingService\Providers\ShipRocket\Actions\TrackingAction;
 
 class ShipRocketShippingService implements ShippingProviderContract
@@ -34,6 +36,11 @@ class ShipRocketShippingService implements ShippingProviderContract
     public function getClass(): string
     {
         return get_class($this);
+    }
+
+    public function getProvider(): ShippingProviderContract
+    {
+       return $this;
     }
 
     /**
@@ -64,9 +71,9 @@ class ShipRocketShippingService implements ShippingProviderContract
         return new CourierAction($this->api);
     }
 
-    public function return()
+    public function return():ShippingProviderReturnContract
     {
-        // TODO: Implement return() method.
+        return new ReturnAction($this->api);
     }
 
     public function shipment()

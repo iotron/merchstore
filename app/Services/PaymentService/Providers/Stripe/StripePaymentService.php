@@ -2,6 +2,7 @@
 
 namespace App\Services\PaymentService\Providers\Stripe;
 
+use App\Models\Payment\PaymentProvider;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
@@ -15,7 +16,7 @@ use Stripe\StripeClient;
 
 class StripePaymentService implements PaymentProviderContract,StripePaymentServiceContract
 {
-
+    protected ?PaymentProvider $providerModel = null;
     protected ?string $error = null;
     protected StripeClient $api;
     protected bool $intentMode=false;
@@ -32,8 +33,9 @@ class StripePaymentService implements PaymentProviderContract,StripePaymentServi
     protected bool $display_terms = false;
 
 
-    public function __construct(StripeClient $api_key)
+    public function __construct(?PaymentProvider $providerModel,StripeClient $api_key)
     {
+        $this->providerModel = $providerModel;
         $this->api = $api_key;
         $this->discoverConfig();
     }
@@ -195,6 +197,17 @@ class StripePaymentService implements PaymentProviderContract,StripePaymentServi
     {
         return get_class($this);
     }
+
+    public function getProvider():static|PaymentProviderContract
+    {
+        return $this;
+    }
+
+    public function getModel():?PaymentProvider
+    {
+        return $this->providerModel;
+    }
+
 
     /**
      * @param string $error

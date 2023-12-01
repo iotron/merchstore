@@ -38,7 +38,7 @@ trait hasShippableOrders
         })->toArray();
 
         return [
-            'order_id'                  => $order->id,
+            'order_id'                  => $order->id, // need to check
             'order_date'                => $order->created_at->format('Y-m-d H:i'),
             'order_items'               => $orderItems,
             'payment_method'            => ($orderShipment->cod) ? 'COD' : 'Prepaid',

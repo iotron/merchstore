@@ -7,6 +7,7 @@ use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
+use App\Models\Payment\Refund;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -69,7 +70,7 @@ class Order extends Model
         'shipping_is_billing',
         'billing_address_id',
         'shipping_address_id',
-
+        'is_cod',
     ];
 
     protected $casts = [
@@ -91,6 +92,11 @@ class Order extends Model
         return $this->hasOne(Payment::class, 'order_id', 'id');
     }
 
+    public function refund():HasOne
+    {
+        return $this->hasOne(Refund::class, 'order_id','id');
+    }
+
 
 
     public function billingAddress(): BelongsTo
@@ -107,6 +113,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderProduct::class, 'order_id', 'id');
     }
+
+
 
     public function shipments(): HasMany
     {

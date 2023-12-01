@@ -19,17 +19,28 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        return [
+        $data = [
             'sku' => $this->faker->unique()->word,
             'type' => Product::SIMPLE,
-            'name' => $productName = $this->faker->unique()->word,
+            'name' => $productName = ucwords($this->faker->unique()->words(2,true)),
             'url' => Str::slug($productName),
             'status' => Product::PUBLISHED,
-            'base_price' => $basePrice = fake()->numberBetween(1000, 30000),
+            'base_price' => $basePrice = fake()->numberBetween(1000, 12000),
             'price' => $basePrice,
             'filter_group_id' => fake()->randomElement([5, 6]),
             'quantity' => 0,
+            'is_returnable' => $returnable = fake()->boolean(40),
         ];
+
+        if ($data['is_returnable'])
+        {
+            $data = array_merge($data,[
+                'return_window' => now()->addDays(rand(1,4))
+            ]);
+        }
+
+        return $data;
+
     }
 
 

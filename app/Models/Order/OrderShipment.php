@@ -24,6 +24,9 @@ class OrderShipment extends Model
     public const DELIVERED = 'delivered';
     public const CANCELLED = 'cancelled';
 
+    public const RETURNED = 'returned';
+    public const RETURNING = 'returning';
+
     public const StatusOptions = [
         self::PROCESSING => 'Processing',
         self::REVIEW => 'Review',
@@ -31,7 +34,9 @@ class OrderShipment extends Model
         self::READYTOSHIP => 'Ready To Ship',
         self::INTRANSIT => 'In Transit',
         self::DELIVERED => 'Delivered',
-        self::CANCELLED => 'Cancelled'
+        self::CANCELLED => 'Cancelled',
+        self::RETURNED => 'Returned',
+        self::RETURNING => 'Return Placed',
     ];
 
     protected $fillable = [
@@ -40,25 +45,25 @@ class OrderShipment extends Model
         'status',
         'invoice_uid',
         'cod',
-
         'tracking_id',
         'tracking_data',
-
-        'provider_order_id',
-        'shipment_id',
-        'shipment_track_activities',
-        'shipping_provider_id',
-        'details',
-
-        'pickup_address',
-        'delivery_address',
-        'order_id',
         'weight',
         'length',
         'breadth',
         'height',
         'charge',
-
+        'provider_payment_method',
+        'provider_channel_id',
+        'provider_order_id',
+        'shipment_id',
+        'shipment_track_activities',
+        'details',
+        'order_id',
+        'pickup_address',
+        'delivery_address',
+        'shipping_provider_id',
+        'return_order_id',
+        'return_shipment_id'
     ];
 
     protected $casts = [

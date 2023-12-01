@@ -5,7 +5,14 @@ namespace App\Filament\Resources\Order\OrderResource\Pages;
 use App\Filament\Resources\Order\OrderResource;
 use App\Helpers\Money\Money;
 use App\Models\Order\Order;
+use App\Models\Order\OrderShipment;
+use App\Models\Shipping\ShippingProvider;
+use App\Services\OrderService\OrderRefundService;
+use App\Services\OrderService\OrderReturnService;
 use App\Services\OrderService\OrderShippedService;
+use App\Services\OrderService\Return\OrderProductReturnService;
+use App\Services\OrderService\Shipping\OrderShipmentShippingService;
+use App\Services\PaymentService\PaymentService;
 use App\Services\ShippingService\ShippingService;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -73,19 +80,42 @@ class ViewOrder extends ViewRecord
                     }
                 }),
            Actions\Action::make('returnOrder')->color('danger')
-//               ->action(function (ShippingService $shippingService){
-//                   $orderReturnService = new OrderReturnService($this->record,$shippingService);
-//                   if ($orderReturnService->return())
-//                   {
-//                       // Successfully Return
-//
-//                   }else{
-//                       Notification::make()
-//                           ->title('Return Not Made!')
-//                           ->body($orderReturnService->getError())
-//                           ->send();
-//                   }
-//               }),
+               ->action(function (ShippingService $shippingService){
+                   $orderReturnService = new OrderReturnService($this->record,$shippingService);
+                   if ($orderReturnService->return())
+                   {
+                       // Successfully Return
+
+                   }else{
+                       Notification::make()
+                           ->title('Return Not Made!')
+                           ->body($orderReturnService->getError())
+                           ->send();
+                   }
+               }),
+
+
+
+
+
+            Actions\Action::make('refund')
+                ->color('success')
+//                ->visible(!$this->record->is_cod)
+                ->action(function (PaymentService $paymentService){
+                    $refundService = new OrderRefundService($this->record,$paymentService);
+                    if ($refundService->refund())
+                    {
+                        // Successfully Refund
+
+                    }else{
+                        Notification::make()
+                            ->title('Opps! Order not shipped..')
+                            ->body($refundService->getError())
+                            ->send();
+                    }
+                }),
+
+
 
         ];
     }
@@ -128,8 +158,7 @@ class ViewOrder extends ViewRecord
                         Tabs\Tab::make('Order')
                             ->columns(2)
                             ->schema($this->orderInfoSchema()),
-                        Tabs\Tab::make('Product')
-                            ->columns(2)
+                        Tabs\Tab::make('Products')
                             ->schema($this->orderProductInfoSchema()),
                         Tabs\Tab::make('Payment')
                             ->columns(2)
@@ -235,26 +264,12 @@ class ViewOrder extends ViewRecord
         ];
     }
 
-    public function orderProductInfoSchema(): array
-    {
-        return [
 
-            RepeatableEntry::make('orderProducts')
-
-                ->schema([
-                    TextEntry::make('product.name'),
-                    TextEntry::make('quantity'),
-                ])
-                ->columns(2)
-
-
-        ];
-    }
 
     public function orderPaymentInfoSchema(): array
     {
         return [
-
+            TextEntry::make('payment.provider.name')->label('Payment Provider'),
             TextEntry::make('payment.receipt'),
 
             Split::make([
@@ -433,6 +448,178 @@ class ViewOrder extends ViewRecord
         return Section::make($bag);
 
     }
+
+
+
+
+
+
+
+    // Basic
+    public function orderProductInfoSchema(): array
+    {
+        return [
+
+            RepeatableEntry::make('orderProducts')
+                ->grid(2)
+                ->columns(2)
+                ->schema([
+
+                    TextEntry::make('product.name')
+                        ->hiddenLabel()
+                        ->columnSpanFull()
+                        ->icon('heroicon-m-briefcase')
+                        ->size(TextEntry\TextEntrySize::Large),
+
+                    TextEntry::make('product.sku')
+                        ->label('SKU')
+                        ->size(TextEntry\TextEntrySize::Large),
+
+                    IconEntry::make('product.is_returnable')
+                        ->default(false)
+                        ->label('Returnable')
+                        ->boolean()
+                        ->hintAction(
+                            \Filament\Infolists\Components\Actions\Action::make('return')
+                                ->requiresConfirmation()
+                                ->visible(function (?Model $record){
+                                    return $record->product->is_returnable;
+                                })
+                                ->action(function (Model $record,ShippingService $shippingService){
+                                    $orderProductReturnService = new OrderProductReturnService($shippingService,$record);
+                                    if ($orderProductReturnService->return())
+                                    {
+                                        Notification::make()
+                                            ->success()
+                                            ->title('Return Placed')
+                                            ->body('Return Placed for all shipments')
+                                            ->send();
+
+                                    }else{
+                                        Notification::make()
+                                            ->title('Return Process Abort!')
+                                            ->body($orderProductReturnService->getError())
+                                            ->danger()
+                                            ->send();
+                                    }
+                                })
+
+                        ),
+
+                    TextEntry::make('order.payment.provider.name')->label('Pay With'),
+
+                    TextEntry::make('quantity')->hiddenLabel()
+                        ->formatStateUsing(function ($state){
+                            return $state.' (Qty)';
+                        })->badge(),
+
+                    TextEntry::make('amount')
+                        ->formatStateUsing(function ($state){
+                            return ($state instanceof Money) ? $state->formatted() : $state;
+                        }),
+
+                    TextEntry::make('discount')
+                        ->formatStateUsing(function ($state){
+                            return ($state instanceof Money) ? $state->formatted() : $state;
+                        }),
+
+                    TextEntry::make('tax')
+                        ->formatStateUsing(function ($state){
+                            return ($state instanceof Money) ? $state->formatted() : $state;
+                        }),
+
+                    TextEntry::make('total')
+                        ->formatStateUsing(function ($state){
+                            return ($state instanceof Money) ? $state->formatted() : $state;
+                        }),
+//                    IconEntry::make('has_tax')->default(false)->boolean(),
+
+
+                    RepeatableEntry::make('shipment')
+                        ->columns(3)
+                        ->columnSpanFull()
+                        ->schema([
+                            TextEntry::make('status')
+                                ->badge()
+                                ->formatStateUsing(function ($state){
+                                    return OrderShipment::StatusOptions[$state];
+                                })
+                                ->color(fn (string $state): string => match ($state) {
+                                    OrderShipment::PROCESSING => 'gray',
+                                    OrderShipment::REVIEW,OrderShipment::READYTOSHIP,OrderShipment::PACKING => 'warning',
+                                    OrderShipment::DELIVERED,OrderShipment::INTRANSIT,OrderShipment::RETURNED => 'success',
+                                    OrderShipment::CANCELLED,OrderShipment::RETURNING => 'danger',
+                                }),
+                            TextEntry::make('total_quantity')->label('Quantity'),
+                            IconEntry::make('cod')->default(false)->boolean(),
+                            TextEntry::make('provider_payment_method')
+                                ->label('Payment Mode')
+                                ->tooltip('Shipping Provider Payment Mode')
+                                ->default('--not found--'),
+                            TextEntry::make('provider_order_id')
+                                ->default('--not found--'),
+                            TextEntry::make('tracking_id')->default('--not found--'),
+                            TextEntry::make('return_order_id')
+                                ->visible(function ($state){
+                                    return !is_null($state);
+                                })
+                                ->default('--not found--'),
+
+                            TextEntry::make('return_shipment_id')
+                                ->visible(function ($state){
+                                    return !is_null($state);
+                                })
+                                ->default('--not found--'),
+
+                            TextEntry::make('pickupAddress.address_1')
+                                ->columnSpanFull()
+                                ->hint(function (Model $record){
+                                    if (is_null($record->weight) && is_null($record->length) && is_null($record->breadth) && is_null($record->height))
+                                    {
+                                        return 'Not Ready For Shipment';
+                                    }else{
+                                        return 'Ready For Shipment ';
+                                    }
+                                })
+                                ->hintAction(
+                                    \Filament\Infolists\Components\Actions\Action::make('make_shipment')
+                                        ->requiresConfirmation()
+                                        ->form([
+                                            Select::make('shipping_provider')
+                                                ->options(ShippingProvider::where('status','=',true)->get()->pluck('name','code'))
+                                                ->helperText('Choose Shipping Method')
+                                                ->required(),
+                                        ])
+                                        ->visible(function (Model $record){
+                                            return !is_null($record->weight) && !is_null($record->length) && !is_null($record->breadth) && !is_null($record->height);
+                                        })
+                                        ->action(function (array $data,ShippingService $shippingService,Model $record){
+                                            $shippingProvider = $shippingService->provider($data['shipping_provider'])->getProvider();
+                                            $shipmentShipService = new OrderShipmentShippingService($record,$shippingProvider);
+                                            $shipmentShipService->shipped();
+                                            if (is_null($shipmentShipService->getError()))
+                                            {
+
+                                            }else{
+                                                Notification::make()
+                                                    ->title('Abort!')
+                                                    ->body($shipmentShipService->getError())
+                                                    ->danger()
+                                                    ->send();
+                                            }
+
+                                        })
+                                )
+                        ]),
+
+
+
+                ])
+
+
+        ];
+    }
+
 
 
 }

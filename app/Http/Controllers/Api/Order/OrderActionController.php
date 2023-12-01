@@ -66,7 +66,7 @@ class OrderActionController extends Controller
         if (!$paymentProvider->status) {
             return response()->json(['status' => false, 'message' => 'please choose another payment service'], 422);
         }
-       $this->paymentService->provider($paymentProvider->code);
+
 
 
         // Validate Delivery Address (auth)
@@ -91,7 +91,9 @@ class OrderActionController extends Controller
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         }
-        $orderCreationService = new OrderCreationService($this->paymentService,$cart);
+        $paymentProviderService = $this->paymentService->provider($paymentProvider->code)->getProvider();
+
+        $orderCreationService = new OrderCreationService($paymentProviderService,$cart);
         $uuid = $this->generateUniqueID();
         if (is_null($uuid))
         {
@@ -107,12 +109,12 @@ class OrderActionController extends Controller
         if (app()->isLocal())
         {
             // return Application Checkout link Route
-            return (!app()->runningInConsole() && !is_null($this->paymentService)) ? response()->json([
+            return (!app()->runningInConsole() && !is_null($paymentProviderService->getModel())) ? response()->json([
                 'success' => true,
                 'message' => 'order placed successfully',
                 'payment_provider' => [
-                    'name' => $this->paymentService->getProviderModel()->name,
-                    'code' => $this->paymentService->getProviderModel()->code,
+                    'name' => $paymentProviderService->getModel()->name,
+                    'code' => $paymentProviderService->getModel()->code,
                 ],
                 'order' => [
                     'uuid' => $orderCreationService->getOrder()->uuid,
@@ -162,6 +164,14 @@ class OrderActionController extends Controller
 
 
 
+
+    }
+
+
+
+
+    public function captureCallback()
+    {
 
     }
 

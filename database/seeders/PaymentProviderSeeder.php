@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderCreationService;
-use App\Services\PaymentService\Providers\CashOnDelivery\CodPaymentService;
+use App\Services\PaymentService\Providers\Custom\CustomPaymentService;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayPaymentService;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -21,9 +21,9 @@ class PaymentProviderSeeder extends Seeder
 
 
         $cashOnDeliveryProvider = PaymentProvider::create([
-            'name' => 'Cash On Delivery',
-            'code' => 'cod',
-            'service_provider' => CodPaymentService::class,
+            'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::CUSTOM],
+            'code' => PaymentProvider::CUSTOM,
+            'service_provider' => CustomPaymentService::class,
             'status' => true,
             'is_primary' => false,
             'has_api' => false,
@@ -32,8 +32,8 @@ class PaymentProviderSeeder extends Seeder
 
 
         $razorpay = PaymentProvider::create([
-            'name' => 'Razorpay',
-            'code' => 'razorpay',
+            'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::RAZORPAY],
+            'code' => PaymentProvider::RAZORPAY,
             'service_provider' => RazorpayPaymentService::class,
             'status' => true,
             'is_primary' => true,
@@ -43,8 +43,8 @@ class PaymentProviderSeeder extends Seeder
 
 
         $stripe = PaymentProvider::create([
-            'name' => 'Stripe',
-            'code' => 'stripe',
+            'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::STRIPE],
+            'code' => PaymentProvider::STRIPE,
             'service_provider' => StripePaymentService::class,
             'status' => true,
             'is_primary' => false,

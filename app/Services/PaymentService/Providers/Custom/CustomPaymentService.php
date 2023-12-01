@@ -1,23 +1,28 @@
 <?php
 
-namespace App\Services\PaymentService\Providers\CashOnDelivery;
+namespace App\Services\PaymentService\Providers\Custom;
 
+use App\Models\Payment\PaymentProvider;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderPayoutContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderRefundContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationContract;
-use App\Services\PaymentService\Providers\CashOnDelivery\Actions\OrderAction;
+use App\Services\PaymentService\Providers\Custom\Actions\OrderAction;
+use App\Services\PaymentService\Providers\Custom\Actions\RefundAction;
 
 
-class CodPaymentService implements PaymentProviderContract
+class CustomPaymentService implements PaymentProviderContract
 {
+
+    protected ?PaymentProvider $providerModel = null;
 
     //
 
-    public function __construct()
+    public function __construct(?PaymentProvider $providerModel,mixed $api=null)
     {
+        $this->providerModel = $providerModel;
     }
 
     public function getApi(): object
@@ -33,6 +38,17 @@ class CodPaymentService implements PaymentProviderContract
     public function getClass(): string
     {
         return get_class($this);
+    }
+
+    public function getModel():?PaymentProvider
+    {
+        return $this->providerModel;
+    }
+
+
+    public function getProvider():static|PaymentProviderContract
+    {
+        return $this;
     }
 
     /**
@@ -65,7 +81,7 @@ class CodPaymentService implements PaymentProviderContract
 
     public function refund(): PaymentProviderRefundContract
     {
-        // TODO: Implement refund() method.
+        return  new RefundAction();
     }
 
     public function payout(): PaymentProviderPayoutContract

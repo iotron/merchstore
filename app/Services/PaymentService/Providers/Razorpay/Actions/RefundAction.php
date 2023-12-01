@@ -3,9 +3,10 @@
 namespace App\Services\PaymentService\Providers\Razorpay\Actions;
 
 use App\Helpers\Money\Money;
-use App\Models\Customer\Booking;
-use App\Models\Customer\Payment;
-use App\Models\Customer\Refund;
+
+use App\Models\Order\Order;
+use App\Models\Payment\Payment;
+use App\Models\Payment\Refund;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderRefundContract;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayApi;
@@ -25,46 +26,21 @@ class RefundAction implements PaymentProviderRefundContract
     }
 
     /**
-     * @param Booking $booking
-     * @return Refund
+     * @param Payment $payment
+     * @return mixed|void
      */
-    public function create(Booking $booking):Refund
+    public function create(Payment $payment)
     {
 
         try {
 
-            if ($booking->refund()->count())
-            {
-                return $booking->refund;
-            }
 
-            $response = $this->api->payment->fetch($booking->payment->provider_ref_id)->refund([
-                "amount"=> ($booking->amount instanceof Money) ? $booking->amount->getAmount() : $booking->amount,
+            $response = $this->api->payment->fetch($payment->provider_ref_id)->refund([
+                "amount"=> ($payment->total instanceof Money) ? $payment->total->getAmount() : $payment->total,
                 "speed"=> $this->paymentProvider->getSpeed(),
             ]);
 
-            if ($response['status'] == 'processed')
-            {
-                // Update Payment
-                $paymentModel = $booking->payment;
-                $paymentModel->status = Payment::REFUND;
-                $paymentModel->save();
-                // Create And Return Refund Model
-                return $booking->refund()->create([
-                    'refund_id' => $response['id'],
-                    'amount' => $response['amount'],
-                    'currency' => $response['currency'],
-                    'payment_id' => $response['payment_id'],
-                    'receipt' => $booking->payment->receipt,
-                    'speed' => $response['speed_processed'],
-                    'status' => Refund::COMPLETED,
-                    'batch_id' => $response['batch_id'],
-                    'notes' => $response['notes']->toArray(),
-                    'tracking_data' =>  $response['acquirer_data']->toArray(),
-                    'details' => $response->toArray(),
-                    'error' => $response['error'] ?? null,
-                ]);
-            }
+           return $response;
 
 
         }catch (\Throwable $e)

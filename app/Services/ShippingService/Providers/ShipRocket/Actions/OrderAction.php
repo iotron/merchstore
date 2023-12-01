@@ -33,14 +33,14 @@ class OrderAction implements ShippingProviderActionContract
 
     public function all()
     {
-        $response = $this->api->http()->get($this->api->getBaseUrl().'orders');
+        $response = $this->api->httpGet('orders');
         return $response->json();
     }
 
     public function fetch(int|string $id)
     {
-        $response = $this->api->http()->get($this->api->getBaseUrl().'orders/show/'.$id);
-        return $response->body();
+        $response = $this->api->httpGet('orders/show/'.$id);
+        return $response->json();
     }
 
     public function verify(): bool

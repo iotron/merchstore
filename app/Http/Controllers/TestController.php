@@ -23,14 +23,17 @@ class TestController extends Controller
 {
 
 
-    public function index(ShippingService $shippingService)
+    public function index(PaymentService $paymentService)
     {
+//        $razorpay = $paymentService->provider('razorpay')->getProvider();
+//
+//           dd($razorpay->isOnline());
        // $order = Order::with('shipments')->first();
 
 
-        $orderShipment = OrderShipment::with('orderProducts')->first();
-
-        dd($orderShipment);
+//        $orderShipment = OrderShipment::with('orderProducts')->first();
+//
+//        dd($orderShipment);
 
 
 
@@ -40,12 +43,12 @@ class TestController extends Controller
 //            $shippingService->provider('shiprocket')->order()->create($shipment);
 //        }
 
-        $orderShipment = $order->shipments->first();
-
-
-
-        dd($shippingService->provider('shiprocket')->courier()->getCharge());
-
+//        $orderShipment = $order->shipments->first();
+//
+//
+//
+//        dd($shippingService->provider('shiprocket')->courier()->getCharge());
+//
 
 //
 //
@@ -59,7 +62,7 @@ class TestController extends Controller
 //      //  dd($paymentService->provider('razorpay')->order()->fetch('order_N2NOkMZ3higYO2'));
 
 
-      //  $this->loginDefaultCustomer();
+       $this->loginDefaultCustomer();
 
     }
 

@@ -30,11 +30,15 @@ return new class extends Migration
             $table->string('height')->nullable();
             $table->float('charge', 10, 2, true)->default(0.00);
 
-
+            $table->string('provider_payment_method')->nullable(); // COD/Prepaid
+            $table->string('provider_channel_id')->nullable(); // after creating an order or with channel_id
             $table->string('provider_order_id')->nullable();
             $table->string('shipment_id')->nullable();
             $table->json('shipment_track_activities')->nullable();
             $table->json('details')->nullable();
+
+            $table->string('return_order_id')->nullable();
+            $table->string('return_shipment_id')->nullable();
 
             // order id
             $table->foreignId('order_id')->constrained('orders')->onUpdate('cascade')->onDelete('cascade');

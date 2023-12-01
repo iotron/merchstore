@@ -228,7 +228,16 @@ class EditOrder extends EditRecord
                             Placeholder::make('shipping_provider')
                                 ->hiddenLabel()
                                 ->content(function (Model $record){
-                                    return 'Quantity : '.$record->total_quantity.' |Shipping Provider : '.$record->shippingProvider->name . '  ( Code: '.$record->shippingProvider->code.')';
+                                    $record->loadMissing('shippingProvider');
+                                    $text = 'Quantity : '.$record->total_quantity;
+                                    if (!is_null($record->shippingProvider))
+                                    {
+                                        $text .= ' |Shipping Provider : '.$record->shippingProvider->name . '  ( Code: '.$record->shippingProvider->code.')';
+                                    }else{
+                                        $text .=' |Shipping Provider : --not set yet--';
+                                    }
+
+                                    return $text;
                                 }),
 
 

@@ -12,6 +12,22 @@ class OrderProduct extends Model
 {
     use HasFactory;
 
+
+//    public const PROCESSING = 'processing';
+//    public const SHIPPED = 'shipped';
+//    public const RETURNED = 'returned';
+//    public const RESTOCKED_AFTER_RETURN = 'restock_after_return';
+//
+//    public const STATUS_OPTIONS = [
+//        self::PROCESSING => 'Processing',
+//        self::SHIPPED => 'Shipped',
+//        self::RETURNED => 'Returned',
+//        self::RESTOCKED_AFTER_RETURN => 'Restock',
+//    ];
+
+
+
+
     protected $fillable = [
         'quantity',
         'amount',
@@ -19,7 +35,9 @@ class OrderProduct extends Model
         'tax',
         'total',
         'has_tax',
-        'product_id'
+        'product_id',
+        'status',
+        'status_feedback'
     ];
 
     protected $casts = [

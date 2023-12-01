@@ -1,0 +1,5 @@
+<div>
+
+
+    {{ $getAction('actions') }}
+</div>

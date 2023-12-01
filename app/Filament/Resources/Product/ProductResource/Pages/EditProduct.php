@@ -10,6 +10,7 @@ use App\Models\Product\Product;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -54,6 +55,7 @@ class EditProduct extends EditRecord
         // Check Money Instances
         $product['base_price'] = $product['base_price']->getAmount();
         $product['price'] = $product['price']->getAmount();
+        $product['tax_amount'] = $product['tax_amount']->getAmount();
 
 
         // Add Product Flat Too
@@ -133,6 +135,27 @@ class EditProduct extends EditRecord
                     ->hint('Max - 100')
                     ->maxLength(100)
                     ->required(),
+
+
+                Toggle::make('is_returnable')
+                    ->label(__('Returnable'))
+                    ->helperText(__('customers have the option to return this product'))
+                    ->inlineLabel()
+                    ->lazy()
+                    ->default(false),
+
+
+                DateTimePicker::make('return_window')
+                    ->seconds(false)
+                    ->label(__('Cancellation Period'))
+                    ->inlineLabel()
+//                    ->minValue(1)
+//                    ->maxValue(function () {
+//                        return now()->diffInDays($this->record->start_date, false);
+//                    })
+                    ->visible(function (Get $get) {
+                        return $get('is_returnable');
+                    }),
 
 
 

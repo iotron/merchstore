@@ -63,7 +63,8 @@ class ProductSeeder extends Seeder
 
                     // Add Stock
                     $stock1 = $product->stocks()->create([
-                        'init_quantity' => fake()->numberBetween(200, 600),
+//                        'init_quantity' => fake()->numberBetween(200, 600),
+                        'init_quantity' => fake()->randomElement([200,300]),
                         'sold_quantity' => 0,
                     ]);
                     $stock1Address = $stock1->addresses()->create(Address::factory()->raw());
@@ -71,7 +72,8 @@ class ProductSeeder extends Seeder
 
 
                     $stock2 = $product->stocks()->create([
-                        'init_quantity' => fake()->numberBetween(200, 600),
+                        //'init_quantity' => fake()->numberBetween(200, 600),
+                        'init_quantity' => fake()->randomElement([50,150]),
                         'sold_quantity' => 0,
                     ]);
 
@@ -79,7 +81,8 @@ class ProductSeeder extends Seeder
                     $stock2->update(['address_id' => $stock2Address->id]);
 
                     $stock3 = $product->stocks()->create([
-                        'init_quantity' => fake()->numberBetween(200, 600),
+                        //'init_quantity' => fake()->numberBetween(200, 600),
+                        'init_quantity' => fake()->randomElement([100,200]),
                         'sold_quantity' => 0,
                     ]);
                     $stock3Address = $stock3->addresses()->create(Address::factory()->raw());

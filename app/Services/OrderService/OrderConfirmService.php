@@ -4,12 +4,15 @@ namespace App\Services\OrderService;
 
 use App\Models\Localization\Address;
 use App\Models\Order\Order;
+use App\Models\Order\OrderProduct;
 use App\Models\Order\OrderShipment;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
+use App\Models\Product\Product;
 use App\Models\Promotion\Voucher;
 use App\Models\Promotion\VoucherCode;
 use App\Models\Shipping\ShippingProvider;
+use Illuminate\Database\Eloquent\Model;
 
 class OrderConfirmService
 {
@@ -64,42 +67,107 @@ class OrderConfirmService
         ])->save();
     }
 
-    private function updateProductStock():void
-    {
+//    private function updateProductStock():void
+//    {
+//
+//
+//        foreach ($this->order->orderProducts as $orderProduct)
+//        {
+//            $productModel = $orderProduct->product;
+//
+//            $totalQuantity = $orderProduct->quantity;
+//            $productAllStock = $productModel->availableStocks()->get();
+//
+//
+//            foreach($productAllStock as $stock)
+//            {
+//                if ($totalQuantity != 0)
+//                {
+//                    if($stock->in_stock_quantity >= $totalQuantity)
+//                    {
+//                        // Update Product Stock
+//                        $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
+//                        $stock->save();
+//                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
+//                        $totalQuantity = 0;
+//                    }elseif($stock->in_stock){
+//                        // Partially Update Stock From Each Stock
+//                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
+//                        $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
+//                        // Update Product Stock
+//                        $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
+//                        $stock->save();
+//                    }
+//                }
+//            }
+//
+//        }
+//    }
+//
+//
 
+
+
+
+
+
+    protected function updateProductStock()
+    {
+        $this->order->loadMissing('orderProducts','orderProducts.product','orderProducts.product.availableStocks','orderProducts.shipment');
 
         foreach ($this->order->orderProducts as $orderProduct)
         {
-            $productModel = $orderProduct->product;
 
-            $totalQuantity = $orderProduct->quantity;
-            $productAllStock = $productModel->availableStocks()->get();
-
-
-            foreach($productAllStock as $stock)
+            foreach ($orderProduct->shipment as $orderShipment)
             {
-                if ($totalQuantity != 0)
-                {
-                    if($stock->in_stock_quantity >= $totalQuantity)
-                    {
-                        // Update Product Stock
-                        $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
-                        $stock->save();
-                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-                        $totalQuantity = 0;
-                    }elseif($stock->in_stock){
-                        // Partially Update Stock From Each Stock
-                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-                        $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
-                        // Update Product Stock
-                        $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
-                        $stock->save();
-                    }
+
+                $this->updateStock($orderProduct->product,$orderShipment,$orderProduct);
+            }
+
+
+        }
+
+    }
+
+
+
+
+
+    protected function updateStock(Product $product, OrderShipment $orderShipment, OrderProduct|Model $orderProduct)
+    {
+
+       // dd($product);
+        $requiredQuantity = $this->order->quantity;
+        $quantityFulfilled = 0;
+
+        foreach ($product->availableStocks as $stock) {
+
+            if ($stock->address_id == $orderShipment->pickup_address)
+            {
+                if ($stock->in_stock_quantity >= $requiredQuantity - $orderShipment->total_quantity) {
+                    // Deducted Stock Quantity & Update Product Stock
+                    $quantityToDeduct = $requiredQuantity - $orderShipment->total_quantity;
+
+                    $stock->sold_quantity += $quantityToDeduct;
+                    $stock->save();
+
+                    $pickUpAddress = $stock->addresses()->first();
+
+                    // Update the quantity fulfilled
+                    $quantityFulfilled += $quantityToDeduct;
+
+                    // Break the loop since the required quantity is fulfilled
+                    break;
                 }
             }
 
         }
+        // dd($quantityFulfilled,$requiredQuantity);
     }
+
+
+
+
 
     private function updateUsageOfCouponIfPresent(): void
     {

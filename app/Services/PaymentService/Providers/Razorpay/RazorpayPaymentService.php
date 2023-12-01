@@ -2,6 +2,7 @@
 
 namespace App\Services\PaymentService\Providers\Razorpay;
 
+use App\Models\Payment\PaymentProvider;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderOrderContract;
@@ -25,20 +26,30 @@ class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentS
     private ?string $error = null;
     protected string $speed = 'normal';
     private ?RazorpayApi $apiX=null;
-    protected bool $activateX = false;
+    protected bool $razorpayX = false;
+    protected ?PaymentProvider $providerModel = null;
 
-    public function __construct(RazorpayApi $api,bool $activateX=false)
+    public function __construct(?PaymentProvider $providerModel,RazorpayApi $api,bool $activateX=false)
     {
+
+        $this->providerModel = $providerModel;
         $this->api = $api;
-        $this->activateX = $activateX;
+        $this->razorpayX = $activateX;
         $this->discoverConfig();
+
     }
+
+
+
 
     protected function discoverConfig()
     {
         $this->speed = config('payment-provider.providers.razorpay.speed');
-        if ($this->activateX)
+        if ($this->razorpayX)
         {
+            throw_if(empty(config('services.razorpay.api_x_key')),'Razorpay-X Key not found!',500);
+            throw_if(empty(config('services.razorpay.api_x_secret')),'Razorpay-X Secret not found!',500);
+
             $this->apiX = $this->getRazorpayXApi();
         }
     }
@@ -46,6 +57,12 @@ class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentS
     public function getSpeed(): string
     {
         return $this->speed;
+    }
+
+
+    public function getModel():?PaymentProvider
+    {
+        return $this->providerModel;
     }
 
 
@@ -130,6 +147,11 @@ class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentS
     public function getClass(): string
     {
         return get_class($this);
+    }
+
+    public function getProvider():static|PaymentProviderContract
+    {
+        return $this;
     }
 
 
