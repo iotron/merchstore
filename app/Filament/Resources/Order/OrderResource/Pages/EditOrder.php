@@ -7,6 +7,7 @@ use App\Helpers\Money\Money;
 use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Order\OrderShipment;
+use App\Models\Payment\Payment;
 use App\Models\Product\Product;
 use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\ShippingService;
@@ -71,6 +72,8 @@ class EditOrder extends EditRecord
                         Tabs\Tab::make('General')
                             ->columns(2)
                             ->schema($this->getOrderSchema()),
+                        Tabs\Tab::make('Payment')
+                            ->schema($this->getPaymentSchema()),
                         Tabs\Tab::make('Product')
                             ->schema($this->getProductSchema()),
                         Tabs\Tab::make('Shipping')
@@ -123,6 +126,56 @@ class EditOrder extends EditRecord
                 ->numeric(),
         ];
     }
+
+
+
+    public function getPaymentSchema()
+    {
+        return [
+            Repeater::make('payment')
+                ->relationship('payment')
+                ->columns(2)
+                ->mutateRelationshipDataBeforeFillUsing(function (array $data){
+                    $data['subtotal'] = ($data['subtotal'] instanceof Money) ? $data['subtotal']->getAmount() : $data['subtotal'];
+                    $data['discount'] = ($data['discount'] instanceof Money) ? $data['discount']->getAmount() : $data['discount'];
+                    $data['tax'] = ($data['tax'] instanceof Money) ? $data['tax']->getAmount() : $data['tax'];
+                    $data['total'] = ($data['total'] instanceof Money) ? $data['total']->getAmount() : $data['total'];
+                    return $data;
+                })
+                ->schema([
+                    TextInput::make('receipt')
+                        ->hint('Max: 50')
+                        ->maxLength(50),
+                    TextInput::make('provider_gen_id')
+                        ->label('Order ID')
+                        ->helperText('generate while create payment')
+                        ->hint('Max: 50')
+                        ->maxLength(50),
+                    TextInput::make('provider_ref_id')
+                        ->label('Payment ID')
+                        ->helperText('generate while pay the payment')
+                        ->hint('Max: 50')
+                        ->maxLength(50),
+                    Select::make('status')
+                        ->options(Payment::STATUS_OPTION),
+                    Toggle::make('verified'),
+
+
+
+                ])
+        ];
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     public function getProductSchema()
     {

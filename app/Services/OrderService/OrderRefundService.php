@@ -42,12 +42,11 @@ class OrderRefundService
                 ->title('Refund Not Possible!')
                 ->send();
         }else{
+
             // Do the Refund
            $response =  $this->paymentProvider->refund()->create($this->payment);
 
-           dd($response);
-
-            if ($response['status'] == 'processed')
+            if (isset($response['status']) && $response['status'] == 'processed')
             {
                 // Update Payment
                 $this->payment->fill([
@@ -63,11 +62,13 @@ class OrderRefundService
                     'speed' => $response['speed_processed'],
                     'status' => Refund::COMPLETED,
                     'batch_id' => $response['batch_id'],
-                    'notes' => $response['notes']->toArray(),
-                    'tracking_data' =>  $response['acquirer_data']->toArray(),
-                    'details' => $response->toArray(),
+                    'notes' => is_array($response['notes']) ? $response['notes'] : $response['notes']->toArray(),
+                    'tracking_data' => is_array($response['acquirer_data']) ? $response['acquirer_data'] : $response['acquirer_data']->toArray(),
+                    'details' => is_array($response) ? $response : $response->toArray(),
                     'error' => $response['error'] ?? null,
                 ]);
+            }else{
+                $this->error = $response['error']['description'];
             }
 
         }

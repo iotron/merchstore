@@ -40,36 +40,31 @@ class ViewOrder extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\EditAction::make(),
-//            Action::make('calculate_charge')
-//                ->fillForm(function (?Model $record){
-//                    $record->load('shipments');
-//                    $data = $record->toArray();
-//                    $data['amount'] = ($data['amount'] instanceof Money) ? $data['amount']->getAmount() : $data['amount'];
-//                    $data['subtotal'] = ($data['subtotal'] instanceof Money) ? $data['subtotal']->getAmount() : $data['subtotal'];
-//                    $data['discount'] = ($data['discount'] instanceof Money) ? $data['discount']->getAmount() : $data['discount'];
-//                    $data['tax'] = ($data['tax'] instanceof Money) ? $data['tax']->getAmount() : $data['tax'];
-//                    $data['total'] = ($data['total'] instanceof Money) ? $data['total']->getAmount() : $data['total'];
-//                   return $data;
-//                })
-//                ->form([
-//                    TextInput::make('shipments.weight')
-//
-//
-//                ])
-//                ->action(function (array $data){
-//                    dd($data);
-//                })
-//                ->modalHeading('Shipping Charge Calculator'),
+        return array_merge($this->getCustomHeaderActions(),[
 
-//
+            Actions\EditAction::make(),
+
+        ]);
+    }
+
+
+    protected function getCustomHeaderActions():array
+    {
+        return [
+            // Whole Order OneTime Shipment
             Actions\Action::make('makeShipping')
+                ->label('Place Custom Shipment')
                 ->color('success')
                 ->action(function (ShippingService $shippingService){
+
                     $orderShipService = new OrderShippedService($this->record,$shippingService);
                     if ($orderShipService->send())
                     {
+                        // Send A Notification
+                        Notification::make()
+                            ->success()
+                            ->title('Order  Ready For Shipped!')
+                            ->send();
                         // Successfully All Shipment Of This Order Are Placed Booking On Provider
 
                     }else{
@@ -79,47 +74,52 @@ class ViewOrder extends ViewRecord
                             ->send();
                     }
                 }),
-           Actions\Action::make('returnOrder')->color('danger')
-               ->action(function (ShippingService $shippingService){
-                   $orderReturnService = new OrderReturnService($this->record,$shippingService);
-                   if ($orderReturnService->return())
-                   {
-                       // Successfully Return
-
-                   }else{
-                       Notification::make()
-                           ->title('Return Not Made!')
-                           ->body($orderReturnService->getError())
-                           ->send();
-                   }
-               }),
 
 
+            // Return Order Action
+            Actions\Action::make('returnOrder')->color('warning')
+                ->action(function (ShippingService $shippingService){
+                    $orderReturnService = new OrderReturnService($this->record,$shippingService);
+                    if ($orderReturnService->return())
+                    {
+                        // Successfully Return
+
+                    }else{
+                        Notification::make()
+                            ->title('Return Not Made!')
+                            ->body($orderReturnService->getError())
+                            ->send();
+                    }
+                }),
 
 
+            // Refund Order Payment
 
             Actions\Action::make('refund')
-                ->color('success')
+                ->color('danger')
 //                ->visible(!$this->record->is_cod)
                 ->action(function (PaymentService $paymentService){
                     $refundService = new OrderRefundService($this->record,$paymentService);
                     if ($refundService->refund())
                     {
                         // Successfully Refund
+                        Notification::make()
+                            ->success()
+                            ->title('Refund Made Successfully')
+                            ->body('')
+                            ->send();
+
 
                     }else{
                         Notification::make()
-                            ->title('Opps! Order not shipped..')
+                            ->danger()
+                            ->title('Refund Abort!')
                             ->body($refundService->getError())
                             ->send();
                     }
                 }),
-
-
-
         ];
     }
-
 
 
 
@@ -259,6 +259,25 @@ class ViewOrder extends ViewRecord
             IconEntry::make('shipping_is_billing')->default(false)->boolean(),
             TextEntry::make('customer_gstin'),
             TextEntry::make('customer.email'),
+
+
+
+
+           Section::make('Refund')
+               ->visible($this->record->refund()->count())
+               ->columnSpanFull()
+               ->columns(2)
+                ->schema([
+                    TextEntry::make('refund.refund_id'),
+                    TextEntry::make('refund.amount')
+                        ->formatStateUsing(function ($state){
+                            return $state  instanceof Money ? $state->formatted() : $state;
+                        }),
+                    TextEntry::make('refund.receipt'),
+                    TextEntry::make('refund.payment_id'),
+                    TextEntry::make('refund.status'),
+                ]),
+
 
 
         ];
@@ -596,9 +615,15 @@ class ViewOrder extends ViewRecord
                                         ->action(function (array $data,ShippingService $shippingService,Model $record){
                                             $shippingProvider = $shippingService->provider($data['shipping_provider'])->getProvider();
                                             $shipmentShipService = new OrderShipmentShippingService($record,$shippingProvider);
-                                            $shipmentShipService->shipped();
-                                            if (is_null($shipmentShipService->getError()))
+
+                                            if ($shipmentShipService->shipped())
                                             {
+                                                // Send A Notification
+                                                Notification::make()
+                                                    ->success()
+                                                    ->title('OrderShipment ID:'.$record->id.' Ready For Shipped!')
+                                                    ->body('Shipping Request Placed By '.ucfirst($shippingProvider->getProviderName()).' Shipping Service')
+                                                    ->send();
 
                                             }else{
                                                 Notification::make()
