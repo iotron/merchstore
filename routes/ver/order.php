@@ -12,6 +12,9 @@ Route::middleware(['auth:customer'])->group(function(){
     Route::get('/',[OrderController::class,'index']);
     Route::get('{order:uuid}',[OrderController::class,'show']);
     Route::get('{order:uuid}/invoice',[OrderController::class,'viewInvoice']);
+
+    Route::post('{order:uuid}/return',[OrderActionController::class,'returnOrder']);
+
 });
 
 

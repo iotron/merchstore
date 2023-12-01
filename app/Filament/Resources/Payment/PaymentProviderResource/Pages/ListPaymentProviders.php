@@ -59,10 +59,10 @@ class ListPaymentProviders extends ListRecords
                                 ->description('Payments')
                                 ->tooltip('Total Payments Init')
                                 ->weight(FontWeight::Bold),
-                            Tables\Columns\TextColumn::make('orders_count')->counts('orders')
-                                ->description('Orders')
-                                ->tooltip('Total Orders Init')
-                                ->weight(FontWeight::Bold),
+//                            Tables\Columns\TextColumn::make('orders_count')->counts('orders')
+//                                ->description('Orders')
+//                                ->tooltip('Total Orders Init')
+//                                ->weight(FontWeight::Bold),
 
                         ]),
                     ]),

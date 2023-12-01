@@ -10,7 +10,9 @@ use App\Models\Order\Order;
 use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderConfirmService;
 use App\Services\OrderService\OrderCreationService;
+use App\Services\OrderService\Return\OrderReturnRefundService;
 use App\Services\PaymentService\PaymentService;
+use App\Services\ShippingService\ShippingService;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -28,14 +30,18 @@ class OrderActionController extends Controller
      */
     public PaymentService $paymentService;
 
+    public ShippingService $shippingService;
+
     /**
      * @param PaymentService $paymentService
+     * @param ShippingService $shippingService
      */
-    public function __construct(PaymentService $paymentService)
+    public function __construct(PaymentService $paymentService,ShippingService $shippingService)
     {
 
         $this->middleware('auth:customer')->except('captureCallback', 'verifyPayment', 'confirmPayment');
         $this->paymentService = $paymentService;
+        $this->shippingService = $shippingService;
     }
 
 
@@ -174,6 +180,90 @@ class OrderActionController extends Controller
     {
 
     }
+
+
+
+
+
+
+
+    public function returnOrder(Order $order,Request $request)
+    {
+        $order->load('orderProducts','orderProducts.product');
+
+        if (isset($request->product_sku))
+        {
+            // Customer Wish This Product To Return
+
+            $productSkuToReturn = $request->product_sku;
+
+            $orderProductToReturn = $order->orderProducts->first(function ($orderProduct) use ($productSkuToReturn) {
+                return $orderProduct->product->sku === $productSkuToReturn;
+            });
+
+
+            if ($orderProductToReturn) {
+                // Check if the product is returnable
+                if (!$orderProductToReturn->product->is_returnable) {
+                    return response()->json(['error' => 'Product is not returnable'], 400);
+                }else{
+                    // Logic
+                        $returnService = new OrderReturnRefundService($order,$this->paymentService,$this->shippingService);
+                        $returnService->returnOrderProduct($orderProductToReturn);
+                        $returnService->return();
+
+
+                    return response()->json(['message' => 'Product returned successfully']);
+                }
+
+
+
+            } else {
+                // The requested product is not found in the order
+                return response()->json(['error' => 'Product not found in the order'], 404);
+            }
+
+
+
+        }else{
+            // Customer Try to return whole order
+
+            $returnService = new OrderReturnRefundService($order,$this->paymentService,$this->shippingService);
+            $returnService->return();
+
+        }
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
