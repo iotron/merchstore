@@ -24,6 +24,7 @@ class ProductIndexResource extends JsonResource
         'view_count' => $this->view_count,
         'price' => $this->price->formatted(),
         'type' => $this->type,
+        'returnable' => $this->is_returnable,
 
         'productDisplay' => [
             'src' => $this->getFirstMediaUrl('productDisplay'),
