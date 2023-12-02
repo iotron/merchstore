@@ -32,15 +32,15 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ProductController extends Controller implements  CanBeSortableContract
+class ProductController extends Controller implements CanBeSortableContract
 {
 
 
 
 
-    public function getFilterScopes(?string $scope_name=null): array
+    public function getFilterScopes(?string $scope_name = null): array
     {
-        $allScopes =  [
+        $allScopes = [
             'filters' => new FilterScope(),
             'themes' => new ThemeScope(),
             'categories' => new CategoryScope(),
@@ -118,9 +118,9 @@ class ProductController extends Controller implements  CanBeSortableContract
         return ProductResource::make($product);
     }
 
-    public function showProductsByCategory(Category $category,Request $request)
+    public function showProductsByCategory(Category $category, Request $request)
     {
-        $category->load('children','media');
+        $category->load('children', 'media');
         // base query
         $query = Product::with([
             'media',
@@ -145,7 +145,7 @@ class ProductController extends Controller implements  CanBeSortableContract
             ->flatten();
 
         // additional information
-       // $query->with('media');
+        // $query->with('media');
 
 
 
@@ -155,7 +155,7 @@ class ProductController extends Controller implements  CanBeSortableContract
         //
 
 
-//
+        //
 //        // If Request has Filter
 //        if (isset($request->filter)) {
 //            $query->withScopes($this->getFilterScopes());
@@ -192,7 +192,7 @@ class ProductController extends Controller implements  CanBeSortableContract
             ]);
     }
 
-    public function showProductsByTheme(Theme $theme)
+    public function showProductsByTheme(Request $request, Theme $theme)
     {
 
         $theme->load('children');
