@@ -21,14 +21,18 @@ class ProductResource extends ProductIndexResource
     public function toArray(Request $request): array
     {
 
-        return array_merge(parent::toArray($request),[
-//
+        return array_merge(parent::toArray($request), [
+            //
 //            'productGallerys' => [
 //                'src' => $this->getFirstMediaUrl('productGallery'),
 //                'srcset' => $this->getFirstMedia('productGallery') ? $this->getFirstMedia('productGallery')->getSrcset('optimized') : null,
 //            ],
-            'productGallery' => new MediaResource($this->getMediaCollection('productGallery')) , // temp
-
+            'productGallery' => new MediaResource($this->getMediaCollection('productGallery')), // temp
+            'returnable' => $this->is_returnable,
+            'sku' => $this->sku,
+            'quantity' => ($this->quantity != 0) ? $this->quantity : $this->availableStocks->sum('in_stock_quantity'),
+            'popularity' => $this->popularity,
+            'view_count' => $this->view_count,
             'featured' => $this->featured,
             'status' => $this->status,
             'visible_individually' => $this->visible_individually,
@@ -52,9 +56,8 @@ class ProductResource extends ProductIndexResource
     public function getFilterOptions(): array
     {
         $bag = [];
-        foreach ($this->filterOptions as $option)
-        {
-            $bag[$option->filter->display_name] []= $option->display_name;
+        foreach ($this->filterOptions as $option) {
+            $bag[$option->filter->display_name][] = $option->display_name;
         }
         return $bag;
     }
