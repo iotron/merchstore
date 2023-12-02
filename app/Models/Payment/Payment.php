@@ -67,7 +67,7 @@ class Payment extends Model
         return $this->belongsTo(Customer::class,'customer_id','id');
     }
 
-    public function order()
+    public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class,'order_id','id');
     }
@@ -78,6 +78,9 @@ class Payment extends Model
         return $this->belongsTo(PaymentProvider::class,'payment_provider_id','id');
     }
 
-
+    public function refund(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Refund::class,'payment_id','id');
+    }
 
 }

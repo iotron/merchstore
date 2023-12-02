@@ -262,21 +262,22 @@ class ViewOrder extends ViewRecord
 
 
 
-
-           Section::make('Refund')
-               ->visible($this->record->refund()->count())
-               ->columnSpanFull()
-               ->columns(2)
-                ->schema([
-                    TextEntry::make('refund.refund_id'),
-                    TextEntry::make('refund.amount')
-                        ->formatStateUsing(function ($state){
-                            return $state  instanceof Money ? $state->formatted() : $state;
-                        }),
-                    TextEntry::make('refund.receipt'),
-                    TextEntry::make('refund.payment_id'),
-                    TextEntry::make('refund.status'),
-                ]),
+//
+//            RepeatableEntry::make('refunds')
+//                ->visible($this->record->refunds()->count())
+//                ->columnSpanFull()
+//                ->contained(false)
+//                ->columns(2)
+//                ->schema([
+//                    TextEntry::make('refund.refund_id'),
+//                    TextEntry::make('refund.amount')
+//                        ->formatStateUsing(function ($state){
+//                            return $state  instanceof Money ? $state->formatted() : $state;
+//                        }),
+//                    TextEntry::make('refund.receipt'),
+//                    TextEntry::make('refund.payment_id'),
+//                    TextEntry::make('refund.status'),
+//                ])
 
 
 

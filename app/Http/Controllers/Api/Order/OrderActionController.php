@@ -187,55 +187,16 @@ class OrderActionController extends Controller
 
 
 
-    public function returnOrder(Order $order,Request $request)
+    public function returnOrder(Order $order,Request $request): JsonResponse
     {
-        $order->load('orderProducts','orderProducts.product');
-
-        if (isset($request->product_sku))
+        $givenSku = isset($request->product_sku) ? $request->product_sku : null;
+        $newReturnService = new OrderReturnRefundService($order,$this->paymentService,$this->shippingService,$givenSku);
+        if ($newReturnService->return())
         {
-            // Customer Wish This Product To Return
-
-            $productSkuToReturn = $request->product_sku;
-
-            $orderProductToReturn = $order->orderProducts->first(function ($orderProduct) use ($productSkuToReturn) {
-                return $orderProduct->product->sku === $productSkuToReturn;
-            });
-
-
-            if ($orderProductToReturn) {
-                // Check if the product is returnable
-                if (!$orderProductToReturn->product->is_returnable) {
-                    return response()->json(['error' => 'Product is not returnable'], 400);
-                }else{
-                    // Logic
-                        $returnService = new OrderReturnRefundService($order,$this->paymentService,$this->shippingService);
-                        $returnService->returnOrderProduct($orderProductToReturn);
-                        $returnService->return();
-
-
-                    return response()->json(['message' => 'Product returned successfully']);
-                }
-
-
-
-            } else {
-                // The requested product is not found in the order
-                return response()->json(['error' => 'Product not found in the order'], 404);
-            }
-
-
-
+            return response()->json(['message' => 'Product returned successfully']);
         }else{
-            // Customer Try to return whole order
-
-            $returnService = new OrderReturnRefundService($order,$this->paymentService,$this->shippingService);
-            $returnService->return();
-
+            return response()->json(['error' => $newReturnService->getError()]);
         }
-
-
-
-
     }
 
 

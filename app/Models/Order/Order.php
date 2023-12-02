@@ -92,9 +92,9 @@ class Order extends Model
         return $this->hasOne(Payment::class, 'order_id', 'id');
     }
 
-    public function refund():HasOne
+    public function refunds()
     {
-        return $this->hasOne(Refund::class, 'order_id','id');
+        return $this->hasMany(Refund::class, 'order_id','id');
     }
 
 

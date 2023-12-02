@@ -17,7 +17,6 @@ return new class extends Migration
             $table->integer('amount')->default(0);
             $table->string('currency')->nullable();
             $table->string('receipt');
-            $table->string('payment_id');
             $table->string('speed')->nullable();
             $table->string('status')->default('unknown');
             $table->string('batch_id')->nullable();
@@ -29,6 +28,8 @@ return new class extends Migration
             $table->json('error')->nullable();
 
             $table->foreignId('order_id')->constrained('orders')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('order_product_id')->constrained('order_products')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('payment_id')->constrained('payments')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

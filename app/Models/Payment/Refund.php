@@ -3,6 +3,7 @@
 namespace App\Models\Payment;
 
 use App\Models\Order\Order;
+use App\Models\Order\OrderProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,6 +41,7 @@ class Refund extends Model
         'tracking_data',
         'details',
         'error',
+        'order_id'
     ];
 
 
@@ -51,10 +53,19 @@ class Refund extends Model
     ];
 
 
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(Payment::class,'payment_id','id');
+    }
 
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class,'order_id','id');
+    }
+
+    public function orderProduct(): BelongsTo
+    {
+        return $this->belongsTo(OrderProduct::class,'order_product_id','id');
     }
 
 

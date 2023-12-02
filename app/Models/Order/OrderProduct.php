@@ -3,10 +3,12 @@
 namespace App\Models\Order;
 
 use App\Helpers\Money\MoneyCast;
+use App\Models\Payment\Refund;
 use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class OrderProduct extends Model
 {
@@ -64,6 +66,12 @@ class OrderProduct extends Model
     public function shipment()
     {
         return $this->belongsToMany(OrderShipment::class, 'shipment_products','order_product_id');
+    }
+
+
+    public function refund(): HasOne
+    {
+        return $this->hasOne(Refund::class,'order_product_id','id');
     }
 
 

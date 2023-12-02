@@ -26,17 +26,18 @@ class RefundAction implements PaymentProviderRefundContract
     }
 
     /**
-     * @param Payment $payment
+     * @param int|string $payment_id
+     * @param int|string|Money $amount
      * @return mixed|void
      */
-    public function create(Payment $payment)
+    public function create(int|string $payment_id, int|string|Money $amount)
     {
 
         try {
 
 
-            $response = $this->api->payment->fetch($payment->provider_ref_id)->refund([
-                "amount"=> ($payment->total instanceof Money) ? $payment->total->getAmount() : $payment->total,
+            $response = $this->api->payment->fetch($payment_id)->refund([
+                "amount"=> ($amount instanceof Money) ? $amount->getAmount() : $amount,
                 "speed"=> $this->paymentProvider->getSpeed(),
             ]);
 
