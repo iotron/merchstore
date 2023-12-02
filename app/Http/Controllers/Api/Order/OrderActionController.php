@@ -48,7 +48,7 @@ class OrderActionController extends Controller
 
 
 
-    public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|array
+    public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|RedirectResponse
     {
         $validate = $request->validated();
 
@@ -59,9 +59,6 @@ class OrderActionController extends Controller
             // Apply Coupon In Cart
             $cart->addCoupon($validate['coupon']);
         }
-
-
-
 
 
         $paymentProvider = PaymentProvider::firstWhere('id', $validate['payment_provider_id']);
