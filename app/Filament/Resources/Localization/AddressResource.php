@@ -23,29 +23,71 @@ class AddressResource extends Resource
     {
         return $form
             ->schema([
-                //
+
+                Forms\Components\TextInput::make('pickup_location')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('name')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('contact')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('alternate_contact')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('address_1')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('address_2')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+
+                Forms\Components\TextInput::make('landmark')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+
+                Forms\Components\TextInput::make('city')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+
+                Forms\Components\TextInput::make('postal_code')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('state')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('priority')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+                Forms\Components\Toggle::make('default'),
+
+                Forms\Components\TextInput::make('country_code')
+                    ->hint('Max: 255')
+                    ->maxLength(255),
+
+
+
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                //
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+
 
     public static function getRelations(): array
     {
