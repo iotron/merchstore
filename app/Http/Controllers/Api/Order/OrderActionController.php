@@ -112,27 +112,33 @@ class OrderActionController extends Controller
 
 
         // redirect instead json response
-        if (app()->isLocal())
-        {
-            // return Application Checkout link Route
-            return (!app()->runningInConsole() && !is_null($paymentProviderService->getModel())) ? response()->json([
-                'success' => true,
-                'message' => 'order placed successfully',
-                'payment_provider' => [
-                    'name' => $paymentProviderService->getModel()->name,
-                    'code' => $paymentProviderService->getModel()->code,
-                ],
-                'order' => [
-                    'uuid' => $orderCreationService->getOrder()->uuid,
-                    'status' => $orderCreationService->getOrder()->status,
-                ],
-                'redirect' => ($orderCreationService->isCod) ?
-                    config('app.client_url').'/orders/'. $orderCreationService->getOrder()->uuid : route('payment.visit', ['payment' => $orderCreationService->getOrder()->payment->receipt]),
-            ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $orderCreationService->getOrder()->payment()];
 
-        }else{
-            // redirect urls
-        }
+//            return (!app()->runningInConsole() && !is_null($paymentProviderService->getModel())) ? response()->json([
+//                'success' => true,
+//                'message' => 'order placed successfully',
+//                'payment_provider' => [
+//                    'name' => $paymentProviderService->getModel()->name,
+//                    'code' => $paymentProviderService->getModel()->code,
+//                ],
+//                'order' => [
+//                    'uuid' => $orderCreationService->getOrder()->uuid,
+//                    'status' => $orderCreationService->getOrder()->status,
+//                ],
+//                'redirect' => ($orderCreationService->isCod) ?
+//                    config('app.client_url').'/orders/'. $orderCreationService->getOrder()->uuid : route('payment.visit', ['payment' => $orderCreationService->getOrder()->payment->receipt]),
+//            ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $orderCreationService->getOrder()->payment()];
+
+
+        // return Application Checkout link Route
+
+            return redirect()->to(($orderCreationService->isCod) ?
+                config('app.client_url').'/orders/'. $orderCreationService->getOrder()->uuid :
+                route('payment.visit', ['payment' => $orderCreationService->getOrder()->payment->receipt]));
+
+
+
+
+
 
     }
 
