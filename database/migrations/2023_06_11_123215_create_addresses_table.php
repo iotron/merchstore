@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
+            $table->string('pickup_location')->nullable();
             $table->string('name');
+            $table->string('email')->nullable();
             $table->string('contact');
             $table->string('alternate_contact')->nullable();
             $table->enum('type', ['Home', 'Work', 'Other']);

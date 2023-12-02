@@ -54,7 +54,7 @@ class OrderReturnRefundService
         $this->shippingService = $shippingService;
         $this->paymentService = $paymentService;
 
-        if (is_null($this->payment))
+        if (is_null($this->payment) && is_null($this->payment->provider_ref_id))
         {
             $this->error = 'Order has not paid yet!';
         }else{
@@ -197,7 +197,7 @@ class OrderReturnRefundService
 
                 if ($response['payment_id'] === $this->payment->provider_ref_id)
                 {
-                    
+
                     // Update Payment
                     $this->payment->fill([
                         'status' => Payment::REFUND

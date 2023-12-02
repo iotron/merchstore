@@ -74,8 +74,8 @@ class EditOrder extends EditRecord
                             ->schema($this->getOrderSchema()),
                         Tabs\Tab::make('Payment')
                             ->schema($this->getPaymentSchema()),
-                        Tabs\Tab::make('Product')
-                            ->schema($this->getProductSchema()),
+//                        Tabs\Tab::make('Product')
+//                            ->schema($this->getProductSchema()),
                         Tabs\Tab::make('Shipping')
                             ->schema($this->getShippingSchema()),
                     ]),
@@ -91,39 +91,8 @@ class EditOrder extends EditRecord
     public function getOrderSchema(): array
     {
         return [
-            TextInput::make('uuid')
-                ->label('UUID')
-                ->required()
-                ->columnSpanFull()
-                ->maxLength(255),
 
 
-
-
-
-
-            TextInput::make('quantity')
-                ->required()
-                ->numeric(),
-
-
-            TextInput::make('amount')
-                ->required()
-                ->numeric(),
-            TextInput::make('subtotal')
-                ->required()
-                ->numeric(),
-            TextInput::make('discount')
-                ->required()
-                ->numeric(),
-
-            TextInput::make('tax')
-                ->required()
-                ->numeric(),
-
-            TextInput::make('total')
-                ->required()
-                ->numeric(),
         ];
     }
 
@@ -134,6 +103,7 @@ class EditOrder extends EditRecord
         return [
             Repeater::make('payment')
                 ->relationship('payment')
+                ->addable(false)
                 ->columns(2)
                 ->mutateRelationshipDataBeforeFillUsing(function (array $data){
                     $data['subtotal'] = ($data['subtotal'] instanceof Money) ? $data['subtotal']->getAmount() : $data['subtotal'];
@@ -143,22 +113,25 @@ class EditOrder extends EditRecord
                     return $data;
                 })
                 ->schema([
-                    TextInput::make('receipt')
-                        ->hint('Max: 50')
-                        ->maxLength(50),
-                    TextInput::make('provider_gen_id')
-                        ->label('Order ID')
-                        ->helperText('generate while create payment')
-                        ->hint('Max: 50')
-                        ->maxLength(50),
+
+                    Placeholder::make('provider_gen_id')
+                        ->hint('Payment Order ID')
+                        ->content(function ($state){
+                            return $state;
+                        }),
+
                     TextInput::make('provider_ref_id')
                         ->label('Payment ID')
-                        ->helperText('generate while pay the payment')
+                        ->helperText('generate while pay the payment (custom payment init)')
                         ->hint('Max: 50')
                         ->maxLength(50),
+
                     Select::make('status')
+                        ->inlineLabel()
                         ->options(Payment::STATUS_OPTION),
-                    Toggle::make('verified'),
+
+                    Toggle::make('verified')
+                        ->hint('Payment Verification'),
 
 
 
@@ -176,59 +149,6 @@ class EditOrder extends EditRecord
 
 
 
-
-    public function getProductSchema()
-    {
-        return [
-
-//            Select::make('customer_id')
-//                ->relationship('customer', 'name')
-//                ->lazy()
-//                ->required(),
-
-
-            TextInput::make('customer_gstin')
-                ->maxLength(255),
-
-
-            Repeater::make('orderProducts')
-                ->relationship('orderProducts')
-                ->columns(2)
-                ->formatStateUsing(function ($state){
-
-                    $bag= $state;
-                    foreach ($state as $key => $rec)
-                    {
-                        $bag[$key]['amount'] = $bag[$key]['amount']->getAmount();
-                        $bag[$key]['discount'] = $bag[$key]['discount']->getAmount();
-                        $bag[$key]['tax'] = $bag[$key]['tax']->getAmount();
-                        $bag[$key]['total'] = $bag[$key]['total']->getAmount();
-                    }
-                    return $bag;
-                })
-                ->schema([
-                    Select::make('product_id')
-                        ->options(Product::where([
-                            ['type','=',Product::SIMPLE],
-                            ['status','=',Product::PUBLISHED]
-                        ])->get()->pluck('sku','id')),
-                    TextInput::make('quantity'),
-
-                    TextInput::make('amount'),
-                    TextInput::make('discount'),
-                    TextInput::make('tax')
-                        ->visible(function (Get $get){
-                            return $get('has_tax');
-                        }),
-                    TextInput::make('total')->columnSpanFull(),
-
-                ])
-
-
-
-
-        ];
-    }
 
     public function getShippingSchema()
     {
@@ -326,13 +246,6 @@ class EditOrder extends EditRecord
                                 ->hint('Max: 100')
                                 ->maxLength(100),
                             Placeholder::make('charge')
-//                                ->hintAction(
-//                                    Action::make('fetchRate')
-//                                        ->requiresConfirmation()
-//                                        ->action(function (){
-//                                            dd("sdfsdf");
-//                                        })
-//                                )
                                 ->content(function ($state){
                                     return ($state instanceof Money) ? $state->formatted() : Money::format($state ?? 0.00) ;
                                 }),
@@ -402,39 +315,6 @@ class EditOrder extends EditRecord
                         ]),
 
 
-
-
-//                    Section::make('Package Details')
-//                        ->aside()
-//                        ->columnSpan(1)
-//                        ->schema([
-////                        Select::make('shipping_provider_id')
-////                        ->relationship('shippingProvider','name'),
-//
-//
-//
-//
-////                        Placeholder::make('charge')
-////                            ->content(function (Model $record,Get $get,ShippingService $shippingService){
-//                                if (!is_null($get('weight')) && !is_null($get('length')) && !is_null($get('breadth')) && !is_null($get('height')))
-//                                {
-//                                    $shippingProviderModel = ShippingProvider::firstWhere('id',$get('shipping_provider_id'));
-//                                    $record->load([
-//                                        'pickupAddress',
-//                                        'deliveryAddress'
-//                                    ]);
-//                                    $pickUpPostalCode = $record->pickupAddress->postal_code;
-//                                    $deliveryPostalCode = $record->deliveryAddress->postal_code;
-////                                $result = $shippingService->provider($shippingProviderModel->code)->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode);
-//                                    $result = $shippingService->provider('shiprocket')->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode,$get('weight'));
-//                                    return $result;
-//                                }else{
-//                                    return 'Please fill weight,length,breadth,height';
-//                                }
-////
-////
-////                            })
-//                        ]),
 
 
 

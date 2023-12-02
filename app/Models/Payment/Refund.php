@@ -41,7 +41,8 @@ class Refund extends Model
         'tracking_data',
         'details',
         'error',
-        'order_id'
+        'order_id',
+        'verified'
     ];
 
 
@@ -50,6 +51,7 @@ class Refund extends Model
         'tracking_data' => 'array',
         'details' => 'array',
         'error' => 'array',
+        'verified' => 'bool'
     ];
 
 

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->json('notes')->nullable();
             $table->json('tracking_data')->nullable();
 
-
+            $table->boolean('verified')->default(false);
             $table->json('details')->nullable();
             $table->json('error')->nullable();
 

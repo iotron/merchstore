@@ -7,26 +7,33 @@ use App\Helpers\Money\Money;
 use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;
 use App\Models\Shipping\ShippingProvider;
-
+use App\Services\OrderService\OrderRefundService;
+use App\Services\OrderService\OrderReturnService;
+use App\Services\OrderService\OrderShippedService;
+use App\Services\OrderService\Return\OrderProductReturnService;
 use App\Services\OrderService\Shipping\OrderShipmentShippingService;
+use App\Services\PaymentService\PaymentService;
 use App\Services\ShippingService\ShippingService;
 use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
-use Filament\Infolists\Components\Tabs;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Enums\FontWeight;
+use Filament\Infolists\Components\Tabs;
 use Illuminate\Database\Eloquent\Model;
 
-class ViewOrder extends ViewRecord
+class BackupViewOrder extends ViewRecord
 {
     protected static string $resource = OrderResource::class;
     public array $chargeInfo = [];
@@ -44,31 +51,73 @@ class ViewOrder extends ViewRecord
     protected function getCustomHeaderActions():array
     {
         return [
+            // Whole Order OneTime Shipment
+            Actions\Action::make('makeShipping')
+                ->label('Place Custom Shipment')
+                ->color('success')
+                ->action(function (ShippingService $shippingService){
 
-//
-//            Actions\Action::make('refund')
-//                ->color('danger')
-////                ->visible(!$this->record->is_cod)
-//                ->action(function (PaymentService $paymentService){
-//                    $refundService = new OrderRefundService($this->record,$paymentService);
-//                    if ($refundService->refund())
-//                    {
-//                        // Successfully Refund
-//                        Notification::make()
-//                            ->success()
-//                            ->title('Refund Made Successfully')
-//                            ->body('')
-//                            ->send();
-//
-//
-//                    }else{
-//                        Notification::make()
-//                            ->danger()
-//                            ->title('Refund Abort!')
-//                            ->body($refundService->getError())
-//                            ->send();
-//                    }
-//                }),
+                    $orderShipService = new OrderShippedService($this->record,$shippingService);
+                    if ($orderShipService->send())
+                    {
+                        // Send A Notification
+                        Notification::make()
+                            ->success()
+                            ->title('Order  Ready For Shipped!')
+                            ->send();
+                        // Successfully All Shipment Of This Order Are Placed Booking On Provider
+
+                    }else{
+                        Notification::make()
+                            ->title('Opps! Order not shipped..')
+                            ->body($orderShipService->getError())
+                            ->send();
+                    }
+                }),
+
+
+            // Return Order Action
+            Actions\Action::make('returnOrder')->color('warning')
+                ->action(function (ShippingService $shippingService){
+                    $orderReturnService = new OrderReturnService($this->record,$shippingService);
+                    if ($orderReturnService->return())
+                    {
+                        // Successfully Return
+
+                    }else{
+                        Notification::make()
+                            ->title('Return Not Made!')
+                            ->body($orderReturnService->getError())
+                            ->send();
+                    }
+                }),
+
+
+            // Refund Order Payment
+
+            Actions\Action::make('refund')
+                ->color('danger')
+//                ->visible(!$this->record->is_cod)
+                ->action(function (PaymentService $paymentService){
+                    $refundService = new OrderRefundService($this->record,$paymentService);
+                    if ($refundService->refund())
+                    {
+                        // Successfully Refund
+                        Notification::make()
+                            ->success()
+                            ->title('Refund Made Successfully')
+                            ->body('')
+                            ->send();
+
+
+                    }else{
+                        Notification::make()
+                            ->danger()
+                            ->title('Refund Abort!')
+                            ->body($refundService->getError())
+                            ->send();
+                    }
+                }),
         ];
     }
 
@@ -213,31 +262,22 @@ class ViewOrder extends ViewRecord
 
 
 
-
-            RepeatableEntry::make('refunds')
-                ->visible($this->record->refunds()->count())
-                ->columnSpanFull()
-                ->contained(false)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('refund_id'),
-                    TextEntry::make('amount')
-                        ->formatStateUsing(function ($state){
-                            return $state  instanceof Money ? $state->formatted() : $state;
-                        }),
-                    TextEntry::make('receipt'),
-                    TextEntry::make('payment_id'),
-                    TextEntry::make('status')->badge(),
-                    IconEntry::make('verified')
-                        ->boolean()
-                        ->hintAction(\Filament\Infolists\Components\Actions\Action::make('calculate')
-                            ->label('Refund It')
-                            ->action(function (array $data, Model $record){
-                                dd('Refund Init',$record);
-                            })
-                        ),
-
-                ])
+//
+//            RepeatableEntry::make('refunds')
+//                ->visible($this->record->refunds()->count())
+//                ->columnSpanFull()
+//                ->contained(false)
+//                ->columns(2)
+//                ->schema([
+//                    TextEntry::make('refund.refund_id'),
+//                    TextEntry::make('refund.amount')
+//                        ->formatStateUsing(function ($state){
+//                            return $state  instanceof Money ? $state->formatted() : $state;
+//                        }),
+//                    TextEntry::make('refund.receipt'),
+//                    TextEntry::make('refund.payment_id'),
+//                    TextEntry::make('refund.status'),
+//                ])
 
 
 
@@ -348,12 +388,85 @@ class ViewOrder extends ViewRecord
                     TextEntry::make('length')->default('0.00'),
                     TextEntry::make('breadth')->default('0.00'),
                     TextEntry::make('height')->default('0.00'),
+                    TextEntry::make('cost')
+                        ->hintAction(\Filament\Infolists\Components\Actions\Action::make('calculate')
+                            ->label('Calculate Cost')
+                            ->fillForm(function (?Model $record){
+                                $data = $record->toArray();
+                                $data['charge'] = ($data['charge'] instanceof Money) ? $data['charge']->getAmount() : $data['charge'];
+                                return $data;
+                            })
+                            ->form([
+                                TextInput::make('weight'),
+                                TextInput::make('length'),
+                                TextInput::make('breadth'),
+                                TextInput::make('height'),
+                            ])
+                            ->action(function (array $data, ?Model $record,ShippingService $shippingService) use (&$chargeInfo){
+                                $record->load('shippingProvider','pickupAddress','deliveryAddress');
+//                                        $service = $shippingService->provider($record->shippingProvider->code);
+                                $service = $shippingService->provider('shiprocket');
+                                $pickUpPostalCode = $record->pickupAddress->postal_code;
+                                $deliveryPostalCode = $record->deliveryAddress->postal_code;
+//                                        $chargeInfo = $service->courier()->getCharge($pickUpPostalCode,$deliveryPostalCode,$data);
+                                $chargeInfo = $service->courier()->getCharge(711401,$deliveryPostalCode,$data,$record->cod);
+
+                                $this->chargeInfo = $chargeInfo;
+                            })
+                            ->requiresConfirmation()
+
+                        ),
+
+
+                    $this->getCourierDisplayerInfoSchema()
+
 
 
                 ])
 
 
         ];
+    }
+
+    private function getCourierDisplayerInfoSchema()
+    {
+        $bag = [];
+        if (!empty($this->chargeInfo))
+        {
+            foreach ($this->chargeInfo['data']['available_courier_companies'] as $company)
+            {
+
+             $bag[] =  Section::make('Courier Company Info')
+                        ->description('Charges Will Be')
+                        ->state($company)
+                        ->columns(3)
+
+                        ->schema([
+                                TextEntry::make('call_before_delivery')->state($company['call_before_delivery']),
+                                TextEntry::make('charge_weight')->state($company['charge_weight']),
+                                TextEntry::make('cod')->state($company['cod']),
+                                TextEntry::make('cod_charges')->state($company['cod_charges'])->hint(Money::format($company['cod_charges'])),
+                                TextEntry::make('cod_multiplier')->state($company['cod_multiplier']),
+                                TextEntry::make('courier_name')->state($company['courier_name']),
+                                TextEntry::make('coverage_charges')->state($company['coverage_charges'])->hint(Money::format($company['coverage_charges'])),
+                                TextEntry::make('estimated_delivery_days')->state($company['estimated_delivery_days']),
+                                TextEntry::make('etd')->state($company['etd']),
+                                TextEntry::make('etd_hours')->state($company['etd_hours']),
+                                TextEntry::make('freight_charge')->state($company['freight_charge'])->hint(Money::format($company['freight_charge'])),
+                                IconEntry::make('is_surface')->boolean(),
+                                TextEntry::make('message')->state($company['message']),
+                                TextEntry::make('min_weight')->state($company['min_weight']),
+                                TextEntry::make('rating')->badge()->state($company['rating']),
+                                TextEntry::make('rto_charges')->state($company['rto_charges'])->hint(Money::format($company['rto_charges'])),
+                                TextEntry::make('seconds_left_for_pickup')->state($company['seconds_left_for_pickup'])
+                        ]);
+
+            }
+
+        }
+
+        return Section::make($bag);
+
     }
 
 

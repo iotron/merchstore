@@ -18,7 +18,9 @@ class Address extends Model
     use HasFactory;
 
     protected $fillable = [
+        'pickup_location', //
         'name',
+        'email',
         'contact',
         'alternate_contact',
         'type',
@@ -35,6 +37,10 @@ class Address extends Model
         'addressable_type',
     ];
 
+
+    protected $casts = [
+        'default' => 'bool'
+    ];
 
 
     public static function boot()
