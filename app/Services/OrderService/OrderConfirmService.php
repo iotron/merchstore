@@ -34,15 +34,14 @@ class OrderConfirmService
         $this->order = $order;
     }
 
-    public function getOrder():Order
+    public function getOrder(): Order
     {
-
+        return $this->order;
     }
 
-    protected function discoverOrder():void
+    protected function discoverOrder(): void
     {
-        if (is_null($this->order))
-        {
+        if (is_null($this->order)) {
             $this->order = $this->payment->order()->first();
         }
         // Load Necessary Relations
@@ -54,7 +53,7 @@ class OrderConfirmService
         ]);
     }
 
-    public function confirmOrder():void
+    public function confirmOrder(): void
     {
         // Ensure Order Model
         $this->discoverOrder();
@@ -85,21 +84,19 @@ class OrderConfirmService
     protected function processOrderProducts(): void
     {
 
-        $this->order->orderProducts->each(function ($orderProduct){
+        $this->order->orderProducts->each(function ($orderProduct) {
 
             // Step 1.1
-             $this->getUpdatedProductStockQuantity($orderProduct->product,$orderProduct->quantity);
-            if (!empty($this->usedStockBag) && is_null($this->error))
-            {
-                foreach ($this->usedStockBag as $data)
-                {
+            $this->getUpdatedProductStockQuantity($orderProduct->product, $orderProduct->quantity);
+            if (!empty($this->usedStockBag) && is_null($this->error)) {
+                foreach ($this->usedStockBag as $data) {
                     // Step 1.2
-                    $newOrderShipment = $this->makeOrderShipment($orderProduct,$data);
+                    $newOrderShipment = $this->makeOrderShipment($orderProduct, $data);
                     // Step 1.3
-                    $newOrderInvoice = $this->makeOrderInvoice($newOrderShipment,$orderProduct);
+                    $newOrderInvoice = $this->makeOrderInvoice($newOrderShipment, $orderProduct);
                 }
-            }else{
-                $this->error = 'no stock available for '. $orderProduct->product->name;
+            } else {
+                $this->error = 'no stock available for ' . $orderProduct->product->name;
             }
 
         });
@@ -112,19 +109,17 @@ class OrderConfirmService
      * @param int $requiredQuantity
      * @return void
      */
-    protected function getUpdatedProductStockQuantity(Product $product, int $requiredQuantity):void
+    protected function getUpdatedProductStockQuantity(Product $product, int $requiredQuantity): void
     {
         $quantityFulfilled = 0;
 
-        foreach ($product->availableStocks as $productStock)
-        {
-            if ($productStock->in_stock_quantity >= $requiredQuantity - $quantityFulfilled)
-            {
+        foreach ($product->availableStocks as $productStock) {
+            if ($productStock->in_stock_quantity >= $requiredQuantity - $quantityFulfilled) {
                 // Deducted Stock Quantity & Update Product Stock
                 $quantityToDeduct = $requiredQuantity - $quantityFulfilled;
-                $this->usedStockBag [] = [
-                  'quantity' => $quantityToDeduct,
-                  'model' => $productStock
+                $this->usedStockBag[] = [
+                    'quantity' => $quantityToDeduct,
+                    'model' => $productStock
                 ];
                 // Update the quantity fulfilled
                 $quantityFulfilled += $quantityToDeduct;
@@ -134,16 +129,14 @@ class OrderConfirmService
         }
 
         // If Fulfil Order Quantity, Then Stock Will Be Updated
-        if ($quantityFulfilled === $requiredQuantity)
-        {
+        if ($quantityFulfilled === $requiredQuantity) {
             // Update Stocks
-            foreach ($this->usedStockBag as $data)
-            {
+            foreach ($this->usedStockBag as $data) {
                 $data['model']->sold_quantity += $data['quantity'];
                 $data['model']->save();
             }
-        }else{
-            $this->error = $product->name.' out of stock!';
+        } else {
+            $this->error = $product->name . ' out of stock!';
         }
 
     }
@@ -154,7 +147,7 @@ class OrderConfirmService
      * @param array $data
      * @return Model|OrderShipment
      */
-    protected function makeOrderShipment(OrderProduct $orderProduct,array $data): Model|OrderShipment
+    protected function makeOrderShipment(OrderProduct $orderProduct, array $data): Model|OrderShipment
     {
         return $orderProduct->shipment()->create([
             'order_id' => $this->order->id,
@@ -172,10 +165,10 @@ class OrderConfirmService
      * @param OrderProduct $orderProduct
      * @return OrderInvoice
      */
-    protected function makeOrderInvoice(Model|OrderShipment $orderShipment,OrderProduct $orderProduct):OrderInvoice
+    protected function makeOrderInvoice(Model|OrderShipment $orderShipment, OrderProduct $orderProduct): OrderInvoice
     {
         $newInvoice = $orderShipment->invoice()->create([
-            'uuid' => 'INV_'.$this->order->uuid,
+            'uuid' => 'INV_' . $this->order->uuid,
             'order_id' => $this->order->id,
             'order_product_id' => $orderProduct->id,
         ]);
@@ -219,9 +212,8 @@ class OrderConfirmService
      */
     protected function updateUsageOfCouponIfPresent(): void
     {
-        if (!is_null($this->order->voucher))
-        {
-            $voucherModel = VoucherCode::firstWhere('code','=',$this->order->voucher);
+        if (!is_null($this->order->voucher)) {
+            $voucherModel = VoucherCode::firstWhere('code', '=', $this->order->voucher);
             $voucherModel->times_used++;
             $voucherModel->save();
         }
