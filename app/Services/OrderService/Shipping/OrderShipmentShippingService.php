@@ -2,6 +2,7 @@
 
 namespace App\Services\OrderService\Shipping;
 
+use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;
 use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
@@ -16,7 +17,9 @@ class OrderShipmentShippingService
 
     public function __construct(OrderShipment $orderShipment, ShippingProviderContract $shippingProvider)
     {
+        $orderShipment->load('order');
         $this->orderShipment = $orderShipment;
+
         $this->shippingProvider = $shippingProvider;
 
     }
@@ -85,6 +88,9 @@ class OrderShipmentShippingService
                 $this->orderShipment->fill($insertableData)->save();
             }
         }
+
+        $this->updateOrderStatus();
+
         return is_null($this->error);
     }
 
@@ -106,10 +112,15 @@ class OrderShipmentShippingService
         return !is_null($this->error);
     }
 
+    protected function updateOrderStatus()
+    {
+        $order = $this->orderShipment->order;
 
+        $order->fill([
+            'status' => Order::READYTOSHIP
+        ])->save();
 
-
-
+    }
 
 
 }
