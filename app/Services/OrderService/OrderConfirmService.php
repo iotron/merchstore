@@ -89,9 +89,15 @@ class OrderConfirmService
             // Step 1.1
             $this->getUpdatedProductStockQuantity($orderProduct->product, $orderProduct->quantity);
             if (!empty($this->usedStockBag) && is_null($this->error)) {
-                foreach ($this->usedStockBag as $data) {
+
+                $groupedStock = collect($this->usedStockBag)->groupBy('pickup_address_id');
+
+                foreach ($groupedStock as $address_id => $data) {
+                    $totalQuantityOfThisPickupAddress = $data->sum(function ($item){
+                        return $item['quantity'];
+                    });
                     // Step 1.2
-                    $newOrderShipment = $this->makeOrderShipment($orderProduct, $data);
+                    $newOrderShipment = $this->makeOrderShipment($orderProduct, $totalQuantityOfThisPickupAddress,$address_id);
                     // Step 1.3
                     $newOrderInvoice = $this->makeOrderInvoice($newOrderShipment, $orderProduct);
                 }
@@ -117,9 +123,11 @@ class OrderConfirmService
             if ($productStock->in_stock_quantity >= $requiredQuantity - $quantityFulfilled) {
                 // Deducted Stock Quantity & Update Product Stock
                 $quantityToDeduct = $requiredQuantity - $quantityFulfilled;
+
                 $this->usedStockBag[] = [
                     'quantity' => $quantityToDeduct,
-                    'stock' => $productStock
+                    'stock' => $productStock,
+                    'pickup_address_id' => $productStock->addresses->first()->id
                 ];
                 // Update the quantity fulfilled
                 $quantityFulfilled += $quantityToDeduct;
@@ -130,7 +138,8 @@ class OrderConfirmService
 
         // If Fulfil Order Quantity, Then Stock Will Be Updated
         if ($quantityFulfilled === $requiredQuantity) {
-            // Update Stocks
+
+
             foreach ($this->usedStockBag as $data) {
                 $data['stock']->sold_quantity += $data['quantity'];
                 $data['stock']->save();
@@ -144,15 +153,16 @@ class OrderConfirmService
     /**
      * Step 1.2
      * @param OrderProduct $orderProduct
-     * @param array $data
+     * @param $quantity
+     * @param int $address_id
      * @return Model|OrderShipment
      */
-    protected function makeOrderShipment(OrderProduct $orderProduct, array $data): Model|OrderShipment
+    protected function makeOrderShipment(OrderProduct $orderProduct, $quantity,int $address_id): Model|OrderShipment
     {
         return $orderProduct->shipment()->create([
             'order_id' => $this->order->id,
-            'total_quantity' => $data['quantity'],
-            'pickup_address' => $data['stock']->addresses->first()->id,
+            'total_quantity' => $quantity,
+            'pickup_address' => $address_id,
             'delivery_address' => $this->order->shipping_address_id,
             'cod' => $this->order->is_cod,
             'status' => OrderShipment::PROCESSING,
