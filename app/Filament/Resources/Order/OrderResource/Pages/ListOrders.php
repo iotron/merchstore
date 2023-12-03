@@ -7,6 +7,7 @@ use App\Helpers\Money\Money;
 use App\Models\Order\Order;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Table;
 use Filament\Tables;
 use Filament\Resources\Components\Tab;
@@ -48,6 +49,7 @@ class ListOrders extends ListRecords
 
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('UUID')
+                    ->weight(FontWeight::Bold)
                     ->searchable(),
 
 
@@ -57,14 +59,24 @@ class ListOrders extends ListRecords
                     ->copyable()
                     ->copyMessage('copied!')
                     ->default('--not found--')
+                    ->badge()
+                    ->color(function ($state){
+                        return ($state == '--not found--') ? 'danger' : 'success';
+                    })
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('quantity')
                     ->numeric()
+                    ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('voucher')
                     ->default('--not found--')
+                    ->badge()
+                    ->color(function ($state){
+
+                        return ($state == '--not found--') ? 'danger' : 'success';
+                    })
                     ->searchable(),
 
 
@@ -79,6 +91,7 @@ class ListOrders extends ListRecords
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment.provider.name')
                     ->label('Payment Provider')
+                    ->badge()
                     ->default('--not found--')
                     ->sortable(),
 
@@ -90,6 +103,7 @@ class ListOrders extends ListRecords
                     ->formatStateUsing(function ($state){
                         return Order::StatusOptions[$state];
                     })
+                    ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         Order::PENDING,Order::REVIEW => 'gray',
                         Order::PROCESSING,Order::INTRANSIT,Order::READYTOSHIP => 'warning',
