@@ -119,7 +119,7 @@ class OrderConfirmService
                 $quantityToDeduct = $requiredQuantity - $quantityFulfilled;
                 $this->usedStockBag[] = [
                     'quantity' => $quantityToDeduct,
-                    'model' => $productStock
+                    'stock' => $productStock
                 ];
                 // Update the quantity fulfilled
                 $quantityFulfilled += $quantityToDeduct;
@@ -132,8 +132,8 @@ class OrderConfirmService
         if ($quantityFulfilled === $requiredQuantity) {
             // Update Stocks
             foreach ($this->usedStockBag as $data) {
-                $data['model']->sold_quantity += $data['quantity'];
-                $data['model']->save();
+                $data['stock']->sold_quantity += $data['quantity'];
+                $data['stock']->save();
             }
         } else {
             $this->error = $product->name . ' out of stock!';
@@ -152,7 +152,7 @@ class OrderConfirmService
         return $orderProduct->shipment()->create([
             'order_id' => $this->order->id,
             'total_quantity' => $data['quantity'],
-            'pickup_address' => $data['model']->addresses->first()->id,
+            'pickup_address' => $data['stock']->addresses->first()->id,
             'delivery_address' => $this->order->shipping_address_id,
             'cod' => $this->order->is_cod,
             'status' => OrderShipment::PROCESSING,
