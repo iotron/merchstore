@@ -217,7 +217,7 @@ class ViewOrder extends ViewRecord
             RepeatableEntry::make('refunds')
                 ->visible($this->record->refunds()->count())
                 ->columnSpanFull()
-                ->contained(false)
+                //->contained(false)
                 ->columns(2)
                 ->schema([
                     TextEntry::make('refund_id'),

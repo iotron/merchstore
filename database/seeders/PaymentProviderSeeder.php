@@ -3,11 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Payment\PaymentProvider;
-use App\Services\OrderService\OrderCreationService;
 use App\Services\PaymentService\Providers\Custom\CustomPaymentService;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayPaymentService;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class PaymentProviderSeeder extends Seeder

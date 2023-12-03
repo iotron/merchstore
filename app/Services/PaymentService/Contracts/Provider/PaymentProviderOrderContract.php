@@ -7,7 +7,7 @@ use App\Models\Order\Order;
 interface PaymentProviderOrderContract
 {
 
-    public function create(Order $order):mixed;
+    public function create(Order $order):array;
 
     public function fetch(string|int $id);
 

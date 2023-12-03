@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('order_invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('order_shipment_id')->nullable()->constrained('order_shipments')->onUpdate('cascade')->onDelete('set null');
+            $table->string('uuid');
+            $table->foreignId('order_id')->constrained('orders')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('order_product_id')->constrained('order_products')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('order_shipment_id')->nullable()->constrained('order_shipments')->cascadeOnUpdate()->nullOnDelete();
             $table->timestamps();
         });
     }

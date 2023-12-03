@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api\Order;
 
 use App\Helpers\Cart\Cart;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Order\OrderConfirmRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
-use App\Models\Localization\Address;
 use App\Models\Order\Order;
+use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderConfirmService;
 use App\Services\OrderService\OrderCreationService;
@@ -17,8 +18,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\Payment\Payment;
-use App\Http\Requests\Order\OrderConfirmRequest;
 use Illuminate\Routing\Redirector;
 
 class OrderActionController extends Controller
@@ -50,26 +49,16 @@ class OrderActionController extends Controller
 
     public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|RedirectResponse
     {
+
+        // Validate Request
         $validate = $request->validated();
 
         // Check If Coupon Presence (Voucher)
-
         if (isset($validate['coupon']) && !empty($validate['coupon']))
         {
             // Apply Coupon In Cart
             $cart->addCoupon($validate['coupon']);
         }
-
-
-        $paymentProvider = PaymentProvider::firstWhere('id', $validate['payment_provider_id']);
-        // Validate Payment Method
-        if (is_null($paymentProvider)) {
-            return response()->json(['status' => false, 'message' => 'payment service does not exist'], 422);
-        }
-        if (!$paymentProvider->status) {
-            return response()->json(['status' => false, 'message' => 'please choose another payment service'], 422);
-        }
-
 
 
         // Validate Delivery Address (auth)
@@ -91,12 +80,28 @@ class OrderActionController extends Controller
         if ($cart->getTotalQuantity() <= 0) {
             return response()->json(['success' => false, 'message' => 'cart empty!'], 403);
         }
+
+        // Finish Cart Calculation
+        $cartMeta = $cart->getMeta();
+        // Check Cart For Errors
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         }
+
+        // Found Payment Provider
+        $paymentProvider = $this->paymentService->getAllProvidersModel()->firstWhere('id','=',$validate['payment_provider_id']);
+
+        // Validate Payment Method
+        if (is_null($paymentProvider)) {
+            return response()->json(['status' => false, 'message' => 'payment service does not exist'], 422);
+        }
+        if (!$paymentProvider->status) {
+            return response()->json(['status' => false, 'message' => 'please choose another payment service'], 422);
+        }
+        // Load Payment Provider Service
         $paymentProviderService = $this->paymentService->provider($paymentProvider->code)->getProvider();
 
-        $orderCreationService = new OrderCreationService($paymentProviderService,$cart);
+        // Order UUID Generation
         $uuid = $this->generateUniqueID();
         if (is_null($uuid))
         {
@@ -105,37 +110,30 @@ class OrderActionController extends Controller
                 'message' => 'unable to generate unique order id, try again!',
             ],409);
         }
-        $orderCreationService->checkout($uuid,$shippingAddress,$billingAddress);
 
 
-        // redirect instead json response
+        // Order Place Process Start
+        $cartCustomer = $cart->getCustomer();
+        $orderCreation = new OrderCreationService($paymentProviderService,$cartCustomer,$cartMeta);
+        $orderCreation->placeOrder($uuid,$shippingAddress,$billingAddress);
+        // Clean Cart Attributes
+        $cart->reset();
 
-//            return (!app()->runningInConsole() && !is_null($paymentProviderService->getModel())) ? response()->json([
-//                'success' => true,
-//                'message' => 'order placed successfully',
-//                'payment_provider' => [
-//                    'name' => $paymentProviderService->getModel()->name,
-//                    'code' => $paymentProviderService->getModel()->code,
-//                ],
-//                'order' => [
-//                    'uuid' => $orderCreationService->getOrder()->uuid,
-//                    'status' => $orderCreationService->getOrder()->status,
-//                ],
-//                'redirect' => ($orderCreationService->isCod) ?
-//                    config('app.client_url').'/orders/'. $orderCreationService->getOrder()->uuid : route('payment.visit', ['payment' => $orderCreationService->getOrder()->payment->receipt]),
-//            ], 200) : ['success' => true, 'message' => 'order placed successfully', 'payment' => $orderCreationService->getOrder()->payment()];
-
-
-        // return Application Checkout link Route
-
-            return redirect()->to(($orderCreationService->isCod) ?
-                config('app.client_url').'/orders/'. $orderCreationService->getOrder()->uuid :
-                route('payment.visit', ['payment' => $orderCreationService->getOrder()->payment->receipt]));
-
-
-
-
-
+        // Return Based On Error
+        if (!is_null($orderCreation->getError()))
+        {
+            // Failure
+            return response()->json([
+                'success' => true,
+                'message' => $orderCreation->getError(),
+            ],409);
+        }else{
+            // Success
+//            dd('order success');
+            return redirect()->to(($orderCreation->isCashOnDelivery()) ?
+                config('app.client_url').'/orders/'. $orderCreation->getOrder()->uuid :
+                route('payment.visit', ['payment' => $orderCreation->getPayment()->receipt]));
+        }
 
     }
 
@@ -144,35 +142,31 @@ class OrderActionController extends Controller
 
     public function confirmPayment(Payment $payment, OrderConfirmRequest $request): Application|JsonResponse|Redirector|RedirectResponse|\Illuminate\Contracts\Foundation\Application
     {
-
-        $paymentVerified =
-            $this->paymentService
-                ->provider($payment->provider->code)
-                ->verify()
-                ->verifyWith($payment,$request->validationData());
+        // Found Payment Provider
+        $paymentProviderModel = $this->paymentService->getAllProvidersModel()->firstWhere('id',$payment->payment_provider_id);
+        $paymentProviderService = $this->paymentService->provider($paymentProviderModel->code)->getProvider();
+        $paymentVerified = $paymentProviderService->verify()->verifyWith($payment,$request->validationData());
 
 
-        if ($paymentVerified && is_null($this->paymentService->provider()->getError()))
+        if (!$paymentVerified || !is_null($paymentProviderService->getError()))
         {
-            $orderConfirmService = new OrderConfirmService($payment);
-            if ($orderConfirmService->updateOrder()
-            ) {
-                $order = $orderConfirmService->getOrder();
-                if ($order->exists) {
-                    //Send Notification To Event Manager
-                    //$this->notifyManagerOnSuccess($order->event->manager,'new booking found!','a new booking '.$order->uuid.' found for order - '.$order->event->name);
-                    //Redirect On Success
-                    return redirect(config('app.client_url') . '/orders/' . $order->uuid);
-                }
-                return redirect(config('app.client_url') . '/cart/');
-            }
-            return redirect(config('app.client_url') . '/cart/');
-        } else {
             return response()->json(['status' => false, 'message' => 'provider order id mismatch'], 403);
         }
 
+        // Confirm This Payment And Update Order
+        $orderConfirmService = new OrderConfirmService($payment);
+        $orderConfirmService->confirmOrder();
+        $order = $orderConfirmService->getOrder();
 
+        if (is_null($orderConfirmService->getError()))
+        {
+            return redirect(config('app.client_url') . '/cart/');
+        }
 
+        //Send Notification To Event Manager
+        //$this->notifyManagerOnSuccess($order->event->manager,'new booking found!','a new booking '.$order->uuid.' found for order - '.$order->event->name);
+        //Redirect On Success
+        return redirect(config('app.client_url') . '/orders/' . $order->uuid);
 
     }
 

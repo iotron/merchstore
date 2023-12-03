@@ -20,6 +20,15 @@ use App\Models\Order\OrderInvoice;
  * @property $shipping_is_billing;
  * @property $created_at;
  * @property $id;
+ * @property $subtotal;
+ * @property $discount;
+ * @property $tax;
+ * @property $total;
+ * @property $uuid;
+ * @property $voucher;
+ * @property $quantity;
+ * @property $is_cod;
+ * @property $shipping_address_id;
  */
 class Order extends Model
 {
@@ -123,7 +132,7 @@ class Order extends Model
 
     public function invoices()
     {
-        return $this->hasMany(OrderInvoice::class);
+        return $this->hasMany(OrderInvoice::class,'order_id','id');
     }
 
 

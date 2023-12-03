@@ -9,7 +9,6 @@ use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
 use App\Services\OrderService\OrderCreationService;
 use App\Services\PaymentService\PaymentService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class OrderSeeder extends Seeder
@@ -26,13 +25,13 @@ class OrderSeeder extends Seeder
             ['type','=',Product::SIMPLE],
             ['status','=',Product::PUBLISHED],
             ['is_returnable','=',false]
-        ])->limit(10)->get();
+        ])->limit(3)->get();
 
         $returnableProducts = Product::where([
             ['type','=',Product::SIMPLE],
             ['status','=',Product::PUBLISHED],
             ['is_returnable','=',true]
-        ])->limit(10)->get();
+        ])->limit(3)->get();
 
 
 
@@ -63,9 +62,10 @@ class OrderSeeder extends Seeder
 
 
 
-            $paymentProvider = $paymentService->provider(PaymentProvider::CUSTOM)->getProvider();
+            $paymentProviderService = $paymentService->provider(PaymentProvider::CUSTOM)->getProvider();
+            $cartCustomer = $cart->getCustomer();
+            $cartMeta = $cart->getMeta();
 
-            $orderCreationService = new OrderCreationService($paymentProvider,$cart);
 
             $shippingIsBilling = fake()->boolean;
 
@@ -84,8 +84,11 @@ class OrderSeeder extends Seeder
             }
 
             $uuid = $this->generateUniqueID();
-            $orderCreationService->checkout($uuid,$shippingAddress,$billingAddress);
+            $orderCreation = new OrderCreationService($paymentProviderService,$cartCustomer,$cartMeta);
+            $orderCreation->placeOrder($uuid,$shippingAddress,$billingAddress);
 
+
+            $cart->reset();
 
         }
 

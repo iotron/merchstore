@@ -11,6 +11,9 @@ use App\Models\Shipping\ShippingProvider;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property $invoice_uid;
+ */
 class OrderShipment extends Model
 {
     use HasFactory;

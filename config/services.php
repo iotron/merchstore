@@ -85,5 +85,17 @@ return [
 
 
 
+    'custom-shipping' => [
+
+    ],
+
+    'custom_payment' => [
+        'prefix' => 'cod_',
+    ],
+
+
+
+
+
 
 ];

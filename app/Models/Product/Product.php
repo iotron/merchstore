@@ -22,6 +22,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+/**
+ * @property $name
+ */
 class Product extends Model implements HasMedia
 {
     use HasFactory,InteractsWithMedia,CanBeScoped;

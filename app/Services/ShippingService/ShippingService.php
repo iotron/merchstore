@@ -98,7 +98,7 @@ class ShippingService implements ShippingServiceContract
             }
 
             // Activate And Get Provider Instance
-            $providerInstance = new $providerClass($providerApi);
+            $providerInstance = new $providerClass($providerModel,$providerApi);
             throw_unless($providerInstance instanceof ShippingProviderContract,$providerClass.' must implement App\Services\ShippingService\Contracts\ShippingProviderContract');
             // Add Provider Service In Providers List
             $this->providers[$provider] = $providerInstance;

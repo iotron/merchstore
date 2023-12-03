@@ -2,6 +2,7 @@
 
 namespace App\Services\ShippingService\Providers\Custom;
 
+use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderReturnContract;
@@ -16,6 +17,13 @@ class CustomShippingService implements ShippingProviderContract
 {
 
     private ?string $error = null;
+    protected ShippingProvider $providerModel;
+
+    public function __construct(ShippingProvider $providerModel,mixed $api = null)
+    {
+        $this->providerModel = $providerModel;
+    }
+
 
     public function getProviderName(): string
     {
@@ -33,6 +41,11 @@ class CustomShippingService implements ShippingProviderContract
     public function getProvider(): ShippingProviderContract
     {
         return $this;
+    }
+
+    public function getModel(): ShippingProvider
+    {
+        return $this->providerModel;
     }
 
     /**

@@ -32,7 +32,7 @@ class CustomPaymentService implements PaymentProviderContract
 
     public function getProviderName(): string
     {
-        return 'cod';
+        return 'custom';
     }
 
     public function getClass(): string

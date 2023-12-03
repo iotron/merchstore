@@ -48,8 +48,20 @@ class OrderReturnRefundService
             'orderProducts.shipment.deliveryAddress',
         ]);
 
+        // Is there Any Payment Available For Return The Order
+        if (is_null($this->order->payment->provider_ref_id))
+        {
+            $this->error = 'order : '.$this->order->uuid.' not paid yet!';
+        }
 
         $this->payment = $this->order->payment;
+
+        if (!$this->payment->verified)
+        {
+            $this->error = 'Payment : '.$this->payment->receipt.' not verified!';
+        }
+
+
         $this->sku = $given_sku;
         $this->shippingService = $shippingService;
         $this->paymentService = $paymentService;
@@ -125,6 +137,7 @@ class OrderReturnRefundService
 
         }
 
+
         if (is_null($this->error))
         {
             $this->makePendingRefund();
@@ -152,6 +165,7 @@ class OrderReturnRefundService
             // Check For Error
             if (is_null($this->error))
             {
+
                 // Everything Is Fine For Return This OrderProduct With Whole Quantity
                 $response = $this->shippingService->provider($orderShipment->shippingProvider->code)
                     ->return()
@@ -190,7 +204,8 @@ class OrderReturnRefundService
         foreach ($this->returnPlacedBag as $orderProduct)
         {
 
-            $response =  $this->paymentProvider->refund()->create($this->payment->provider_ref_id,$totalRefundableAmount);
+
+            $response =  $this->paymentProvider->refund()->create($this->payment->provider_ref_id,$orderProduct->amount);
 
             if (isset($response['status']) && $response['status'] == 'processed')
             {

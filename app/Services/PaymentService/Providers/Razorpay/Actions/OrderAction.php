@@ -26,9 +26,9 @@ class OrderAction implements PaymentProviderOrderContract
 
     /**
      * @param Order $order
-     * @return mixed
+     * @return array
      */
-    public function create(Order $order):mixed
+    public function create(Order $order):array
     {
         $formattedData = [
         'receipt' => PaymentServiceHelper::newReceipt(),
@@ -50,7 +50,7 @@ class OrderAction implements PaymentProviderOrderContract
     ];
 
 
-        return $this->api->order->create($formattedData);
+        return $this->api->order->create($formattedData)->toArray();
     }
 
     /**

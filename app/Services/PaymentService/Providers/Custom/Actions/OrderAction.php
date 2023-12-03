@@ -2,6 +2,7 @@
 
 namespace App\Services\PaymentService\Providers\Custom\Actions;
 
+use App\Helpers\Money\Money;
 use App\Models\Order\Order;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderMethodContract;
@@ -20,28 +21,29 @@ class OrderAction implements PaymentProviderOrderContract
 
 
 
-    public function create(Order $order):mixed
+    public function create(Order $order):array
     {
-        $receipt = PaymentServiceHelper::newReceipt();
 
-        return [
-            'id' => 'custom_order_'.Str::replace('receipt_','',$receipt),
-            'receipt' => $receipt,
+        $prefix = is_null(config('services.custom-payment.prefix')) ? '' : config('services.custom-payment.prefix');
+        return  [
+            'id' => $prefix.'order_'.$order->uuid,
+            'entity' => 'order',
             'amount' => $order->total->getAmount(),
-            'currency' => $order->total->getCurrency()->getCurrency(),
-
+            'amount_paid' => 0,
+            'amount_due' => $order->total->getAmount(),
+            'currency' => $order->total->currency(),
+            'receipt' => 'receipt#'.Str::upper(Str::random(2)).now()->timestamp,
+            'offer_id' => null,
+            'status'  => 'created',
+            'attempts' => 0,
             'notes' => [
-                'customer_name' => $order->customer->name,
-                'customer_email' => $order->customer->email,
-                'customer_contact' => $order->customer->contact,
-                // column
                 'voucher' => $order->voucher,
                 'quantity' => $order->quantity,
-                'subtotal' => $order->subtotal->getAmount(),
-                'discount' => $order->discount->getAmount(),
-                'tax' => $order->tax->getAmount(),
                 'total' => $order->total->getAmount(),
             ],
+            'created_at' => now()->timestamp,
+            'error' => []
+
         ];
     }
 

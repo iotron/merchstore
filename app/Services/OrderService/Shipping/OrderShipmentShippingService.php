@@ -18,6 +18,7 @@ class OrderShipmentShippingService
     {
         $this->orderShipment = $orderShipment;
         $this->shippingProvider = $shippingProvider;
+
     }
 
     public function getError(): ?string
@@ -78,6 +79,7 @@ class OrderShipmentShippingService
                     'provider_channel_id' => $channelID,
                     'status' => OrderShipment::READYTOSHIP,
                     'last_update' => now(),
+                    'shipping_provider_id' => $this->shippingProvider->getModel()->id
                 ];
 
                 $this->orderShipment->fill($insertableData)->save();

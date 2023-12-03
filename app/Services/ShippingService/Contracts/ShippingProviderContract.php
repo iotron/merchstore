@@ -2,6 +2,7 @@
 
 namespace App\Services\ShippingService\Contracts;
 
+use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderReturnContract;
@@ -14,6 +15,8 @@ interface ShippingProviderContract
     public function getClass():string;
 
     public function getProvider():ShippingProviderContract;
+
+    public function getModel():ShippingProvider;
 
     public function setError(string $error):void;
     public function getError():?string;

@@ -2,55 +2,196 @@
 
 namespace App\Services\OrderService;
 
-use App\Models\Localization\Address;
 use App\Models\Order\Order;
+use App\Models\Order\OrderInvoice;
 use App\Models\Order\OrderProduct;
 use App\Models\Order\OrderShipment;
 use App\Models\Payment\Payment;
-use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
-use App\Models\Promotion\Voucher;
 use App\Models\Promotion\VoucherCode;
-use App\Models\Shipping\ShippingProvider;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderConfirmService
 {
-
-
+    protected ?string $error = null;
     protected Payment $payment;
-    protected Order $order;
-    protected ?VoucherCode $voucherCode=null;
-    protected array $stockBag = [];
-    protected bool $isCod = false;
+    protected ?Order $order = null;
+    protected array $usedStockBag = [];
 
     public function __construct(Payment $payment)
     {
         $this->payment = $payment;
-//        throw_if($this->payment->provider->url == PaymentProvider::COD,'cash on delivery order not submit with this service');
-        $this->order = $this->payment->order;
-        $this->order->loadMissing('orderProducts','orderProducts.product');
-        $this->voucherCode = VoucherCode::firstWhere('code',$this->order->voucher);
+    }
+
+
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    public function setOrder(Order $order)
+    {
+        $this->order = $order;
+    }
+
+    public function getOrder():Order
+    {
 
     }
 
-    public function getOrder()
+    protected function discoverOrder():void
     {
-        return $this->order;
+        if (is_null($this->order))
+        {
+            $this->order = $this->payment->order()->first();
+        }
+        // Load Necessary Relations
+        $this->order->loadMissing([
+            'orderProducts',
+            'orderProducts.product',
+            'orderProducts.product.availableStocks',
+            'orderProducts.product.availableStocks.addresses'
+        ]);
     }
 
-    public function updateOrder():bool
+    public function confirmOrder():void
     {
+        // Ensure Order Model
+        $this->discoverOrder();
+
+        // Step 1
+        $this->processOrderProducts();
+
+        // Step 2
         $this->updateOrderStatus();
+
+        // Step 3
         $this->updatePaymentStatus();
-        $this->updateProductStock();
+
+        // Step 4
         $this->updateUsageOfCouponIfPresent();
 
-        // Left Jobs
-        // Return
-        return $this->order->status == Order::CONFIRM;
+
     }
 
+
+
+
+
+    /**
+     * Step 1
+     * @return void
+     */
+    protected function processOrderProducts(): void
+    {
+
+        $this->order->orderProducts->each(function ($orderProduct){
+
+            // Step 1.1
+             $this->getUpdatedProductStockQuantity($orderProduct->product,$orderProduct->quantity);
+            if (!empty($this->usedStockBag) && is_null($this->error))
+            {
+                foreach ($this->usedStockBag as $data)
+                {
+                    // Step 1.2
+                    $newOrderShipment = $this->makeOrderShipment($orderProduct,$data);
+                    // Step 1.3
+                    $newOrderInvoice = $this->makeOrderInvoice($newOrderShipment,$orderProduct);
+                }
+            }else{
+                $this->error = 'no stock available for '. $orderProduct->product->name;
+            }
+
+        });
+
+    }
+
+    /**
+     * Step 1.1
+     * @param Product $product
+     * @param int $requiredQuantity
+     * @return void
+     */
+    protected function getUpdatedProductStockQuantity(Product $product, int $requiredQuantity):void
+    {
+        $quantityFulfilled = 0;
+
+        foreach ($product->availableStocks as $productStock)
+        {
+            if ($productStock->in_stock_quantity >= $requiredQuantity - $quantityFulfilled)
+            {
+                // Deducted Stock Quantity & Update Product Stock
+                $quantityToDeduct = $requiredQuantity - $quantityFulfilled;
+                $this->usedStockBag [] = [
+                  'quantity' => $quantityToDeduct,
+                  'model' => $productStock
+                ];
+                // Update the quantity fulfilled
+                $quantityFulfilled += $quantityToDeduct;
+                // Break the loop since the required quantity is fulfilled
+                break;
+            }
+        }
+
+        // If Fulfil Order Quantity, Then Stock Will Be Updated
+        if ($quantityFulfilled === $requiredQuantity)
+        {
+            // Update Stocks
+            foreach ($this->usedStockBag as $data)
+            {
+                $data['model']->sold_quantity += $data['quantity'];
+                $data['model']->save();
+            }
+        }else{
+            $this->error = $product->name.' out of stock!';
+        }
+
+    }
+
+    /**
+     * Step 1.2
+     * @param OrderProduct $orderProduct
+     * @param array $data
+     * @return Model|OrderShipment
+     */
+    protected function makeOrderShipment(OrderProduct $orderProduct,array $data): Model|OrderShipment
+    {
+        return $orderProduct->shipment()->create([
+            'order_id' => $this->order->id,
+            'total_quantity' => $data['quantity'],
+            'pickup_address' => $data['model']->addresses->first()->id,
+            'delivery_address' => $this->order->shipping_address_id,
+            'cod' => $this->order->is_cod,
+            'status' => OrderShipment::PROCESSING,
+        ]);
+    }
+
+    /**
+     * Step 1.3
+     * @param Model|OrderShipment $orderShipment
+     * @param OrderProduct $orderProduct
+     * @return OrderInvoice
+     */
+    protected function makeOrderInvoice(Model|OrderShipment $orderShipment,OrderProduct $orderProduct):OrderInvoice
+    {
+        $newInvoice = $orderShipment->invoice()->create([
+            'uuid' => 'INV_'.$this->order->uuid,
+            'order_id' => $this->order->id,
+            'order_product_id' => $orderProduct->id,
+        ]);
+        $orderShipment->invoice_uid = $newInvoice->uuid;
+        $orderShipment->save();
+        return $newInvoice;
+    }
+
+
+
+
+
+    /**
+     * Step 2
+     * @return void
+     */
     private function updateOrderStatus(): void
     {
         $this->order->status == Order::CONFIRM;
@@ -59,6 +200,10 @@ class OrderConfirmService
     }
 
 
+    /**
+     * Step 3
+     * @return void
+     */
     protected function updatePaymentStatus(): void
     {
         $this->payment->fill([
@@ -67,121 +212,20 @@ class OrderConfirmService
         ])->save();
     }
 
-//    private function updateProductStock():void
-//    {
-//
-//
-//        foreach ($this->order->orderProducts as $orderProduct)
-//        {
-//            $productModel = $orderProduct->product;
-//
-//            $totalQuantity = $orderProduct->quantity;
-//            $productAllStock = $productModel->availableStocks()->get();
-//
-//
-//            foreach($productAllStock as $stock)
-//            {
-//                if ($totalQuantity != 0)
-//                {
-//                    if($stock->in_stock_quantity >= $totalQuantity)
-//                    {
-//                        // Update Product Stock
-//                        $stock->sold_quantity = $stock->sold_quantity + $totalQuantity;
-//                        $stock->save();
-//                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-//                        $totalQuantity = 0;
-//                    }elseif($stock->in_stock){
-//                        // Partially Update Stock From Each Stock
-//                        $this->stockBag[] = ['model' => $stock , 'quantity' => $totalQuantity];
-//                        $totalQuantity = $totalQuantity - $stock->in_stock_quantity;
-//                        // Update Product Stock
-//                        $stock->sold_quantity = $stock->sold_quantity + $stock->in_stock_quantity;
-//                        $stock->save();
-//                    }
-//                }
-//            }
-//
-//        }
-//    }
-//
-//
 
-
-
-
-
-
-    protected function updateProductStock()
+    /**
+     * Step 4
+     * @return void
+     */
+    protected function updateUsageOfCouponIfPresent(): void
     {
-        $this->order->loadMissing('orderProducts','orderProducts.product','orderProducts.product.availableStocks','orderProducts.shipment');
-
-        foreach ($this->order->orderProducts as $orderProduct)
+        if (!is_null($this->order->voucher))
         {
-
-            foreach ($orderProduct->shipment as $orderShipment)
-            {
-
-                $this->updateStock($orderProduct->product,$orderShipment,$orderProduct);
-            }
-
-
+            $voucherModel = VoucherCode::firstWhere('code','=',$this->order->voucher);
+            $voucherModel->times_used++;
+            $voucherModel->save();
         }
-
     }
-
-
-
-
-
-    protected function updateStock(Product $product, OrderShipment $orderShipment, OrderProduct|Model $orderProduct)
-    {
-
-       // dd($product);
-        $requiredQuantity = $this->order->quantity;
-        $quantityFulfilled = 0;
-
-        foreach ($product->availableStocks as $stock) {
-
-            if ($stock->address_id == $orderShipment->pickup_address)
-            {
-                if ($stock->in_stock_quantity >= $requiredQuantity - $orderShipment->total_quantity) {
-                    // Deducted Stock Quantity & Update Product Stock
-                    $quantityToDeduct = $requiredQuantity - $orderShipment->total_quantity;
-
-                    $stock->sold_quantity += $quantityToDeduct;
-                    $stock->save();
-
-                    $pickUpAddress = $stock->addresses()->first();
-
-                    // Update the quantity fulfilled
-                    $quantityFulfilled += $quantityToDeduct;
-
-                    // Break the loop since the required quantity is fulfilled
-                    break;
-                }
-            }
-
-        }
-        // dd($quantityFulfilled,$requiredQuantity);
-    }
-
-
-
-
-
-    private function updateUsageOfCouponIfPresent(): void
-    {
-        if (!is_null($this->voucherCode))
-        {
-            $this->voucherCode->times_used++;
-            $this->voucherCode->save();
-        }
-
-    }
-
-
-
-
 
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services\ShippingService\Providers\ShipRocket;
 
+use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderReturnContract;
@@ -18,9 +19,11 @@ class ShipRocketShippingService implements ShippingProviderContract
 
     protected ShipRocketApi $api;
     private ?string $error = null;
+    protected ShippingProvider $providerModel;
 
-    public function __construct(ShipRocketApi $api)
+    public function __construct(ShippingProvider $providerModel,ShipRocketApi $api)
     {
+        $this->providerModel = $providerModel;
         $this->api = $api;
     }
 
@@ -41,6 +44,11 @@ class ShipRocketShippingService implements ShippingProviderContract
     public function getProvider(): ShippingProviderContract
     {
        return $this;
+    }
+
+    public function getModel(): ShippingProvider
+    {
+        return $this->providerModel;
     }
 
     /**

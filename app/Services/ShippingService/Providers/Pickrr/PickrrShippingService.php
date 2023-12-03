@@ -2,6 +2,7 @@
 
 namespace App\Services\ShippingService\Providers\Pickrr;
 
+use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContract;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderReturnContract;
@@ -10,6 +11,15 @@ use App\Services\ShippingService\Contracts\ShippingProviderContract;
 
 class PickrrShippingService implements ShippingProviderContract
 {
+    private ?string $error = null;
+    protected ShippingProvider $providerModel;
+
+    public function __construct(ShippingProvider $providerModel,mixed $api = null)
+    {
+        $this->providerModel = $providerModel;
+    }
+
+
 
     /**
      * @return string
@@ -34,6 +44,13 @@ class PickrrShippingService implements ShippingProviderContract
     {
         return $this;
     }
+
+
+    public function getModel(): ShippingProvider
+    {
+        return $this->providerModel;
+    }
+
 
     /**
      * @param string $error

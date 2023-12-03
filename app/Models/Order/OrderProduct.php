@@ -8,6 +8,7 @@ use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class OrderProduct extends Model
@@ -63,7 +64,7 @@ class OrderProduct extends Model
     }
 
 
-    public function shipment()
+    public function shipment(): BelongsToMany
     {
         return $this->belongsToMany(OrderShipment::class, 'shipment_products','order_product_id');
     }
@@ -73,6 +74,12 @@ class OrderProduct extends Model
     {
         return $this->hasOne(Refund::class,'order_product_id','id');
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(OrderInvoice::class,'order_product_id','id');
+    }
+
 
 
 }

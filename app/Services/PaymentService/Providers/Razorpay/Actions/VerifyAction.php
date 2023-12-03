@@ -33,6 +33,7 @@ class VerifyAction implements PaymentProviderVerificationContract
      */
     public function verifyWith(Payment $payment, array $data): bool
     {
+        //dd($payment,$data);
 
         $success = false;
         try {
@@ -50,6 +51,8 @@ class VerifyAction implements PaymentProviderVerificationContract
                 {
                     $verify = $this->verifyManuallySignature($preparedData);
                 }
+
+                dd($verify);
 
                 if ($verify)
                 {
