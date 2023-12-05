@@ -43,7 +43,8 @@ class Refund extends Model
         'details',
         'error',
         'order_id',
-        'verified'
+        'verified',
+		'provider_payment_id'
     ];
 
 
