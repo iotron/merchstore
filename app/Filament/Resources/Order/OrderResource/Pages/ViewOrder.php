@@ -6,9 +6,12 @@ use App\Filament\Resources\Order\OrderResource;
 use App\Helpers\Money\Money;
 use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;
+use App\Models\Payment\Refund;
 use App\Models\Shipping\ShippingProvider;
 
+use App\Services\OrderService\Return\OrderRefundPayService;
 use App\Services\OrderService\Shipping\OrderShipmentShippingService;
+use App\Services\PaymentService\PaymentService;
 use App\Services\ShippingService\ShippingService;
 use Filament\Actions;
 use Filament\Forms\Components\Select;
@@ -168,7 +171,6 @@ class ViewOrder extends ViewRecord
                     Order::ACCEPTED,Order::CONFIRM,Order::COMPLETED => 'success',
                     Order::REFUNED,Order::PAYMENT_FAILED,Order::CANCELLED => 'danger',
                 })
-
                 ->badge(),
 
 
@@ -214,30 +216,6 @@ class ViewOrder extends ViewRecord
 
 
 
-            RepeatableEntry::make('refunds')
-                ->visible($this->record->refunds()->count())
-                ->columnSpanFull()
-                //->contained(false)
-                ->columns(2)
-                ->schema([
-                    TextEntry::make('refund_id'),
-                    TextEntry::make('amount')
-                        ->formatStateUsing(function ($state){
-                            return $state  instanceof Money ? $state->formatted() : $state;
-                        }),
-                    TextEntry::make('receipt'),
-                    TextEntry::make('payment_id'),
-                    TextEntry::make('status')->badge(),
-                    IconEntry::make('verified')
-                        ->boolean()
-                        ->hintAction(\Filament\Infolists\Components\Actions\Action::make('calculate')
-                            ->label('Refund It')
-                            ->action(function (array $data, Model $record){
-                                dd('Refund Init',$record);
-                            })
-                        ),
-
-                ])
 
 
 
@@ -274,27 +252,61 @@ class ViewOrder extends ViewRecord
                 ->label('Quantity'),
 
 
-//            Split::make([
-//                TextEntry::make('subtotal')
-//                    ->formatStateUsing(function ($state){
-//                        return ($state instanceof Money) ? $state->formatted() : $state;
-//                    }),
-//
-//                TextEntry::make('discount')
-//                    ->formatStateUsing(function ($state){
-//                        return ($state instanceof Money) ? $state->formatted() : $state;
-//                    }),
-//
-//                TextEntry::make('tax')
-//                    ->formatStateUsing(function ($state){
-//                        return ($state instanceof Money) ? $state->formatted() : $state;
-//                    }),
-//
-//                TextEntry::make('total')
-//                    ->formatStateUsing(function ($state){
-//                        return ($state instanceof Money) ? $state->formatted() : $state;
-//                    }),
-//            ]),
+            RepeatableEntry::make('refunds')
+                ->visible($this->record->refunds()->count())
+                ->columnSpanFull()
+                //->contained(false)
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('refund_id'),
+                    TextEntry::make('amount')
+                        ->hint(function ($state){
+                            return 'Format : '. $state  instanceof Money ? $state->formatted() : Money::format($state);
+                        })
+                        ->formatStateUsing(function ($state){
+                            return $state  instanceof Money ? $state->formatted() : $state;
+                        }),
+                    TextEntry::make('receipt'),
+                    TextEntry::make('payment_id'),
+                    TextEntry::make('status')->badge(),
+                    IconEntry::make('verified')
+                        ->boolean()
+                        ->hintAction(\Filament\Infolists\Components\Actions\Action::make('refund_amount_action')
+                            ->disabled(function (Model $record){
+                                return $record->status != Refund::PENDING;
+                            })
+                            ->label(function (Model $record){
+                                return $record->status == Refund::PENDING ? 'Refund Amount' : 'Refuned';
+                            })
+                            ->action(function (array $data, Model $record,PaymentService $paymentService){
+                                $record->loadMissing('payment');
+                                $paymentProviderModel = $paymentService->getAllProvidersModel()->firstWhere('id','=',$record->payment->payment_provider_id);
+                                $paymentProviderService = $paymentService->provider($paymentProviderModel->code)->getProvider();
+
+                                $refundPayService = new OrderRefundPayService($paymentProviderService,$record);
+
+                                if ($refundPayService->refund())
+                                {
+                                    Notification::make()
+                                        ->success()
+                                        ->title('Refund Complete')
+                                        ->send();
+                                }else{
+                                    Notification::make()
+                                        ->danger()
+                                        ->title('Refund Abort')
+                                        ->body($refundPayService->getError())
+                                        ->send();
+                                }
+
+
+
+
+                            })
+                        ),
+
+                ])
+
 
 
 
@@ -309,6 +321,7 @@ class ViewOrder extends ViewRecord
             RepeatableEntry::make('shipments')
                 ->hiddenLabel()
                 ->columnSpanFull()
+                ->columns(2)
                 ->schema([
                     Split::make([
 
@@ -385,33 +398,7 @@ class ViewOrder extends ViewRecord
                     IconEntry::make('product.is_returnable')
                         ->default(false)
                         ->label('Returnable')
-                        ->boolean()
-                        ->hintAction(
-                            \Filament\Infolists\Components\Actions\Action::make('return')
-                                ->requiresConfirmation()
-                                ->visible(function (?Model $record){
-                                    return $record->product->is_returnable;
-                                })
-                                ->action(function (Model $record,ShippingService $shippingService){
-                                    $orderProductReturnService = new OrderProductReturnService($shippingService,$record);
-                                    if ($orderProductReturnService->return())
-                                    {
-                                        Notification::make()
-                                            ->success()
-                                            ->title('Return Placed')
-                                            ->body('Return Placed for all shipments')
-                                            ->send();
-
-                                    }else{
-                                        Notification::make()
-                                            ->title('Return Process Abort!')
-                                            ->body($orderProductReturnService->getError())
-                                            ->danger()
-                                            ->send();
-                                    }
-                                })
-
-                        ),
+                        ->boolean(),
 
                     TextEntry::make('order.payment.provider.name')->label('Pay With'),
 
@@ -481,12 +468,19 @@ class ViewOrder extends ViewRecord
                             TextEntry::make('pickupAddress.address_1')
                                 ->columnSpanFull()
                                 ->hint(function (Model $record){
-                                    if (is_null($record->weight) && is_null($record->length) && is_null($record->breadth) && is_null($record->height))
+                                    if ($record->status == OrderShipment::PROCESSING)
                                     {
-                                        return 'Not Ready For Shipment';
+                                        if (is_null($record->weight) && is_null($record->length) && is_null($record->breadth) && is_null($record->height))
+                                        {
+                                            return 'Not Ready For Shipment';
+                                        }else{
+                                            return 'Ready For Shipment ';
+                                        }
                                     }else{
-                                        return 'Ready For Shipment ';
+                                        return 'check shipment section for progress';
                                     }
+
+
                                 })
                                 ->hintAction(
                                     \Filament\Infolists\Components\Actions\Action::make('make_shipment')
@@ -498,7 +492,7 @@ class ViewOrder extends ViewRecord
                                                 ->required(),
                                         ])
                                         ->visible(function (Model $record){
-                                            return !is_null($record->weight) && !is_null($record->length) && !is_null($record->breadth) && !is_null($record->height);
+                                            return !is_null($record->weight) && !is_null($record->length) && !is_null($record->breadth) && !is_null($record->height) && ($record->status == OrderShipment::PROCESSING);
                                         })
                                         ->action(function (array $data,ShippingService $shippingService,Model $record){
                                             $shippingProvider = $shippingService->provider($data['shipping_provider'])->getProvider();

@@ -81,7 +81,7 @@ class Payment extends Model
         return $this->belongsTo(PaymentProvider::class,'payment_provider_id','id');
     }
 
-    public function refund(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function refunds(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Refund::class,'payment_id','id');
     }

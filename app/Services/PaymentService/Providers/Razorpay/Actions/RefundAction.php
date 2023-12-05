@@ -35,7 +35,6 @@ class RefundAction implements PaymentProviderRefundContract
 
         try {
 
-
             $response = $this->api->payment->fetch($payment_id)->refund([
                 "amount"=> ($amount instanceof Money) ? $amount->getAmount() : $amount,
                 "speed"=> $this->paymentProvider->getSpeed(),

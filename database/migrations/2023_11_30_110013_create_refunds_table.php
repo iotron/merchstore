@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('refunds', function (Blueprint $table) {
             $table->id();
-            $table->string('refund_id');
+            $table->string('refund_id')->nullable();
+            $table->string('provider_payment_id')->nullable();
             $table->integer('amount')->default(0);
             $table->string('currency')->nullable();
             $table->string('receipt');
             $table->string('speed')->nullable();
-            $table->string('status')->default('unknown');
+            $table->string('status');
             $table->string('batch_id')->nullable();
             $table->json('notes')->nullable();
             $table->json('tracking_data')->nullable();

@@ -2,6 +2,7 @@
 
 namespace App\Models\Payment;
 
+use App\Helpers\Money\MoneyCast;
 use App\Models\Order\Order;
 use App\Models\Order\OrderProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -51,7 +52,8 @@ class Refund extends Model
         'tracking_data' => 'array',
         'details' => 'array',
         'error' => 'array',
-        'verified' => 'bool'
+        'verified' => 'bool',
+        'amount' => MoneyCast::class
     ];
 
 
