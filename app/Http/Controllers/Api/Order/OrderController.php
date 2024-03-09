@@ -29,7 +29,7 @@ class OrderController extends Controller
     {
         // Order Policy customer individual check
 
-        $order->load('billingAddress','invoices','payment','shipments','orderProducts');
+        $order->load('billingAddress','invoices','payment','shipments','orderProducts','orderProducts.product');
         return OrderResource::make($order);
     }
 
