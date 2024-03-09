@@ -18,7 +18,9 @@ class OrderController extends Controller
     public function index()
     {
         $customer = auth('customer')->user();
-        $allOrders = $customer->orders()->paginate();
+        $allOrders = $customer->orders()->with('orderProducts','orderProducts.product')->paginate();
+
+
         return OrderIndexResource::collection($allOrders);
     }
 

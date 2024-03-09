@@ -19,7 +19,8 @@ class ViewProduct extends ViewRecord
 
 
     public function mount(int|string $record): void
-    {$this->record = $this->resolveRecord($record);
+    {
+        $this->record = $this->resolveRecord($record);
         $product = $this->record->toArray();
         // Check Money Instances
         $product['base_price'] = $product['base_price']->getAmount();

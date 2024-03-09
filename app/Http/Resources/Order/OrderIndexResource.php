@@ -22,7 +22,7 @@ class OrderIndexResource extends JsonResource
             'quantity' => $this->quantity,
             'tracking_id' => $this->tracking_id,
             'status' => Order::StatusOptions[$this->status],
-
+            'products' => OrderProductResource::collection($this->whenLoaded('orderProducts')),
 
         ];
     }
