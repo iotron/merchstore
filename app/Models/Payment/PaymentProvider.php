@@ -3,13 +3,14 @@
 namespace App\Models\Payment;
 
 use App\Models\Order\Order;
+use App\Services\Iotron\LaravelPayments\Contracts\Models\PaymentProviderModelContract;
 use App\Services\PaymentService\Providers\Custom\CustomPaymentService;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayPaymentService;
 use App\Services\PaymentService\Providers\Stripe\StripePaymentService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PaymentProvider extends Model
+class PaymentProvider extends Model implements PaymentProviderModelContract
 {
     use HasFactory;
 
