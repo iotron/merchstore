@@ -15,7 +15,7 @@
         "guzzlehttp/guzzle": "^7.8",
         "iotronlab/laravel-page-view": "^1.0.4",
         "jeffgreco13/filament-breezy": "^2.3",
-
+        "khanamiryan/qrcode-detector-decoder": "^2.0",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.12",
