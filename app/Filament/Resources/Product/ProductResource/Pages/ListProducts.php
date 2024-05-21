@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Product\ProductResource\Pages;
 
 use App\Filament\Resources\Product\ProductResource;
-use App\Helpers\Money\Money;
 use App\Models\Product\Product;
+use App\Services\Iotron\Money\Money;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\DeleteBulkAction;

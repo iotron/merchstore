@@ -1,9 +1,23 @@
 <?php
 
-namespace App\Helpers\Money;
+namespace App\Services\Iotron\Money;
+
+use Akaunting\Money\Currency;
 
 class Money extends MoneyService
 {
+    public static function defaultCurrency()
+    {
+        return config('services.defaults.currency');
+    }
+
+    public static function getCurrencySymbol(?string $currency = null)
+    {
+        $currency = $currency ?? self::defaultCurrency();
+
+        return (new Currency($currency))->getSymbol();
+    }
+
     public function addOnce(Money|int|float $addend): self
     {
         $result = $this->laravelMoney->add(self::isMoney($addend) ? $addend->get() : $addend);
@@ -58,5 +72,20 @@ class Money extends MoneyService
         $this->laravelMoney = $this->laravelMoney->divide($divisor);
 
         return $this;
+    }
+
+    public function greaterThan(Money $money)
+    {
+        return $this->laravelMoney->greaterThan($money->get());
+    }
+
+    public function greaterThanOrEqual(Money $money)
+    {
+        return $this->laravelMoney->greaterThanOrEqual($money->get());
+    }
+
+    public function lessThan(Money $money)
+    {
+        return $this->laravelMoney->lessThan($money->get());
     }
 }

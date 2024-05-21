@@ -16,7 +16,7 @@ use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class Theme extends Model implements HasMedia
 {
-    use HasRecursiveRelationships, HasFactory, InteractsWithMedia;
+    use HasChildren,HasRecursiveRelationships, HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'name',

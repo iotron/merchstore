@@ -2,7 +2,7 @@
 
 namespace App\Services\PaymentService\Contracts\Provider;
 
-use App\Helpers\Money\Money;
+use App\Services\Iotron\Money\Money;
 
 interface PaymentProviderRefundContract
 {

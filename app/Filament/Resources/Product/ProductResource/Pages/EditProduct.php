@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\Product\ProductResource\Pages;
 
 use App\Filament\Resources\Product\ProductResource;
-use App\Helpers\Money\Money;
 use App\Helpers\ProductHelper\Support\Attributes\AttributeHelper;
 use App\Models\Category\Category;
 use App\Models\Product\Product;
+use App\Services\Iotron\Money\Money;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
@@ -45,9 +45,9 @@ class EditProduct extends EditRecord
         $this->record = $this->resolveRecord($record);
         $product = $this->record->toArray();
         // Check Money Instances
-        $product['base_price'] = $product['base_price']->getAmount();
-        $product['price'] = $product['price']->getAmount();
-        $product['tax_amount'] = $product['tax_amount']->getAmount();
+//        $product['base_price'] = $product['base_price']->getAmount();
+//        $product['price'] = $product['price']->getAmount();
+//        $product['tax_amount'] = $product['tax_amount']->getAmount();
 
         // Add Product Flat Too
         $productFlat = $this->record->flat->toArray();

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Helpers\Money;
+namespace App\Services\Iotron\Money;
 
 use Akaunting\Money\Currency;
 use Akaunting\Money\Money as LaravelMoney;
+use App\Services\Iotron\Money\Contracts\MoneyServiceContract;
 use Illuminate\Support\Str;
 
-class MoneyService
+class MoneyService implements MoneyServiceContract
 {
     protected LaravelMoney $laravelMoney;
 
@@ -22,32 +23,6 @@ class MoneyService
         $this->laravelMoney = new LaravelMoney($baseValue, $currency, $convert);
         // Keep A Copy Of Original Value
         $this->rawMoney = clone $this->laravelMoney;
-    }
-
-    private function extractBaseValue($value)
-    {
-
-        if ($value instanceof self || $value instanceof LaravelMoney) {
-            return $value->getValue();
-        }
-
-        return $value;
-    }
-
-    private function checkIfConvert($value): bool
-    {
-        if (is_float($value)) {
-            return true;
-        } elseif (is_string($value) && str_contains($value, '.')) {
-            return (bool) Str::after($value, '.');
-        }
-
-        return false;
-    }
-
-    protected function createNewMoneyObject($value, $currency = null, $convert = false): static
-    {
-        return new static($value, $currency ?? $this->getCurrencyCode(), $convert);
     }
 
     public function sameAs($value, ?string $currency = null): bool
@@ -109,11 +84,6 @@ class MoneyService
         return clone $this->rawMoney;
     }
 
-    public function getMoney(): LaravelMoney
-    {
-        return clone $this->laravelMoney;
-    }
-
     public static function resolveCurrency(?string $currency = null): Currency
     {
         return new Currency($currency ?? config('services.defaults.currency'));
@@ -129,5 +99,31 @@ class MoneyService
     public static function isMoney($object): bool
     {
         return $object instanceof self;
+    }
+
+    private function extractBaseValue($value)
+    {
+
+        if ($value instanceof self || $value instanceof LaravelMoney) {
+            return $value->getValue();
+        }
+
+        return $value;
+    }
+
+    private function checkIfConvert($value): bool
+    {
+        if (is_float($value)) {
+            return true;
+        } elseif (is_string($value) && str_contains($value, '.')) {
+            return (bool) Str::after($value, '.');
+        }
+
+        return false;
+    }
+
+    protected function createNewMoneyObject($value, $currency = null, $convert = false): static
+    {
+        return new static($value, $currency ?? $this->getCurrencyCode(), $convert);
     }
 }

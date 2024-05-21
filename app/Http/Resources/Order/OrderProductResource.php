@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\Order;
 
-use App\Helpers\Money\Money;
 use App\Http\Resources\Product\ProductIndexResource;
+use App\Services\Iotron\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

@@ -2,7 +2,8 @@
 
 namespace App\Models\Product;
 
-use App\Helpers\Money\MoneyCast;
+
+use App\Casts\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
 use App\Models\Category\Category;
 use App\Models\Category\Theme;

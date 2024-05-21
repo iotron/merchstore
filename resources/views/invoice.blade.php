@@ -1,8 +1,6 @@
 <x-invoice.invoice-layout>
 
 
-
-
     {{--    {{ dd($booking) }}--}}
     {{--    {{ dd($booking->tickets) }}--}}
 
@@ -16,7 +14,7 @@
         @if(isset($qr))
             <div id="qrcode">
 
-                <img  src="{{ $qr }}">
+                <img src="{{ $qr }}">
 
             </div>
         @endif
@@ -28,15 +26,11 @@
             </div>
 
 
-
-
             {{--            <h1>Booking ID </h1>--}}
-{{--            <div class="date">Date of Invoice: {{ \Carbon\Carbon::parse($booking->created_at)->format("d/m/Y") }}</div>--}}
+            {{--            <div class="date">Date of Invoice: {{ \Carbon\Carbon::parse($booking->created_at)->format("d/m/Y") }}</div>--}}
 
         </div>
     </div>
-
-
 
 
     <div><h3 style="color: #560269">Products </h3></div>
@@ -58,14 +52,11 @@
         </thead>
 
 
-
-
-
         <tbody>
 
         @foreach ($order->orderProducts as $key => $orderProduct)
 
-{{--            {{ dd($orderProduct) }}--}}
+            {{--            {{ dd($orderProduct) }}--}}
             <tr>
                 <td class="no"> {{$key +1}}</td>
                 <td class="desc">
@@ -79,39 +70,38 @@
                 <td class="qty">{{ $orderProduct->quantity }}</td>
                 <td class="total">{{ $orderProduct->product->price->multiplyOnce($orderProduct->quantity)->formatted()}}</td>
 
-{{--                <td class="center">--}}
-{{--                    @if( $orderProduct->amount instanceof \App\Helpers\Money\Money)--}}
-{{--                        {{$orderProduct->amount->formatted()}}--}}
-{{--                    @else--}}
-{{--                        {{\App\Helpers\Money\Money::format($orderProduct->amount)}}--}}
-{{--                    @endif--}}
-{{--                </td>--}}
+                {{--                <td class="center">--}}
+                {{--                    @if( $orderProduct->amount instanceof \App\Helpers\Money\Money)--}}
+                {{--                        {{$orderProduct->amount->formatted()}}--}}
+                {{--                    @else--}}
+                {{--                        {{\App\Helpers\Money\Money::format($orderProduct->amount)}}--}}
+                {{--                    @endif--}}
+                {{--                </td>--}}
 
                 <td class="center">
-                    @if($orderProduct->discount instanceof \App\Helpers\Money\Money)
+                    @if($orderProduct->discount instanceof \App\Services\Iotron\Money\Money)
                         {{$orderProduct->discount->formatted()}}
                     @else
-                        {{\App\Helpers\Money\Money::format($orderProduct->discount)}}
+                        {{\App\Services\Iotron\Money\Money::format($orderProduct->discount)}}
                     @endif
                 </td>
 
                 <td class="center">
-                    @if($orderProduct->tax instanceof \App\Helpers\Money\Money)
+                    @if($orderProduct->tax instanceof \App\Services\Iotron\Money\Money)
                         {{$orderProduct->tax->formatted()}}
                     @else
-                        {{\App\Helpers\Money\Money::format($orderProduct->tax)}}
+                        {{\App\Services\Iotron\Money\Money::format($orderProduct->tax)}}
                     @endif
                 </td>
 
 
                 <td class="total">
-                    @if($orderProduct->total instanceof \App\Helpers\Money\Money)
+                    @if($orderProduct->total instanceof \App\Services\Iotron\Money\Money)
                         {{$orderProduct->total->formatted()}}
                     @else
-                        {{\App\Helpers\Money\Money::format($orderProduct->total)}}
+                        {{\App\Services\Iotron\Money\Money::format($orderProduct->total)}}
                     @endif
                 </td>
-
 
 
             </tr>
@@ -138,7 +128,7 @@
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2"></td>
-            <td colspan="2">TOTAL TAX </td>
+            <td colspan="2">TOTAL TAX</td>
             <td>{{ $order->tax->formatted()}}</td>
         </tr>
         <tr>
@@ -154,40 +144,35 @@
     </table>
 
 
-
-
-
-
-
     <div style="position: relative; margin-top: 10px;">
 
 
-        <div id="notices" >
-{{--            <div><b><u>EVENT DETAILS:</u></b></div>--}}
-{{--            <span><b>Name :</b> {{ ucwords($booking->event->name) }}</span> <br />--}}
-{{--            <span style="display: flex;">--}}
-{{--                <span>--}}
-{{--                    @if($booking->event->type != \App\Models\Events\Events::OUTDOOR) <b>Live On:</b>  @else <b>Start On:</b>  @endif--}}
+        <div id="notices">
+            {{--            <div><b><u>EVENT DETAILS:</u></b></div>--}}
+            {{--            <span><b>Name :</b> {{ ucwords($booking->event->name) }}</span> <br />--}}
+            {{--            <span style="display: flex;">--}}
+            {{--                <span>--}}
+            {{--                    @if($booking->event->type != \App\Models\Events\Events::OUTDOOR) <b>Live On:</b>  @else <b>Start On:</b>  @endif--}}
 
 
-{{--                    {{ \Carbon\Carbon::parse($booking->event->start_date)->format("d/m/Y").' - '.$booking->event->start_time }}</span>--}}
-{{--                &nbsp; - &nbsp;--}}
-{{--                <span><b>Ends On:</b> {{ \Carbon\Carbon::parse($booking->event->end_date)->format("d/m/Y").' - '.$booking->event->end_time }}</span>--}}
-{{--            </span>--}}
+            {{--                    {{ \Carbon\Carbon::parse($booking->event->start_date)->format("d/m/Y").' - '.$booking->event->start_time }}</span>--}}
+            {{--                &nbsp; - &nbsp;--}}
+            {{--                <span><b>Ends On:</b> {{ \Carbon\Carbon::parse($booking->event->end_date)->format("d/m/Y").' - '.$booking->event->end_time }}</span>--}}
+            {{--            </span>--}}
 
-{{--            @if($booking->event->type != \App\Models\Events\Events::OUTDOOR)--}}
-{{--                <strong>Location :-</strong>  <br />--}}
-{{--                <span> View Here : {{$booking->event->streaming_link}}</span> <br />--}}
-{{--                <span> Platform : {{$booking->event->streaming_platform}}</span> <br />--}}
-{{--            @else--}}
-{{--                <strong>Location :-</strong>  <br />--}}
-{{--                <span><strong>Address :</strong> {{$booking->event->location}}</span>--}}
-{{--                <span style="display: flex;">--}}
-{{--                    <span> <strong>City :</strong> {{$booking->event->city->name}} </span>--}}
-{{--                    &nbsp; - &nbsp;--}}
-{{--                    <span> <strong>Venue :</strong> {{$booking->event->location_code}}</span>--}}
-{{--                </span>--}}
-{{--            @endif--}}
+            {{--            @if($booking->event->type != \App\Models\Events\Events::OUTDOOR)--}}
+            {{--                <strong>Location :-</strong>  <br />--}}
+            {{--                <span> View Here : {{$booking->event->streaming_link}}</span> <br />--}}
+            {{--                <span> Platform : {{$booking->event->streaming_platform}}</span> <br />--}}
+            {{--            @else--}}
+            {{--                <strong>Location :-</strong>  <br />--}}
+            {{--                <span><strong>Address :</strong> {{$booking->event->location}}</span>--}}
+            {{--                <span style="display: flex;">--}}
+            {{--                    <span> <strong>City :</strong> {{$booking->event->city->name}} </span>--}}
+            {{--                    &nbsp; - &nbsp;--}}
+            {{--                    <span> <strong>Venue :</strong> {{$booking->event->location_code}}</span>--}}
+            {{--                </span>--}}
+            {{--            @endif--}}
 
         </div>
 
@@ -196,9 +181,6 @@
 
 
     </div>
-
-
-
 
 
 </x-invoice.invoice-layout>

@@ -19,7 +19,7 @@ use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class Category extends Model implements HasMedia
 {
-    use HasRecursiveRelationships,HasFactory, InteractsWithMedia;
+    use HasChildren,HasRecursiveRelationships,HasFactory, InteractsWithMedia;
     public const CATEGORY_IMAGE = 'categoryImage';
 
     protected $fillable = [
