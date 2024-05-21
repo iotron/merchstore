@@ -6,8 +6,8 @@ use App\Filament\Resources\Shipping\ShippingProviderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables\Table;
 use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
 class ListShippingProviders extends ListRecords
@@ -21,14 +21,10 @@ class ListShippingProviders extends ListRecords
         ];
     }
 
-
-
-
-    public  function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
-
 
                 Tables\Columns\Layout\Split::make([
                     Tables\Columns\TextColumn::make('name')
@@ -46,23 +42,23 @@ class ListShippingProviders extends ListRecords
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('service_provider')
                             ->tooltip('Service Provider')
-                            ->formatStateUsing(function ($state){
-                                return Str::remove('App\Services\ShippingService',$state);
+                            ->formatStateUsing(function ($state) {
+                                return Str::remove('App\Services\ShippingService', $state);
                             })
                             ->grow()
                             ->weight(FontWeight::Thin)
                             ->searchable(),
-//                        Tables\Columns\Layout\Split::make([
-//                            Tables\Columns\TextColumn::make('payments_count')->counts('payments')
-//                                ->description('Payments')
-//                                ->tooltip('Total Payments Init')
-//                                ->weight(FontWeight::Bold),
-//                            Tables\Columns\TextColumn::make('orders_count')->counts('orders')
-//                                ->description('Orders')
-//                                ->tooltip('Total Orders Init')
-//                                ->weight(FontWeight::Bold),
-//
-//                        ]),
+                        //                        Tables\Columns\Layout\Split::make([
+                        //                            Tables\Columns\TextColumn::make('payments_count')->counts('payments')
+                        //                                ->description('Payments')
+                        //                                ->tooltip('Total Payments Init')
+                        //                                ->weight(FontWeight::Bold),
+                        //                            Tables\Columns\TextColumn::make('orders_count')->counts('orders')
+                        //                                ->description('Orders')
+                        //                                ->tooltip('Total Orders Init')
+                        //                                ->weight(FontWeight::Bold),
+                        //
+                        //                        ]),
                     ]),
 
                     Tables\Columns\Layout\Stack::make([
@@ -76,11 +72,8 @@ class ListShippingProviders extends ListRecords
                         Tables\Columns\IconColumn::make('status')
                             ->tooltip('Provider Status')
                             ->boolean()->alignRight(),
-                    ])
+                    ]),
                 ]),
-
-
-
 
                 Tables\Columns\Layout\Split::make([
                     Tables\Columns\TextColumn::make('created_at')
@@ -96,12 +89,9 @@ class ListShippingProviders extends ListRecords
                         ->toggleable(isToggledHiddenByDefault: true),
                 ]),
 
-
-
-
             ])
             ->contentGrid([
-                'md' => 2
+                'md' => 2,
             ])
             ->filters([
                 //
@@ -116,12 +106,4 @@ class ListShippingProviders extends ListRecords
                 ]),
             ]);
     }
-
-
-
-
-
-
-
-
 }

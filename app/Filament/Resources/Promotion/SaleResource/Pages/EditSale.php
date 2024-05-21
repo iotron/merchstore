@@ -10,11 +10,10 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Pages\Actions;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
 
@@ -26,7 +25,6 @@ class EditSale extends EditRecord
 
     public $conditions;
 
-
     protected function getHeaderActions(): array
     {
         return [
@@ -35,9 +33,7 @@ class EditSale extends EditRecord
         ];
     }
 
-
-
-    public function mount(int | string $record): void
+    public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
 
@@ -50,23 +46,17 @@ class EditSale extends EditRecord
         // $this->fillForm();
     }
 
-
     protected function afterSave()
     {
         $saleProducts = new ProductSaleHelper();
         $saleProducts->reindexSaleableProducts();
     }
 
-
-
     public function form(Form $form): Form
     {
         return parent::form($form)
             ->schema($this->getFormSchema());
     }
-
-
-
 
     public function getConditionField(array $attribute = [])
     {
@@ -93,11 +83,6 @@ class EditSale extends EditRecord
         }
     }
 
-
-
-
-
-
     protected function getFormSchema(): array
     {
         return [
@@ -119,7 +104,6 @@ class EditSale extends EditRecord
                         ->relationship('customer_groups', 'name')
                         ->placeholder(__('Select some groups'))
                         ->required(),
-
 
                     Textarea::make('description')
                         ->placeholder('Write Briefly About This Rule')
@@ -151,9 +135,6 @@ class EditSale extends EditRecord
                     ])->required(),
                 ])->columns(3),
 
-
-
-
             Fieldset::make('Conditions_list')
                 ->schema([
 
@@ -167,10 +148,6 @@ class EditSale extends EditRecord
                         ->columnSpanFull()
                         ->required(),
 
-
-
-
-
                     Repeater::make('conditions')
                         ->label(__('Condition List'))
                         ->schema([
@@ -178,7 +155,7 @@ class EditSale extends EditRecord
                                 ->label(__('Choose Attribute'))
                                 ->options($this->conditions->pluck('label', 'key')->toArray())
                                 ->placeholder(__('Select an attribute'))
-                                ->columnSpan(function ($state){
+                                ->columnSpan(function ($state) {
                                     return empty($state) ? 3 : 1;
                                 })
                                 ->lazy(),
@@ -202,8 +179,8 @@ class EditSale extends EditRecord
                                         return [];
                                     }
                                 })
-                                ->visible(function (\Filament\Forms\Get $get){
-                                    return !empty($get('attribute'));
+                                ->visible(function (\Filament\Forms\Get $get) {
+                                    return ! empty($get('attribute'));
                                 })
                                 ->columnSpan(2),
 
@@ -212,19 +189,8 @@ class EditSale extends EditRecord
                         ->columnSpanFull()
                         ->collapsible(false),
 
-
-
-
                 ])->columns(2),
-
-
-
-
 
         ];
     }
-
-
-
-
 }

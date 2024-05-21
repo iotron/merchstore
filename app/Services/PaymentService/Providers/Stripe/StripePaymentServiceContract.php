@@ -4,10 +4,10 @@ namespace App\Services\PaymentService\Providers\Stripe;
 
 interface StripePaymentServiceContract
 {
-
     public function hasIntent(): static;
 
     public function hasCheckout(): static;
+
     public function isIntent(): bool;
 
     public function isCheckout(): bool;
@@ -26,6 +26,5 @@ interface StripePaymentServiceContract
 
     public function getTransactionFee(): int;
 
-    public function displayTerms():bool;
-
+    public function displayTerms(): bool;
 }

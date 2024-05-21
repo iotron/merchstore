@@ -8,8 +8,6 @@ use Illuminate\Validation\ValidationException;
 
 class ShipmentTrackActivityObserver
 {
-
-
     /**
      * @throws ValidationException
      */
@@ -27,13 +25,6 @@ class ShipmentTrackActivityObserver
             throw new \Illuminate\Validation\ValidationException($validator);
         }
     }
-
-
-
-
-
-
-
 
     /**
      * @throws ValidationException

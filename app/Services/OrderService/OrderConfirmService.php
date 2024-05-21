@@ -14,15 +14,17 @@ use Illuminate\Database\Eloquent\Model;
 class OrderConfirmService
 {
     protected ?string $error = null;
+
     protected Payment $payment;
+
     protected ?Order $order = null;
+
     protected array $usedStockBag = [];
 
     public function __construct(Payment $payment)
     {
         $this->payment = $payment;
     }
-
 
     public function getError(): ?string
     {
@@ -49,7 +51,7 @@ class OrderConfirmService
             'orderProducts',
             'orderProducts.product',
             'orderProducts.product.availableStocks',
-            'orderProducts.product.availableStocks.addresses'
+            'orderProducts.product.availableStocks.addresses',
         ]);
     }
 
@@ -70,16 +72,10 @@ class OrderConfirmService
         // Step 4
         $this->updateUsageOfCouponIfPresent();
 
-
     }
-
-
-
-
 
     /**
      * Step 1
-     * @return void
      */
     protected function processOrderProducts(): void
     {
@@ -88,21 +84,21 @@ class OrderConfirmService
 
             // Step 1.1
             $this->getUpdatedProductStockQuantity($orderProduct->product, $orderProduct->quantity);
-            if (!empty($this->usedStockBag) && is_null($this->error)) {
+            if (! empty($this->usedStockBag) && is_null($this->error)) {
 
                 $groupedStock = collect($this->usedStockBag)->groupBy('pickup_address_id');
 
                 foreach ($groupedStock as $address_id => $data) {
-                    $totalQuantityOfThisPickupAddress = $data->sum(function ($item){
+                    $totalQuantityOfThisPickupAddress = $data->sum(function ($item) {
                         return $item['quantity'];
                     });
                     // Step 1.2
-                    $newOrderShipment = $this->makeOrderShipment($orderProduct, $totalQuantityOfThisPickupAddress,$address_id);
+                    $newOrderShipment = $this->makeOrderShipment($orderProduct, $totalQuantityOfThisPickupAddress, $address_id);
                     // Step 1.3
                     $newOrderInvoice = $this->makeOrderInvoice($newOrderShipment, $orderProduct);
                 }
             } else {
-                $this->error = 'no stock available for ' . $orderProduct->product->name;
+                $this->error = 'no stock available for '.$orderProduct->product->name;
             }
 
         });
@@ -111,9 +107,6 @@ class OrderConfirmService
 
     /**
      * Step 1.1
-     * @param Product $product
-     * @param int $requiredQuantity
-     * @return void
      */
     protected function getUpdatedProductStockQuantity(Product $product, int $requiredQuantity): void
     {
@@ -127,7 +120,7 @@ class OrderConfirmService
                 $this->usedStockBag[] = [
                     'quantity' => $quantityToDeduct,
                     'stock' => $productStock,
-                    'pickup_address_id' => $productStock->addresses->first()->id
+                    'pickup_address_id' => $productStock->addresses->first()->id,
                 ];
                 // Update the quantity fulfilled
                 $quantityFulfilled += $quantityToDeduct;
@@ -139,25 +132,20 @@ class OrderConfirmService
         // If Fulfil Order Quantity, Then Stock Will Be Updated
         if ($quantityFulfilled === $requiredQuantity) {
 
-
             foreach ($this->usedStockBag as $data) {
                 $data['stock']->sold_quantity += $data['quantity'];
                 $data['stock']->save();
             }
         } else {
-            $this->error = $product->name . ' out of stock!';
+            $this->error = $product->name.' out of stock!';
         }
 
     }
 
     /**
      * Step 1.2
-     * @param OrderProduct $orderProduct
-     * @param $quantity
-     * @param int $address_id
-     * @return Model|OrderShipment
      */
-    protected function makeOrderShipment(OrderProduct $orderProduct, $quantity,int $address_id): Model|OrderShipment
+    protected function makeOrderShipment(OrderProduct $orderProduct, $quantity, int $address_id): Model|OrderShipment
     {
         return $orderProduct->shipment()->create([
             'order_id' => $this->order->id,
@@ -171,29 +159,22 @@ class OrderConfirmService
 
     /**
      * Step 1.3
-     * @param Model|OrderShipment $orderShipment
-     * @param OrderProduct $orderProduct
-     * @return OrderInvoice
      */
     protected function makeOrderInvoice(Model|OrderShipment $orderShipment, OrderProduct $orderProduct): OrderInvoice
     {
         $newInvoice = $orderShipment->invoice()->create([
-            'uuid' => 'INV_' . $this->order->uuid,
+            'uuid' => 'INV_'.$this->order->uuid,
             'order_id' => $this->order->id,
             'order_product_id' => $orderProduct->id,
         ]);
         $orderShipment->invoice_uid = $newInvoice->uuid;
         $orderShipment->save();
+
         return $newInvoice;
     }
 
-
-
-
-
     /**
      * Step 2
-     * @return void
      */
     private function updateOrderStatus(): void
     {
@@ -202,32 +183,26 @@ class OrderConfirmService
         $this->order->save();
     }
 
-
     /**
      * Step 3
-     * @return void
      */
     protected function updatePaymentStatus(): void
     {
         $this->payment->fill([
             'status' => Payment::COMPLETED,
-            'verified' => true
+            'verified' => true,
         ])->save();
     }
 
-
     /**
      * Step 4
-     * @return void
      */
     protected function updateUsageOfCouponIfPresent(): void
     {
-        if (!is_null($this->order->voucher)) {
+        if (! is_null($this->order->voucher)) {
             $voucherModel = VoucherCode::firstWhere('code', '=', $this->order->voucher);
             $voucherModel->times_used++;
             $voucherModel->save();
         }
     }
-
-
 }

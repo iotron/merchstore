@@ -8,20 +8,15 @@ use App\Http\Resources\Category\ThemeResource;
 use App\Http\Resources\Product\ProductIndexResource;
 use App\Models\Category\Category;
 use App\Models\Category\Theme;
-use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-
-
     public function index()
     {
         $categories = Category::where('status', true)->with('children', 'children.children', 'media')->parents()->get();
 
-       return CategoryIndexResource::collection($categories);
+        return CategoryIndexResource::collection($categories);
     }
-
-
 
     public function show(Category $category)
     {
@@ -31,12 +26,10 @@ class CategoryController extends Controller
         return ProductIndexResource::collection($productsPaginated)->additional(['category' => new CategoryIndexResource($category)]);
     }
 
-    public function AllThemes(){
+    public function AllThemes()
+    {
         $themes = Theme::with('children', 'children.children')->parents()->get();
+
         return ThemeResource::collection($themes);
     }
-
-
-
-
 }

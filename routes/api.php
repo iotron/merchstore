@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('capture/payment',[\App\Http\Controllers\Api\Order\OrderActionController::class,'captureCallback'])->name('payment.capture');
+Route::post('capture/payment', [\App\Http\Controllers\Api\Order\OrderActionController::class, 'captureCallback'])->name('payment.capture');
 
 // Auth
 Route::prefix('/')->group(base_path('routes/ver/auth/customer.php'));

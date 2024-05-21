@@ -3,11 +3,10 @@
 namespace App\Models\Order;
 
 use App\Helpers\Money\MoneyCast;
-use App\Observers\Order\ShipmentTrackActivityObserver;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Localization\Address;
 use App\Models\Shipping\ShippingProvider;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -20,14 +19,21 @@ class OrderShipment extends Model
 
     // shipment status
     public const PROCESSING = 'processing';
+
     public const REVIEW = 'review';
+
     public const PACKING = 'packing';
+
     public const READYTOSHIP = 'readytoship';
+
     public const INTRANSIT = 'intransit';
+
     public const DELIVERED = 'delivered';
+
     public const CANCELLED = 'cancelled';
 
     public const RETURNED = 'returned';
+
     public const RETURNING = 'returning';
 
     public const StatusOptions = [
@@ -66,7 +72,7 @@ class OrderShipment extends Model
         'delivery_address',
         'shipping_provider_id',
         'return_order_id',
-        'return_shipment_id'
+        'return_shipment_id',
     ];
 
     protected $casts = [
@@ -74,24 +80,22 @@ class OrderShipment extends Model
         'shipment_track_activities' => 'array',
         'last_update' => 'array',
         'details' => 'array',
-        'charge' => MoneyCast::class
+        'charge' => MoneyCast::class,
     ];
-
-
 
     public function pickupAddress(): BelongsTo
     {
-        return $this->belongsTo(Address::class, 'pickup_address','id');
+        return $this->belongsTo(Address::class, 'pickup_address', 'id');
     }
 
     public function deliveryAddress(): BelongsTo
     {
-        return $this->belongsTo(Address::class, 'delivery_address','id');
+        return $this->belongsTo(Address::class, 'delivery_address', 'id');
     }
 
     public function orderProducts(): BelongsToMany
     {
-        return $this->belongsToMany(OrderProduct::class, 'shipment_products','order_shipment_id');
+        return $this->belongsToMany(OrderProduct::class, 'shipment_products', 'order_shipment_id');
     }
 
     public function order(): BelongsTo
@@ -101,14 +105,11 @@ class OrderShipment extends Model
 
     public function shippingProvider(): BelongsTo
     {
-        return $this->belongsTo(ShippingProvider::class,'shipping_provider_id','id');
+        return $this->belongsTo(ShippingProvider::class, 'shipping_provider_id', 'id');
     }
 
     public function invoice()
     {
-        return $this->belongsTo(OrderInvoice::class,'order_shipment_id','id');
+        return $this->belongsTo(OrderInvoice::class, 'order_shipment_id', 'id');
     }
-
-
-
 }

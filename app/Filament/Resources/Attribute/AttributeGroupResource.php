@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Attribute;
 
 use App\Filament\Resources\Attribute\AttributeGroupResource\Pages;
-use App\Filament\Resources\Attribute\AttributeGroupResource\RelationManagers;
 use App\Models\Filter\FilterGroup;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Radio;
@@ -17,8 +16,11 @@ use Filament\Tables\Table;
 class AttributeGroupResource extends Resource
 {
     protected static ?string $model = FilterGroup::class;
+
     protected static ?string $navigationGroup = 'Filters';
+
     protected static ?string $slug = 'attribute-groups';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -67,7 +69,6 @@ class AttributeGroupResource extends Resource
                 TextColumn::make('admin_name')->label('Name'),
                 TextColumn::make('code')->label('Code'),
 
-
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge()
@@ -77,7 +78,6 @@ class AttributeGroupResource extends Resource
                         'success' => FilterGroup::STATIC,
 
                     ]),
-
 
                 TextColumn::make('position')->label('Position'),
                 TextColumn::make('updated_at')->label('Modified On')->since()->toggleable(),

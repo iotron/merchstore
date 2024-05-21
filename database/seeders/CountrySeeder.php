@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Localization\Country;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -46,11 +45,8 @@ class CountrySeeder extends Seeder
         }
     }
 
-
-
     protected function getFromStorage(string $path)
     {
         return json_decode(Storage::disk('local')->get($path));
     }
-
 }

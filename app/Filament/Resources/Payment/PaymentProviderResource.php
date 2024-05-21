@@ -3,16 +3,11 @@
 namespace App\Filament\Resources\Payment;
 
 use App\Filament\Resources\Payment\PaymentProviderResource\Pages;
-use App\Filament\Resources\Payment\PaymentProviderResource\RelationManagers;
 use App\Models\Payment\PaymentProvider;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
 class PaymentProviderResource extends Resource
@@ -20,6 +15,7 @@ class PaymentProviderResource extends Resource
     protected static ?string $model = PaymentProvider::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Providers';
 
     public static function form(Form $form): Form
@@ -30,8 +26,8 @@ class PaymentProviderResource extends Resource
                     ->required()
                     ->placeholder('Type Provider Name')
                     ->lazy()
-                    ->afterStateUpdated(function ($state,Set $set){
-                        $set('code',Str::slug($state));
+                    ->afterStateUpdated(function ($state, Set $set) {
+                        $set('code', Str::slug($state));
                     })
                     ->hint('Max: 100')
                     ->maxLength(100),
@@ -59,9 +55,8 @@ class PaymentProviderResource extends Resource
                     ->hint('Max: 255')
                     ->maxLength(255),
 
-
                 Forms\Components\Grid::make([
-                    'md' => 3
+                    'md' => 3,
                 ])->schema([
                     Forms\Components\Toggle::make('is_primary')
                         ->required(),
@@ -79,8 +74,6 @@ class PaymentProviderResource extends Resource
                     ->columnSpanFull(),
             ]);
     }
-
-
 
     public static function getRelations(): array
     {

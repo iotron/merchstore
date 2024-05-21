@@ -31,7 +31,6 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-
     /*
      * Custom Services
      */
@@ -45,45 +44,41 @@ return [
         'payout' => [
             'tax' => 0,
             'tcs' => 0,
-            'tds' => 0
+            'tds' => 0,
         ],
         'order_cleanup_time_limit' => env('ORDER_EXPIRED_TIME_LIMIT_IN_MINUTE', 120),
     ],
-
 
     // Payment Providers
 
     'razorpay' => [
         'api_key' => env('RAZORPAY_KEY'),
-        'api_secret'=> env('RAZORPAY_SECRET'),
-        'provider'=> 'razorpay',
-        'webhook_secret'=> env('RAZORPAY_WEBHOOK_SECRET'),
+        'api_secret' => env('RAZORPAY_SECRET'),
+        'provider' => 'razorpay',
+        'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'),
 
         'api_x_key' => env('RAZORPAY_X_KEY'),
-        'api_x_secret'=> env('RAZORPAY_X_SECRET'),
+        'api_x_secret' => env('RAZORPAY_X_SECRET'),
 
         'payout' => [
             'account_no' => 2323230020266990,
             'mode' => 'NEFT',
 
-        ]
+        ],
     ],
     'stripe' => [
         'sk_api_key' => env('STRIPE_SK_KEY'),
-        'pk_api_key' => env('STRIPE_PK_KEY')
+        'pk_api_key' => env('STRIPE_PK_KEY'),
     ],
-
 
     // Shipping Providers
 
     'shiprocket' => [
-        'key' => env('SHIPROCKET_EMAIL','your key'),
-        'secret' => env('SHIPROCKET_PASSWORD','your secret'),
-//        'default' => false,
-        'webhook' => env('SHIPROCKET_WEBHOOK',''),
+        'key' => env('SHIPROCKET_EMAIL', 'your key'),
+        'secret' => env('SHIPROCKET_PASSWORD', 'your secret'),
+        //        'default' => false,
+        'webhook' => env('SHIPROCKET_WEBHOOK', ''),
     ],
-
-
 
     'custom-shipping' => [
 
@@ -92,10 +87,5 @@ return [
     'custom_payment' => [
         'prefix' => 'cod_',
     ],
-
-
-
-
-
 
 ];

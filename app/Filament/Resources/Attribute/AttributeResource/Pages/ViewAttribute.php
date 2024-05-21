@@ -5,8 +5,8 @@ namespace App\Filament\Resources\Attribute\AttributeResource\Pages;
 use App\Filament\Resources\Attribute\AttributeResource;
 use App\Models\Filter\FilterGroup;
 use Filament\Actions\EditAction;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
@@ -27,10 +27,10 @@ class ViewAttribute extends ViewRecord
         return parent::infolist($infolist)
             ->schema([
                 Section::make('Main Info')
-                ->columns([
-                    'default' => 2,
-                    'md' => 3,
-                ])->columnSpan(1)
+                    ->columns([
+                        'default' => 2,
+                        'md' => 3,
+                    ])->columnSpan(1)
                     ->schema([
                         TextEntry::make('display_name')->label('Display Name'),
                         TextEntry::make('code')
@@ -67,7 +67,7 @@ class ViewAttribute extends ViewRecord
                         IconEntry::make('is_required')->label(__('Required'))
                             ->boolean(),
                         IconEntry::make('is_visible_on_front')->label(__('Visibility'))
-                            ->boolean(),  
+                            ->boolean(),
                     ]),
                 Section::make('Date')
                     ->columns([
@@ -79,7 +79,7 @@ class ViewAttribute extends ViewRecord
                             ->dateTime(),
                         TextEntry::make('updated_at')
                             ->dateTime(),
-                    ])
+                    ]),
             ]);
 
     }

@@ -3,20 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Filament\Panel;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Filament\Models\Contracts\FilamentUser;
-
-
 
 class User extends Authenticatable implements FilamentUser, HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable,InteractsWithMedia;
+    use HasApiTokens, HasFactory, InteractsWithMedia,Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -49,12 +47,6 @@ class User extends Authenticatable implements FilamentUser, HasMedia
         'password' => 'hashed',
     ];
 
-
-
-    /**
-     * @param Panel $panel
-     * @return bool
-     */
     public function canAccessPanel(Panel $panel): bool
     {
         return true;

@@ -15,18 +15,18 @@ class AllStocksRelationManager extends RelationManager
     protected static string $relationship = 'stocks';
 
     protected static ?string $recordTitleAttribute = 'in_stock_quantity';
+
     protected static ?string $label = 'Stock';
 
-//    public static function canViewForRecord(Model $ownerRecord): bool
-//    {
-//        return $ownerRecord->type === Product::SIMPLE;
-//    }
+    //    public static function canViewForRecord(Model $ownerRecord): bool
+    //    {
+    //        return $ownerRecord->type === Product::SIMPLE;
+    //    }
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-
 
                 TextInput::make('init_quantity')
                     ->numeric()
@@ -35,10 +35,10 @@ class AllStocksRelationManager extends RelationManager
                         if ($record) {
                             return max(0, $record->sold_quantity);
                         }
+
                         return 0;
                     }
-                )->required(),
-
+                    )->required(),
 
             ]);
     }

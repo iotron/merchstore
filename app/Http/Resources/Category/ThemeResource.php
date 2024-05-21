@@ -17,7 +17,7 @@ class ThemeResource extends JsonResource
         return [
             'name' => $this->name,
             'url' => $this->url,
-            'childern' => ThemeResource::collection($this->whenLoaded('children'))
+            'childern' => ThemeResource::collection($this->whenLoaded('children')),
         ];
     }
 }

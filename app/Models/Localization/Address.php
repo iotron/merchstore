@@ -38,11 +38,9 @@ class Address extends Model
         'addressable_type',
     ];
 
-
     protected $casts = [
-        'default' => 'bool'
+        'default' => 'bool',
     ];
-
 
     public static function boot()
     {
@@ -57,38 +55,29 @@ class Address extends Model
         });
     }
 
-
-
     public function addressable(): MorphTo
     {
         return $this->morphTo();
     }
 
-
     public function country(): BelongsTo
     {
-        return $this->belongsTo(Country::class,  'country_code','iso_code_2');
+        return $this->belongsTo(Country::class, 'country_code', 'iso_code_2');
     }
-
 
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'id', 'addressable_id');
     }
 
+    //    public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    //    {
+    //        return $this->belongsToMany(Product::class, 'product_stocks')->withPivot('quantity');
+    //    }
 
-
-//    public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-//    {
-//        return $this->belongsToMany(Product::class, 'product_stocks')->withPivot('quantity');
-//    }
-
-//    public function orderProducts()
-//    {
-//        return $this->hasMany(OrderProduct::class);
-//    }
-
-
-
+    //    public function orderProducts()
+    //    {
+    //        return $this->hasMany(OrderProduct::class);
+    //    }
 
 }

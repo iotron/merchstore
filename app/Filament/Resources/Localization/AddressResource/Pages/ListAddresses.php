@@ -5,8 +5,8 @@ namespace App\Filament\Resources\Localization\AddressResource\Pages;
 use App\Filament\Resources\Localization\AddressResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Tables\Table;
 use Filament\Tables;
+use Filament\Tables\Table;
 
 class ListAddresses extends ListRecords
 {
@@ -19,10 +19,7 @@ class ListAddresses extends ListRecords
         ];
     }
 
-
-
-
-    public  function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -33,13 +30,12 @@ class ListAddresses extends ListRecords
                     Tables\Columns\TextColumn::make('type')->badge(),
 
                     Tables\Columns\TextColumn::make('addressable_type')
-                        ->formatStateUsing(function ($state){
+                        ->formatStateUsing(function ($state) {
 
                         })
                         ->badge(),
 
                 ]),
-
 
                 Tables\Columns\TextColumn::make('contact'),
                 Tables\Columns\TextColumn::make('address_1')->columnSpanFull(),
@@ -47,12 +43,11 @@ class ListAddresses extends ListRecords
                     Tables\Columns\TextColumn::make('city')->description('City'),
                     Tables\Columns\TextColumn::make('state')->description('State'),
                     Tables\Columns\TextColumn::make('country.name')->description('Country'),
-                ])
-
+                ]),
 
             ])
             ->contentGrid([
-                'md' => 2
+                'md' => 2,
             ])
             ->filters([
                 //
@@ -67,9 +62,4 @@ class ListAddresses extends ListRecords
                 ]),
             ]);
     }
-
-
-
-
-
 }

@@ -8,10 +8,8 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Table;
 
 class CouponsRelationManager extends RelationManager
 {
@@ -29,7 +27,6 @@ class CouponsRelationManager extends RelationManager
                     ->columnSpanFull()
                     ->maxLength(250),
 
-
                 Fieldset::make('Voucher Timeline & Usage')
                     ->schema([
                         DateTimePicker::make('starts_from')->required()->placeholder('Set Start Date And Time'),
@@ -41,7 +38,6 @@ class CouponsRelationManager extends RelationManager
                             ->label('Coupon Usage Limit')
                             ->required(),
                     ])->columns(2),
-
 
             ]);
     }

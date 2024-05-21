@@ -2,10 +2,8 @@
 
 namespace App\Http\Resources\Order;
 
-use App\Http\Resources\Customer\CustomerResource;
 use App\Http\Resources\Location\AddressResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderResource extends OrderIndexResource
 {
@@ -16,9 +14,9 @@ class OrderResource extends OrderIndexResource
      */
     public function toArray(Request $request): array
     {
-       // dd($this);
+        // dd($this);
 
-        return array_merge(parent::toArray($request),[
+        return array_merge(parent::toArray($request), [
 
             'subtotal' => $this->subtotal->formatted(),
             'total' => $this->total->formatted(),
@@ -28,7 +26,7 @@ class OrderResource extends OrderIndexResource
             //'order_products' => OrderProductResource::collection($this->whenLoaded('orderProducts')),
 
             'invoice' => OrderInvoiceResource::collection($this->whenLoaded('invoices')),
-            'shipping_address' => AddressResource::make($this->whenLoaded('billingAddress'))
+            'shipping_address' => AddressResource::make($this->whenLoaded('billingAddress')),
         ]);
     }
 }

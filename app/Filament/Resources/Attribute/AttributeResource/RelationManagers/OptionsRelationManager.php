@@ -45,7 +45,6 @@ class OptionsRelationManager extends RelationManager
                     ->maxValue(10000)
                     ->minValue(0),
 
-
             ]);
     }
 
@@ -54,10 +53,10 @@ class OptionsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('display_name'),
-                Tables\Columns\TextColumn::make('swatch_value')->formatStateUsing(function ($state){
+                Tables\Columns\TextColumn::make('swatch_value')->formatStateUsing(function ($state) {
                     return is_null($state) ? 'undefined' : $state;
                 }),
-                Tables\Columns\TextColumn::make('position')->formatStateUsing(function ($state){
+                Tables\Columns\TextColumn::make('position')->formatStateUsing(function ($state) {
                     return is_null($state) ? 'undefined' : $state;
                 }),
             ])

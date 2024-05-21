@@ -24,7 +24,6 @@ class AddressesRelationManager extends RelationManager
         return $form
             ->schema([
 
-
                 // address form section
                 Fieldset::make(__('Address Detail'))
                     ->schema([
@@ -34,7 +33,6 @@ class AddressesRelationManager extends RelationManager
                             ->placeholder('Enter Name For This Address')
                             ->helperText('name for this address eg. my home')
                             ->required(),
-
 
                         TextInput::make('contact')
                             ->tel()
@@ -47,8 +45,6 @@ class AddressesRelationManager extends RelationManager
 //                            )
                             ->helperText('your default mobile or telephone number')
                             ->required(),
-
-
 
                         TextInput::make('alternate_contact')
                             ->label(__('Alternate Contact'))
@@ -81,7 +77,6 @@ class AddressesRelationManager extends RelationManager
                             ->helperText(__('Set this address as default for future use'))
                             ->default(true)
                             ->required(),
-
 
                     ])->columns(2),
 
@@ -134,11 +129,6 @@ class AddressesRelationManager extends RelationManager
                             ->required(),
 
                     ]),
-
-
-
-
-
 
             ]);
     }

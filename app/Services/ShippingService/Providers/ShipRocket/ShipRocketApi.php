@@ -1,26 +1,27 @@
 <?php
 
 namespace App\Services\ShippingService\Providers\ShipRocket;
+
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+
 class ShipRocketApi
 {
-
     protected string $apiBase = 'https://apiv2.shiprocket.in/v1/external/';
+
     protected string $token;
 
-
-    public function __construct(string $email,string $password)
+    public function __construct(string $email, string $password)
     {
         $loginData = $this->login([
             'email' => $email,
-            'password' => $password
+            'password' => $password,
         ]);
-        throw_unless($loginData['token'],'Shiprocket Authentication Failed! check credentials');
+        throw_unless($loginData['token'], 'Shiprocket Authentication Failed! check credentials');
         $this->token = $loginData['token'];
     }
 
-    public function getToken():string
+    public function getToken(): string
     {
         return $this->token;
     }
@@ -32,17 +33,14 @@ class ShipRocketApi
 
     protected function login(array $credentials)
     {
-        $response = Http::post($this->getBaseUrl()."auth/login", [
+        $response = Http::post($this->getBaseUrl().'auth/login', [
             'email' => $credentials['email'],
             'password' => $credentials['password'],
         ]);
-        throw_if($response->failed(),$response->body());
+        throw_if($response->failed(), $response->body());
+
         return $response->json();
     }
-
-
-
-
 
     public function http(): PendingRequest
     {
@@ -50,24 +48,18 @@ class ShipRocketApi
         //return Http::withToken($this->apiToken)->contentType('application/json');
     }
 
-
-    public function httpGet($url,?string $query = null)
+    public function httpGet($url, ?string $query = null)
     {
         $url = $this->getBaseUrl().$url;
-        return $this->http()->get($url,$query);
+
+        return $this->http()->get($url, $query);
 
     }
 
-
-    public function httpPost(string $url,array $data)
+    public function httpPost(string $url, array $data)
     {
         $url = $this->getBaseUrl().$url;
-        return $this->http()->post($url,$data);
+
+        return $this->http()->post($url, $data);
     }
-
-
-
-
-
-
 }

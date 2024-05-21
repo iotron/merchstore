@@ -12,7 +12,6 @@ use Filament\Notifications\Notification;
 
 class ProductSaleHelper
 {
-
     public function reindexSaleableProducts(): void
     {
         $this->cleanIndex();
@@ -26,11 +25,8 @@ class ProductSaleHelper
         }
     }
 
-
     private function insertSaleProduct(Sale $sale, $product = null): void
     {
-
-
 
         $rows = [];
         $productIds = $this->getMatchingProductIds($sale, $product);
@@ -40,9 +36,7 @@ class ProductSaleHelper
 
         $productCollection = Product::whereIn('id', $productIds)->get();
 
-
         foreach ($productCollection as $product) {
-
 
             // Group Relation Between CatalogRule with Customer need to fix
             foreach ($sale->customer_groups()->pluck('id') as $customerGroupId) {
@@ -61,7 +55,6 @@ class ProductSaleHelper
             }
         }
 
-
         // Ready For Insert/Update CatalogRule Product with Discounted
 
         $this->storeRecord($rows);
@@ -75,10 +68,9 @@ class ProductSaleHelper
 
     }
 
-
     protected function storeRecord(array $data)
     {
-        $storeProduct = SaleProduct::upsert($data, ['customer_group_id','product_id'], ['starts_from',
+        $storeProduct = SaleProduct::upsert($data, ['customer_group_id', 'product_id'], ['starts_from',
             'ends_till',
             'discount_amount',
             'action_type',
@@ -90,11 +82,10 @@ class ProductSaleHelper
             'product_id', ]);
     }
 
-
     public function calculate(Sale $sale, Product $product)
     {
 
-        $price = isset($product->price) && ! empty($product->price->getAmount()) ? $product->price: $sale->discount_amount;
+        $price = isset($product->price) && ! empty($product->price->getAmount()) ? $product->price : $sale->discount_amount;
 
         return match ($sale->action_type) {
             'to_fixed' => min($sale->discount_amount->getAmount(), $price->getAmount()),
@@ -104,15 +95,13 @@ class ProductSaleHelper
         };
     }
 
-
-
     private function getMatchingProductIds(Sale $sale, mixed $product): array
     {
         // Prepare Conditions
         $bag = $this->prepareBag($sale);
-       // Fetch Matched Products
-        $allCatProducts = $this->resolveCategoryProducts($sale,$bag);
-        $allQueryProducts = $this->resolveQueryableProducts($sale,$bag);
+        // Fetch Matched Products
+        $allCatProducts = $this->resolveCategoryProducts($sale, $bag);
+        $allQueryProducts = $this->resolveQueryableProducts($sale, $bag);
         // Unique Product IDs
         $uniques = collect(array_replace(array_keys($allQueryProducts), array_keys($allCatProducts)))->unique();
         $ids = $uniques->values()->all();
@@ -121,23 +110,18 @@ class ProductSaleHelper
                 unset($ids[0]);
             }
         }
+
         return $ids;
     }
-
-
-
 
     protected function prepareBag(Sale $sale)
     {
         $conditionList = (array) $sale->conditions;
         $bag = [];
         // Lets Check
-        foreach ($conditionList as $condition)
-        {
+        foreach ($conditionList as $condition) {
             // First Check Condition Format & Value
-            if (! empty($condition['attribute']) && ! empty($condition['operator']) && ! empty($condition['value']))
-            {
-
+            if (! empty($condition['attribute']) && ! empty($condition['operator']) && ! empty($condition['value'])) {
 
                 $key = $condition['attribute'];
                 $chunks = explode('|', $condition['attribute']);
@@ -165,18 +149,13 @@ class ProductSaleHelper
                     ];
                 }
 
-
-
             }
         }
 
         return $bag;
     }
 
-
-
-
-    private function resolveCategoryProducts(Sale $sale,array $bag)
+    private function resolveCategoryProducts(Sale $sale, array $bag)
     {
         $allCatProducts = [];
         if (isset($bar['cat']) && ! empty($bag['cat'])) {
@@ -184,10 +163,11 @@ class ProductSaleHelper
                 $allCatProducts = array_merge($allCatProducts, $collection->pluck('id')->flip()->toArray());
             }
         }
+
         return $allCatProducts;
     }
 
-    private function resolveQueryableProducts(Sale $sale,array $bag)
+    private function resolveQueryableProducts(Sale $sale, array $bag)
     {
         $allQueryProducts = [];
         $availableColumns = Product::find(1)->first()->getFillable();
@@ -205,8 +185,7 @@ class ProductSaleHelper
             }
             $allQueryProducts = $query->get()->pluck('id')->flip()->toArray();
         }
+
         return $allQueryProducts;
     }
-
-
 }

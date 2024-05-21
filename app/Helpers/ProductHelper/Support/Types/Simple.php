@@ -8,11 +8,6 @@ use App\Models\Product\Product;
 
 class Simple extends AbstractSupportProductSupport
 {
-
-    /**
-     * @param array $data
-     * @return bool|Product
-     */
     public function create(array $data): bool|Product
     {
 
@@ -32,17 +27,11 @@ class Simple extends AbstractSupportProductSupport
         return $product;
     }
 
-    /**
-     * @return bool
-     */
     public function isSaleable(): bool
     {
         // TODO: Implement isSaleable() method.
     }
 
-    /**
-     * @return int
-     */
     public function haveSufficientQuantity(): int
     {
         // TODO: Implement haveSufficientQuantity() method.

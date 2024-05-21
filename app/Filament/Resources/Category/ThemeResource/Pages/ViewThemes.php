@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Category\ThemeResource\Pages;
 
 use App\Filament\Resources\Category\ThemeResource;
-use Filament\Actions;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
@@ -28,10 +27,10 @@ class ViewThemes extends ViewRecord
         return parent::infolist($infolist)
             ->schema([
                 Section::make('Main Info')
-                ->columns([
-                    'default' => 2,
-                    'md' => 3,
-                ])->columnSpan(1)
+                    ->columns([
+                        'default' => 2,
+                        'md' => 3,
+                    ])->columnSpan(1)
                     ->schema([
                         TextEntry::make('parent.name')->label('Parent'),
                         TextEntry::make('name')->label('Name'),
@@ -47,29 +46,29 @@ class ViewThemes extends ViewRecord
                             ->copyMessageDuration(1500),
                     ]),
                 Section::make('Date')
-                ->columns([
-                    'default' => 2,
-                    'md' => 3,
-                ])
+                    ->columns([
+                        'default' => 2,
+                        'md' => 3,
+                    ])
                     ->schema([
                         TextEntry::make('created_at')
-                        ->dateTime(),
+                            ->dateTime(),
                         TextEntry::make('updated_at')
-                        ->dateTime(),
+                            ->dateTime(),
                     ]),
 
                 Section::make('Banners')
                     ->columns([
                         'default' => 2,
-                        'md' => 3
+                        'md' => 3,
                     ])
                     ->schema([
                         RepeatableEntry::make('banners')
                             ->schema([
                                 TextEntry::make('link'),
-                                SpatieMediaLibraryImageEntry::make('banner')
-                            ])
-                    ])
+                                SpatieMediaLibraryImageEntry::make('banner'),
+                            ]),
+                    ]),
 
             ]);
     }

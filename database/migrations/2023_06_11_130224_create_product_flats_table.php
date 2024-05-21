@@ -28,8 +28,6 @@ return new class extends Migration
             $table->decimal('length', 12, 2)->nullable();
             $table->decimal('weight', 12, 2)->nullable();
 
-
-
             $table->foreignId('parent_id')->nullable()->constrained('product_flats')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onUpdate('cascade')->onDelete('cascade');
 

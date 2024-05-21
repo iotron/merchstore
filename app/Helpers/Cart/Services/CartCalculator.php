@@ -11,27 +11,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartCalculator implements CartCalculatorContract
 {
-
-
     private ?CartServiceContract $cartService = null;
+
     private ?CartCouponService $couponService = null;
-    protected array $collectionBag=[];
+
+    protected array $collectionBag = [];
+
     protected bool $hasCoupon = false;
+
     protected bool $validCoupon = false;
-    protected ?Collection $productCollection=null;
+
+    protected ?Collection $productCollection = null;
 
     public function __construct(CartServiceContract $cartService)
     {
         $this->cartService = $cartService;
         $this->cartService->checkStock();
         $this->productCollection = $this->cartService->products();
-        $this->hasCoupon = !is_null($this->cartService->getCouponCode());
-        if ($this->hasCoupon)
-        {
+        $this->hasCoupon = ! is_null($this->cartService->getCouponCode());
+        if ($this->hasCoupon) {
             $this->couponService = new CartCouponService($cartService);
-            if (!is_null($this->cartService->getCouponCode())) {
-                if ($this->couponService->validated($this->cartService->getCouponCode()))
-                {
+            if (! is_null($this->cartService->getCouponCode())) {
+                if ($this->couponService->validated($this->cartService->getCouponCode())) {
                     $this->validCoupon = true;
                 }
             }
@@ -40,35 +41,35 @@ class CartCalculator implements CartCalculatorContract
 
     public function getCouponModel(): ?Model
     {
-        return !is_null($this->couponService) ? $this->couponService->getModel() : null;
+        return ! is_null($this->couponService) ? $this->couponService->getModel() : null;
     }
 
     public function calculate()
     {
 
         // Base Calculation
-        $subTotal = new Money(0.00); $totalTax = new Money(0.00);
+        $subTotal = new Money(0.00);
+        $totalTax = new Money(0.00);
         // Load Product Infos
-        $collectionBag =  $this->productCollection->mapWithKeys(function ($product) use($subTotal,$totalTax){
+        $collectionBag = $this->productCollection->mapWithKeys(function ($product) use ($subTotal, $totalTax) {
             // subtotal
             $productSubTotal = new Money(0.00);
             $productSubTotal->add($product->base_price->multiplyOnce($product->pivot->quantity));
             $subTotal->add($productSubTotal);
             // tax
             $productTotalTax = new Money(0.00);
-            if ($product->tax_percent > 0)
-            {
+            if ($product->tax_percent > 0) {
                 $productTotalTax->add($product->base_price->multiplyOnce($product->pivot->quantity));
                 $totalTax->add($productTotalTax);
             }
 
             // return data
-            return  [
+            return [
                 $product->id => [
                     'id' => $product->id,
                     'pivot_quantity' => $product->pivot->quantity,
                     'name' => $product->name,
-                    'has_tax' => !empty($product->tax_percent),
+                    'has_tax' => ! empty($product->tax_percent),
                     'base_price' => $product->base_price->getAmount(),
                     'base_price_formatted' => $product->base_price->formatted(),
                     'total_base_amount' => $productSubTotal->getAmount(),
@@ -79,8 +80,8 @@ class CartCalculator implements CartCalculatorContract
                     'total_tax_amount_formatted' => $productTotalTax->formatted(),
                     'net_total' => $productSubTotal->addOnce($productTotalTax)->getAmount(),
                     'net_total_formatted' => $productSubTotal->addOnce($productTotalTax)->formatted(),
-                    'product' => $product
-                ]
+                    'product' => $product,
+                ],
             ];
         });
 
@@ -92,38 +93,28 @@ class CartCalculator implements CartCalculatorContract
         $totalDiscount = new Money(0.0);
 
         // Calculate Discount If Present
-        if ($this->hasCoupon & $this->validCoupon)
-        {
+        if ($this->hasCoupon & $this->validCoupon) {
             // Validate Voucher Conditions Before Apply Discount
             $voucherValidator = new VoucherValidator($this->cartService);
-            if ($voucherValidator->validate())
-            {
+            if ($voucherValidator->validate()) {
                 $result = $voucherValidator->getDiscount();
-                if ($result->count())
-                {
+                if ($result->count()) {
                     // Here we can calculate Discount For Products
                     $cartMeta = $this->cartService->getAttribute('meta');
 
-                    foreach ($cartMeta as $item)
-                    {
+                    foreach ($cartMeta as $item) {
                         $totalDiscount->add($item['discount']);
                     }
                 }
             }
         }
 
-        if ($totalDiscount->getAmount() > 0)
-        {
-            $this->cartService->setAttribute('discountTotal',$totalDiscount);
+        if ($totalDiscount->getAmount() > 0) {
+            $this->cartService->setAttribute('discountTotal', $totalDiscount);
             $totalWillBe = new Money(0.0);
             $totalWillBe->add($subTotal)->add($totalTax)->subtract($totalDiscount);
-            $this->cartService->setAttribute('total',$totalWillBe);
+            $this->cartService->setAttribute('total', $totalWillBe);
         }
 
-
-
-
     }
-
-
 }

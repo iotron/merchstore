@@ -8,13 +8,10 @@ use App\Http\Controllers\Api\Auth\Verification\EmailOTPController;
 use App\Http\Controllers\Api\Auth\Verification\PhoneFirebaseController;
 use Illuminate\Support\Facades\Route;
 
-
-
 /**
  * Login
  */
-
-Route::post('/login', [LoginController::class, "loginCustomer"]);
+Route::post('/login', [LoginController::class, 'loginCustomer']);
 
 /**
  * Auth Guarded
@@ -22,9 +19,8 @@ Route::post('/login', [LoginController::class, "loginCustomer"]);
 Route::middleware(['auth:customer'])->group(function () {
 
     // Guarded Login
-    Route::get('session', [LoginController::class, "getSession"]);
-    Route::get('logout', [LoginController::class, "logout"]);
-
+    Route::get('session', [LoginController::class, 'getSession']);
+    Route::get('logout', [LoginController::class, 'logout']);
 
     /**
      * Customer Prefix
@@ -39,7 +35,6 @@ Route::middleware(['auth:customer'])->group(function () {
         Route::post('set-password', [ProfileController::class, 'setPassword']);
         Route::post('change-password', [ProfileController::class, 'updatePassword']);
 
-
         /**
          * Social
          */
@@ -50,29 +45,25 @@ Route::middleware(['auth:customer'])->group(function () {
 
 });
 
-
-
 Route::post('token', [AccountController::class, 'checkTokenValidity']);
 
 /**
  * OTP
  */
-Route::post('sendotp', [EmailOTPController::class, "sendOtp"]);
-Route::post('verifyotp', [EmailOTPController::class, "verifyOtp"]);
+Route::post('sendotp', [EmailOTPController::class, 'sendOtp']);
+Route::post('verifyotp', [EmailOTPController::class, 'verifyOtp']);
 
 // Firebase
 Route::post('check/contact', [PhoneFirebaseController::class, 'checkExistingContact']);
 
 Route::post('save/contact', [PhoneFirebaseController::class, 'saveVerifiedContact']);
 
-
 /**
  * reset
  */
-
 Route::post('reset', [AccountController::class, 'reset']);
 
 /**
  * Register
  */
-Route::post('register', [AccountController::class, "register"]);
+Route::post('register', [AccountController::class, 'register']);

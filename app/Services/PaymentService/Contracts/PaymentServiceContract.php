@@ -7,24 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 interface PaymentServiceContract
 {
+    // public function provider(?string $provider=null):PaymentProviderContract;
 
-   // public function provider(?string $provider=null):PaymentProviderContract;
+    public function allProviders(): array;
 
-    public function allProviders():array;
+    public function getProviderName(): string;
 
-    public function getProviderName():string;
-
-    /**
-     * @return Model
-     */
     public function getProviderModel(): Model;
 
     public function getAllProvidersModel(): ?Collection;
 
-    public function setError(string $error):void;
+    public function setError(string $error): void;
 
-    public function getError():?string;
-
-
-
+    public function getError(): ?string;
 }

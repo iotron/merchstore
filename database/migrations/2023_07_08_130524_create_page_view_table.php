@@ -9,30 +9,22 @@ return new class extends Migration
     public function up()
     {
         Schema::create('page_views', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('ip');
-                    $table->string('user_agent');
-                    $table->string('session');
-                    $table->morphs('viewable');
-                    $table->timestamps();
+            $table->id();
+            $table->string('ip');
+            $table->string('user_agent');
+            $table->string('session');
+            $table->morphs('viewable');
+            $table->timestamps();
         });
     }
 
-
-
-
-
-        /**
-         * Reverse the migrations.
-         *
-         * @return void
-         */
-        public function down()
-        {
-            Schema::dropIfExists('page_views');
-        }
-
-
-
-
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('page_views');
+    }
 };

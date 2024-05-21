@@ -7,9 +7,5 @@ use App\Models\Order\OrderShipment;
 
 interface ShippingProviderReturnContract
 {
-
-
-    public function create(OrderProduct $orderProduct,OrderShipment $orderShipment):mixed;
-
-
+    public function create(OrderProduct $orderProduct, OrderShipment $orderShipment): mixed;
 }

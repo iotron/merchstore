@@ -3,15 +3,10 @@
 namespace App\Filament\Resources\Localization;
 
 use App\Filament\Resources\Localization\AddressResource\Pages;
-use App\Filament\Resources\Localization\AddressResource\RelationManagers;
 use App\Models\Localization\Address;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AddressResource extends Resource
 {
@@ -53,16 +48,13 @@ class AddressResource extends Resource
                     ->hint('Max: 255')
                     ->maxLength(255),
 
-
                 Forms\Components\TextInput::make('landmark')
                     ->hint('Max: 255')
                     ->maxLength(255),
 
-
                 Forms\Components\TextInput::make('city')
                     ->hint('Max: 255')
                     ->maxLength(255),
-
 
                 Forms\Components\TextInput::make('postal_code')
                     ->hint('Max: 255')
@@ -82,12 +74,8 @@ class AddressResource extends Resource
                     ->hint('Max: 255')
                     ->maxLength(255),
 
-
-
             ]);
     }
-
-
 
     public static function getRelations(): array
     {

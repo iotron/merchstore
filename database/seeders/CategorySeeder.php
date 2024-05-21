@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -19,9 +18,9 @@ class CategorySeeder extends Seeder
 
         foreach ($allCategories as $categoryBag) {
             $category = Category::updateOrCreate([
-                    'name' => $name = $categoryBag->name,
-                    'url' => Str::slug($name),
-                ]
+                'name' => $name = $categoryBag->name,
+                'url' => Str::slug($name),
+            ]
             );
             //  $category->attachments()->attach($this->addAttachment());
             // Inject products
@@ -48,12 +47,8 @@ class CategorySeeder extends Seeder
         }
     }
 
-
     protected function getFromStorage(string $path)
     {
         return json_decode(Storage::disk('local')->get($path));
     }
-
-
-
 }

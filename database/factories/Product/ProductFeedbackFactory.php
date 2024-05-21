@@ -22,7 +22,7 @@ class ProductFeedbackFactory extends Factory
             'product_id' => Product::where('status', Product::PUBLISHED)->get()->random()->id,
             'customer_id' => Customer::all()->random()->id,
             'rating' => $this->faker->randomElement([1, 2, 3, 4, 5]),
-            'comment' => $this->faker->sentence(10)
+            'comment' => $this->faker->sentence(10),
         ];
     }
 }

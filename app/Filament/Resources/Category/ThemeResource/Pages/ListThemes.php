@@ -5,17 +5,9 @@ namespace App\Filament\Resources\Category\ThemeResource\Pages;
 use App\Filament\Resources\Category\ThemeResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
-use App\Filament\Resources\Category\ThemeResource\Pages;
-use App\Models\Category\Theme;
-use Filament\Forms;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ListThemes extends ListRecords
 {
@@ -37,11 +29,11 @@ class ListThemes extends ListRecords
             ])
             ->filters([
                 SelectFilter::make('Parent')
-                    ->relationship('parent', 'name')
+                    ->relationship('parent', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

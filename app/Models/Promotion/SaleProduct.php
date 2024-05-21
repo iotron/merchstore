@@ -13,7 +13,6 @@ class SaleProduct extends Model
 {
     use HasFactory,Prunable;
 
-
     protected $fillable = [
 
         'starts_from',
@@ -25,35 +24,28 @@ class SaleProduct extends Model
         'sort_order',
     ];
 
-    protected $casts =[
+    protected $casts = [
         'sale_price' => MoneyCast::class,
-        'discount_amount' => MoneyCast::class
+        'discount_amount' => MoneyCast::class,
     ];
-
-
 
     public function prunable()
     {
         return static::where('created_at', '<=', now()->subMonth());
     }
 
-
     public function sale()
     {
         return $this->belongsTo(Sale::class, 'sale_id');
     }
-
 
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-
     public function customer_group()
     {
         return $this->belongsTo(CustomerGroup::class, 'customer_group_id');
     }
-
-
 }

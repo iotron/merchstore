@@ -5,21 +5,18 @@ namespace App\Http\Controllers\Api\Auth\Verification;
 use App\Http\Controllers\Controller;
 use App\Mail\Customer\OtpSent;
 use App\Models\Customer\Otp;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
 
 class EmailOTPController extends Controller
 {
-
-
     /**
      * send otp to email from a register or reset form
-     * @param Request $request
-     * @return JsonResponse
+     *
      * @throws ValidationException
      */
     public function sendOtp(Request $request): JsonResponse
@@ -60,18 +57,16 @@ class EmailOTPController extends Controller
         );
         // send otp to email
         Mail::to($otp->identifier)->send(new OtpSent($otp));
+
         // return response
         return response()->json([
             'success' => true,
-            'message' => "Otp sent to your email!",
+            'message' => 'Otp sent to your email!',
         ], 200);
     }
 
-
     /**
      * verify otp from otp model
-     * @param Request $request
-     * @return JsonResponse
      */
     public function verifyOtp(Request $request): JsonResponse
     {
@@ -86,26 +81,21 @@ class EmailOTPController extends Controller
         $otpVerified = Otp::where([
             'identifier' => $validator['email'],
             'code' => $validator['otp'],
-            'type' => 'email'
+            'type' => 'email',
         ])->first();
 
         // check if otp model is found
         if ($otpVerified && $otpVerified->verified_at === null) {
             // update the verified_at field
             $otpVerified->update(['verified_at' => NOW()]);
+
             return response()->json([
                 'success' => true,
-                'message' => "OTP verified Successfully!",
+                'message' => 'OTP verified Successfully!',
                 'token' => $otpVerified->token,
             ], 200);
         } else {
-            return response()->json(['success' => false, 'message' => "Invalid OTP.",], 400);
+            return response()->json(['success' => false, 'message' => 'Invalid OTP.'], 400);
         }
     }
-
-
-
-
-
-
 }

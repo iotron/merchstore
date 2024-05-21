@@ -15,9 +15,9 @@ class FilterIndexResource extends JsonResource
     public function toArray(Request $request): array
     {
         return ['code' => $this->code,
-        'display_name' => $this->display_name,
-       // 'options' => $this->options,
-        'options' => FilterOptionIndexResource::collection($this->options),
-    ];
+            'display_name' => $this->display_name,
+            // 'options' => $this->options,
+            'options' => FilterOptionIndexResource::collection($this->options),
+        ];
     }
 }

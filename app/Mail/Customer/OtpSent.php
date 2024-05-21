@@ -5,8 +5,6 @@ namespace App\Mail\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class OtpSent extends Mailable implements ShouldQueue
@@ -17,6 +15,7 @@ class OtpSent extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public $otp;
+
     public function __construct($otp)
     {
         $this->otp = $otp;

@@ -13,52 +13,46 @@ use Stripe\StripeClient;
 
 class RefundAction implements PaymentProviderRefundContract
 {
-
     protected StripeClient $api;
+
     protected PaymentProviderContract|StripePaymentServiceContract $provider;
 
-
-    public function __construct(StripeClient $api_key,PaymentProviderContract $provider)
+    public function __construct(StripeClient $api_key, PaymentProviderContract $provider)
     {
         $this->api = $api_key;
         $this->provider = $provider;
 
-
     }
 
-
     /**
-     * @param Booking $booking
      * @return mixed
+     *
      * @throws ApiErrorException
      */
-    public function create(Booking $booking):Refund
+    public function create(Booking $booking): Refund
     {
         $payment = $booking->payment;
 
-        if ($payment->details['metadata']['provider_mode'] == 'checkout')
-        {
+        if ($payment->details['metadata']['provider_mode'] == 'checkout') {
             $paymentIntentObject = $this->api->paymentIntents->retrieve($payment->provider_ref_id);
-        }else{
+        } else {
             $paymentIntentObject = $this->api->paymentIntents->retrieve($payment->provider_gen_id);
         }
         //Get Payment Intent Charge Instance
         $chargeInstance = $this->api->charges->retrieve($paymentIntentObject->latest_charge);
 
-        if (!$chargeInstance->refunded)
-        {
+        if (! $chargeInstance->refunded) {
             $refundInstance = $this->api->refunds->create([
                 'charge' => $chargeInstance->id,
             ]);
-            if ($refundInstance->status == 'succeeded')
-            {
+            if ($refundInstance->status == 'succeeded') {
                 $payment->status = Payment::REFUND;
                 $payment->save();
                 $booking->refund()->create([
                     'refund_id' => $refundInstance->id,
                     'amount' => $booking->total->getAmount(),
-                    'currency' =>$booking->total->getCurrency()->getCurrency(),
-                    'payment_id'=> $payment->id,
+                    'currency' => $booking->total->getCurrency()->getCurrency(),
+                    'payment_id' => $payment->id,
                     'receipt' => $booking->payment->receipt,
                     'speed' => null,
                     'status' => Refund::COMPLETED,
@@ -68,14 +62,13 @@ class RefundAction implements PaymentProviderRefundContract
                     'details' => $refundInstance->toArray(),
                     'error' => $this->provider->getError(),
                 ]);
-            }else{
+            } else {
                 $payment->status = Payment::CANCEL_REFUND;
                 $payment->save();
             }
         }
+
         return $booking->refund;
 
     }
-
-
 }

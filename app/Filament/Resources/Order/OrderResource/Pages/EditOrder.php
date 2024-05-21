@@ -4,32 +4,20 @@ namespace App\Filament\Resources\Order\OrderResource\Pages;
 
 use App\Filament\Resources\Order\OrderResource;
 use App\Helpers\Money\Money;
-use App\Models\Customer\Customer;
-use App\Models\Localization\Address;
 use App\Models\Order\OrderShipment;
 use App\Models\Payment\Payment;
 use App\Models\Product\Product;
-use App\Models\Shipping\ShippingProvider;
-use App\Services\ShippingService\ShippingService;
 use Filament\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -56,9 +44,7 @@ class EditOrder extends EditRecord
         $data['total'] = ($data['total'] instanceof Money) ? $data['total']->getAmount() : $data['total'];
         $this->form->fill($data);
 
-
     }
-
 
     public function form(Form $form): Form
     {
@@ -74,29 +60,21 @@ class EditOrder extends EditRecord
                             ->schema($this->getOrderSchema()),
                         Tabs\Tab::make('Payment')
                             ->schema($this->getPaymentSchema()),
-//                        Tabs\Tab::make('Product')
-//                            ->schema($this->getProductSchema()),
+                        //                        Tabs\Tab::make('Product')
+                        //                            ->schema($this->getProductSchema()),
                         Tabs\Tab::make('Shipping')
                             ->schema($this->getShippingSchema()),
                     ]),
 
-
-
-
-
             ]);
     }
-
 
     public function getOrderSchema(): array
     {
         return [
 
-
         ];
     }
-
-
 
     public function getPaymentSchema()
     {
@@ -105,18 +83,19 @@ class EditOrder extends EditRecord
                 ->relationship('payment')
                 ->addable(false)
                 ->columns(2)
-                ->mutateRelationshipDataBeforeFillUsing(function (array $data){
+                ->mutateRelationshipDataBeforeFillUsing(function (array $data) {
                     $data['subtotal'] = ($data['subtotal'] instanceof Money) ? $data['subtotal']->getAmount() : $data['subtotal'];
                     $data['discount'] = ($data['discount'] instanceof Money) ? $data['discount']->getAmount() : $data['discount'];
                     $data['tax'] = ($data['tax'] instanceof Money) ? $data['tax']->getAmount() : $data['tax'];
                     $data['total'] = ($data['total'] instanceof Money) ? $data['total']->getAmount() : $data['total'];
+
                     return $data;
                 })
                 ->schema([
 
                     Placeholder::make('provider_gen_id')
                         ->hint('Payment Order ID')
-                        ->content(function ($state){
+                        ->content(function ($state) {
                             return $state;
                         }),
 
@@ -133,48 +112,32 @@ class EditOrder extends EditRecord
                     Toggle::make('verified')
                         ->hint('Payment Verification'),
 
-
-
-                ])
+                ]),
         ];
     }
-
-
-
-
-
-
-
-
-
-
-
 
     public function getShippingSchema()
     {
         return [
 
-
             ViewField::make('billing_address_id')
                 ->view('filament-custom.forms.billing-shipping-order-address'),
-
-
 
             Repeater::make('shipments')
                 ->label('List Of Shipments')
                 ->addable(false)
-                ->relationship('shipments',function ($query){
+                ->relationship('shipments', function ($query) {
                     return $query->with([
                         'pickupAddress',
                         'deliveryAddress',
-                        'shippingProvider'
+                        'shippingProvider',
                     ]);
                 })
-                ->mutateRelationshipDataBeforeFillUsing(function ($data){
-                    if (isset($data['charge']) && $data['charge'] instanceof Money)
-                    {
+                ->mutateRelationshipDataBeforeFillUsing(function ($data) {
+                    if (isset($data['charge']) && $data['charge'] instanceof Money) {
                         $data['charge'] = $data['charge']->getAmount();
                     }
+
                     return $data;
                 })
                 ->columns(2)
@@ -188,7 +151,6 @@ class EditOrder extends EditRecord
                         ->hint('Max: 200')
                         ->maxLength(200),
 
-
                     Select::make('status')
                         ->inlineLabel()
                         ->options(OrderShipment::StatusOptions)
@@ -200,19 +162,17 @@ class EditOrder extends EditRecord
                         ->schema([
                             Placeholder::make('shipping_provider')
                                 ->hiddenLabel()
-                                ->content(function (Model $record){
+                                ->content(function (Model $record) {
                                     $record->loadMissing('shippingProvider');
                                     $text = 'Quantity : '.$record->total_quantity;
-                                    if (!is_null($record->shippingProvider))
-                                    {
-                                        $text .= ' |Shipping Provider : '.$record->shippingProvider->name . '  ( Code: '.$record->shippingProvider->code.')';
-                                    }else{
-                                        $text .=' |Shipping Provider : --not set yet--';
+                                    if (! is_null($record->shippingProvider)) {
+                                        $text .= ' |Shipping Provider : '.$record->shippingProvider->name.'  ( Code: '.$record->shippingProvider->code.')';
+                                    } else {
+                                        $text .= ' |Shipping Provider : --not set yet--';
                                     }
 
                                     return $text;
                                 }),
-
 
                             TextInput::make('weight')
                                 ->inputMode('decimal')
@@ -246,16 +206,11 @@ class EditOrder extends EditRecord
                                 ->hint('Max: 100')
                                 ->maxLength(100),
                             Placeholder::make('charge')
-                                ->content(function ($state){
-                                    return ($state instanceof Money) ? $state->formatted() : Money::format($state ?? 0.00) ;
+                                ->content(function ($state) {
+                                    return ($state instanceof Money) ? $state->formatted() : Money::format($state ?? 0.00);
                                 }),
 
-
-
                         ]),
-
-
-
 
                     Grid::make('right_bar')
                         ->columnSpan(1)
@@ -263,31 +218,26 @@ class EditOrder extends EditRecord
                             ViewField::make('pickup')
                                 ->view('filament-custom.forms.address-placeholder')
                                 ->columnSpan(1)
-                                ->formatStateUsing(function (Model $record){
+                                ->formatStateUsing(function (Model $record) {
                                     return $record->pickupAddress->toArray();
                                 })
                                 ->viewData([
                                     'label' => 'Pickup Address',
-                                    'textAlign' => 'right'
+                                    'textAlign' => 'right',
                                 ]),
 
                             ViewField::make('delivery')
                                 ->view('filament-custom.forms.address-placeholder')
                                 ->columnSpan(1)
-                                ->formatStateUsing(function (Model $record){
+                                ->formatStateUsing(function (Model $record) {
                                     return $record->deliveryAddress->toArray();
                                 })
                                 ->viewData([
                                     'label' => 'Delivery Address',
-                                    'textAlign' => 'right'
+                                    'textAlign' => 'right',
                                 ]),
 
-
-
                         ]),
-
-
-
 
                     Repeater::make('shipment_track_activities')
                         ->label('Shipment Tracking Activity')
@@ -314,22 +264,9 @@ class EditOrder extends EditRecord
                                 ->columnSpanFull(),
                         ]),
 
-
-
-
-
-
                 ]),
-
 
         ];
 
     }
-
-
-
-
-
-
-
 }

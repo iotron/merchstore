@@ -6,7 +6,6 @@ use App\Models\Order\OrderShipment;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Providers\Custom\Support\OrderHandler;
 use App\Services\ShippingService\Providers\ShipRocket\Support\hasShippableOrders;
-use Illuminate\Support\Str;
 
 class OrderAction implements ShippingProviderActionContract
 {
@@ -16,18 +15,19 @@ class OrderAction implements ShippingProviderActionContract
     {
 
         $added = [
-//            "order_id" => random_int(11111111,99999999),
-            "shipment_id" => random_int(11111111,99999999),
-            "status" => "NEW",
-            "status_code" => 1,
-            "onboarding_completed_now" => 0,
-            "awb_code" => null,
-            "courier_company_id" => null,
-            "courier_name" => null
+            //            "order_id" => random_int(11111111,99999999),
+            'shipment_id' => random_int(11111111, 99999999),
+            'status' => 'NEW',
+            'status_code' => 1,
+            'onboarding_completed_now' => 0,
+            'awb_code' => null,
+            'courier_company_id' => null,
+            'courier_name' => null,
         ];
-        $result =  array_merge($added,$this->format($orderShipment));
-        $result['order_id'] = random_int(11111111,99999999);
+        $result = array_merge($added, $this->format($orderShipment));
+        $result['order_id'] = random_int(11111111, 99999999);
         $result['payment_method'] = 'COD';
+
         return $result;
     }
 

@@ -15,27 +15,23 @@ use App\Services\ShippingService\Providers\ShipRocket\Actions\TrackingAction;
 
 class ShipRocketShippingService implements ShippingProviderContract
 {
-
-
     protected ShipRocketApi $api;
+
     private ?string $error = null;
+
     protected ShippingProvider $providerModel;
 
-    public function __construct(ShippingProvider $providerModel,ShipRocketApi $api)
+    public function __construct(ShippingProvider $providerModel, ShipRocketApi $api)
     {
         $this->providerModel = $providerModel;
         $this->api = $api;
     }
-
 
     public function getProviderName(): string
     {
         return 'shiprocket';
     }
 
-    /**
-     * @return string
-     */
     public function getClass(): string
     {
         return get_class($this);
@@ -43,7 +39,7 @@ class ShipRocketShippingService implements ShippingProviderContract
 
     public function getProvider(): ShippingProviderContract
     {
-       return $this;
+        return $this;
     }
 
     public function getModel(): ShippingProvider
@@ -51,35 +47,27 @@ class ShipRocketShippingService implements ShippingProviderContract
         return $this->providerModel;
     }
 
-    /**
-     * @param string $error
-     * @return void
-     */
     public function setError(string $error): void
     {
         $this->error = $error;
     }
 
-    /**
-     * @return string|null
-     */
     public function getError(): ?string
     {
         return $this->error;
     }
 
-
-    public function order():ShippingProviderActionContract
+    public function order(): ShippingProviderActionContract
     {
         return new OrderAction($this->api);
     }
 
-    public function courier():ShippingProviderCourierContract
+    public function courier(): ShippingProviderCourierContract
     {
         return new CourierAction($this->api);
     }
 
-    public function return():ShippingProviderReturnContract
+    public function return(): ShippingProviderReturnContract
     {
         return new ReturnAction($this->api);
     }
@@ -89,10 +77,8 @@ class ShipRocketShippingService implements ShippingProviderContract
         // TODO: Implement shipment() method.
     }
 
-    public function tracking():ShippingProviderTrackingContract
+    public function tracking(): ShippingProviderTrackingContract
     {
         return new TrackingAction($this->api);
     }
-
-
 }

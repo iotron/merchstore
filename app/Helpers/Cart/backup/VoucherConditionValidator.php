@@ -6,10 +6,9 @@ use App\Models\Product\Product;
 
 class VoucherConditionValidator
 {
-
-    public function validate(array $condition,array|string|null $attributeValue, Product $product):bool
+    public function validate(array $condition, array|string|null $attributeValue, Product $product): bool
     {
-        dd('Condition Validator',$condition,$attributeValue,$product);
+        dd('Condition Validator', $condition, $attributeValue, $product);
         $isValid = false;
 
         match ($condition['operator']) {
@@ -18,14 +17,11 @@ class VoucherConditionValidator
             '<=' => $isValid = $this->validateLessThanOrEqual($condition, $attributeValue),
             '>' => $isValid = $this->validateGreaterThan($condition, $attributeValue),
             '>=' => $isValid = $this->validateGreaterThanOrEqual($condition, $attributeValue),
-            default => throw new \Exception("Invalid operator"),
+            default => throw new \Exception('Invalid operator'),
         };
 
         return $isValid;
     }
-
-
-
 
     private function validateEqual()
     {
@@ -42,7 +38,6 @@ class VoucherConditionValidator
 
     }
 
-
     private function lessThanOrEqual()
     {
 
@@ -52,7 +47,4 @@ class VoucherConditionValidator
     {
 
     }
-
-
-
 }

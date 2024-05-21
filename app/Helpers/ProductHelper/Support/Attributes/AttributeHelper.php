@@ -7,15 +7,8 @@ use App\Models\Filter\FilterGroup;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 
-
 class AttributeHelper
 {
-
-
-    /**
-     * @param $id
-     * @return array
-     */
     public function getProductAttributes($id): array
     {
         $groups = FilterGroup::where('id', $id)
@@ -34,11 +27,7 @@ class AttributeHelper
                     ->helperText($item->desc);
             })->toArray();
 
-            return
-                Section::make('Filterable Attributes')->schema($attributeBag)->columns(2);
+            return Section::make('Filterable Attributes')->schema($attributeBag)->columns(2);
         })->toArray();
     }
-
-
-
 }

@@ -16,80 +16,68 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PayoutAction implements PaymentProviderPayoutContract
 {
-
     protected RazorpayApi $api;
+
     protected PaymentProviderContract|RazorpayPaymentServiceContract $paymentProvider;
+
     protected ?PayoutModel $payoutModel = null;
+
     /**
      * @var mixed|null
      */
-    private array $payeeContact=[];
+    private array $payeeContact = [];
+
     /**
      * @var mixed|null
      */
-    private array $payeeFundAccount=[];
+    private array $payeeFundAccount = [];
+
     protected ?BankAccount $bankAccountModel = null;
 
-
-    public function __construct(RazorpayApi $api,PaymentProviderContract $paymentProvider)
+    public function __construct(RazorpayApi $api, PaymentProviderContract $paymentProvider)
     {
         $this->api = $api;
         $this->paymentProvider = $paymentProvider;
     }
-
-
 
     public function fetch($id)
     {
         return $this->api->payout->fetch($id)->toArray();
     }
 
-
-
-
-
-
-
-
-
-
-
-    public function toBank(PayoutModel|Model $payout):array
+    public function toBank(PayoutModel|Model $payout): array
     {
         try {
 
             $this->payoutModel = $payout;
-            $this->payoutModel->loadMissing('user','event');
+            $this->payoutModel->loadMissing('user', 'event');
 
             $this->bankAccountModel = $this->payoutModel->user->defaultBankAccount();
-            throw_if(is_null($this->bankAccountModel),'no default/primary bank account fourd for '.$this->payoutModel->user->email);
+            throw_if(is_null($this->bankAccountModel), 'no default/primary bank account fourd for '.$this->payoutModel->user->email);
 
             $this->prepare($this->bankAccountModel);
 
-
-            if (empty($this->payoutModel->provider_ref_id) && !$this->payoutModel->paid)
-            {
+            if (empty($this->payoutModel->provider_ref_id) && ! $this->payoutModel->paid) {
                 // Initiate Payment to Bank Account
                 $result = $this->api->payout->create([
-                    "account_number" => $this->paymentProvider->getCompanyBankAccount(),
-                    "fund_account_id" => $this->payeeFundAccount['id'],
-                    "amount" => $payout->net_payable_amount->getAmount(),
-                    "currency" => $payout->net_payable_amount->getCurrency()->getCurrency(),
-                    "mode" => $this->paymentProvider->payoutMode(),
-                    "purpose" => "payout",
-                    "queue_if_low_balance" => true,
-                    "reference_id" => $this->payeeContact['reference_id'],
-                    "narration" => config('app.name')." Fund Transfer",
+                    'account_number' => $this->paymentProvider->getCompanyBankAccount(),
+                    'fund_account_id' => $this->payeeFundAccount['id'],
+                    'amount' => $payout->net_payable_amount->getAmount(),
+                    'currency' => $payout->net_payable_amount->getCurrency()->getCurrency(),
+                    'mode' => $this->paymentProvider->payoutMode(),
+                    'purpose' => 'payout',
+                    'queue_if_low_balance' => true,
+                    'reference_id' => $this->payeeContact['reference_id'],
+                    'narration' => config('app.name').' Fund Transfer',
                 ])->toArray();
 
-                return array_merge($result,['bank_account_id' => $this->bankAccountModel->id]);
-
+                return array_merge($result, ['bank_account_id' => $this->bankAccountModel->id]);
 
             }
+
             return [];
 
-        }catch (\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             report($e);
 
             return [];
@@ -99,7 +87,7 @@ class PayoutAction implements PaymentProviderPayoutContract
 
     protected function getCreatedContactInfo()
     {
-        return  $this->api->contact->create([
+        return $this->api->contact->create([
             'name' => $this->payoutModel->user->name,
             'email' => $this->payoutModel->user->email,
             'contact' => $this->payoutModel->user->contact,
@@ -111,45 +99,38 @@ class PayoutAction implements PaymentProviderPayoutContract
         ])->toArray();
     }
 
-
     protected function getCreatedFundAccountInfo()
     {
         return $this->api->fund_account->create([
-            "contact_id" => $this->payeeContact['id'],
-            "account_type" => "bank_account",
-            "bank_account" => [
-                "name" => $this->bankAccountModel->account_name,
-                "ifsc" => $this->bankAccountModel->ifsc,
-                "account_number" => $this->bankAccountModel->account_no
+            'contact_id' => $this->payeeContact['id'],
+            'account_type' => 'bank_account',
+            'bank_account' => [
+                'name' => $this->bankAccountModel->account_name,
+                'ifsc' => $this->bankAccountModel->ifsc,
+                'account_number' => $this->bankAccountModel->account_no,
             ],
         ])->toArray();
     }
 
-
     protected function prepare(BankAccount $bankAccount)
     {
-        if (!is_null($bankAccount->payout_config))
-        {
+        if (! is_null($bankAccount->payout_config)) {
             // Get FundContact
-            if (isset($bankAccount->payout_config[BankAccount::FUND_CONTACT]) && !empty($bankAccount->payout_config[BankAccount::FUND_CONTACT]))
-            {
+            if (isset($bankAccount->payout_config[BankAccount::FUND_CONTACT]) && ! empty($bankAccount->payout_config[BankAccount::FUND_CONTACT])) {
                 $this->payeeContact = $bankAccount->payout_config[BankAccount::FUND_CONTACT];
-            }else{
+            } else {
                 $this->payeeContact = $this->getCreatedContactInfo();
             }
             // Get FundAccount
-            if (isset($bankAccount->payout_config[BankAccount::FUND_ACCOUNT]) && !empty($bankAccount->payout_config[BankAccount::FUND_ACCOUNT]))
-            {
+            if (isset($bankAccount->payout_config[BankAccount::FUND_ACCOUNT]) && ! empty($bankAccount->payout_config[BankAccount::FUND_ACCOUNT])) {
                 $this->payeeFundAccount = $bankAccount->payout_config[BankAccount::FUND_ACCOUNT];
-            }else{
+            } else {
                 $this->payeeFundAccount = $this->getCreatedFundAccountInfo();
             }
 
-
-        }else{
+        } else {
             $this->payeeContact = $this->getCreatedContactInfo();
             $this->payeeFundAccount = $this->getCreatedFundAccountInfo();
-
 
         }
 
@@ -159,9 +140,5 @@ class PayoutAction implements PaymentProviderPayoutContract
         ];
         $this->bankAccountModel->save();
 
-
     }
-
-
-
 }

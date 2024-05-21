@@ -22,7 +22,6 @@ return new class extends Migration
             $table->json('meta_data')->nullable();
             $table->text('desc')->nullable();
 
-
             $table->foreignId('parent_id')->nullable()->constrained('categories')->cascadeOnUpdate()->nullOnDelete();
             $table->timestamps();
         });

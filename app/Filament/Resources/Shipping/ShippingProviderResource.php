@@ -3,16 +3,11 @@
 namespace App\Filament\Resources\Shipping;
 
 use App\Filament\Resources\Shipping\ShippingProviderResource\Pages;
-use App\Filament\Resources\Shipping\ShippingProviderResource\RelationManagers;
 use App\Models\Shipping\ShippingProvider;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
 class ShippingProviderResource extends Resource
@@ -20,6 +15,7 @@ class ShippingProviderResource extends Resource
     protected static ?string $model = ShippingProvider::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Providers';
 
     public static function form(Form $form): Form
@@ -30,8 +26,8 @@ class ShippingProviderResource extends Resource
                     ->required()
                     ->placeholder('Type Provider Name')
                     ->lazy()
-                    ->afterStateUpdated(function ($state,Set $set){
-                        $set('code',Str::slug($state));
+                    ->afterStateUpdated(function ($state, Set $set) {
+                        $set('code', Str::slug($state));
                     })
                     ->hint('Max: 100')
                     ->maxLength(100),
@@ -59,9 +55,8 @@ class ShippingProviderResource extends Resource
                     ->hint('Max: 255')
                     ->maxLength(255),
 
-
                 Forms\Components\Grid::make([
-                    'md' => 3
+                    'md' => 3,
                 ])->schema([
                     Forms\Components\Toggle::make('is_primary')
                         ->required(),
@@ -79,8 +74,6 @@ class ShippingProviderResource extends Resource
                     ->columnSpanFull(),
             ]);
     }
-
-
 
     public static function getRelations(): array
     {

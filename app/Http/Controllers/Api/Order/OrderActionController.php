@@ -8,7 +8,6 @@ use App\Http\Requests\Order\OrderConfirmRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
-use App\Models\Payment\PaymentProvider;
 use App\Services\OrderService\OrderConfirmService;
 use App\Services\OrderService\OrderCreationService;
 use App\Services\OrderService\Return\OrderReturnRefundService;
@@ -22,30 +21,17 @@ use Illuminate\Routing\Redirector;
 
 class OrderActionController extends Controller
 {
-
-
-    /**
-     * @var PaymentService
-     */
     public PaymentService $paymentService;
 
     public ShippingService $shippingService;
 
-    /**
-     * @param PaymentService $paymentService
-     * @param ShippingService $shippingService
-     */
-    public function __construct(PaymentService $paymentService,ShippingService $shippingService)
+    public function __construct(PaymentService $paymentService, ShippingService $shippingService)
     {
 
         $this->middleware('auth:customer')->except('captureCallback', 'verifyPayment', 'confirmPayment');
         $this->paymentService = $paymentService;
         $this->shippingService = $shippingService;
     }
-
-
-
-
 
     public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|RedirectResponse
     {
@@ -54,12 +40,10 @@ class OrderActionController extends Controller
         $validate = $request->validated();
 
         // Check If Coupon Presence (Voucher)
-        if (isset($validate['coupon']) && !empty($validate['coupon']))
-        {
+        if (isset($validate['coupon']) && ! empty($validate['coupon'])) {
             // Apply Coupon In Cart
             $cart->addCoupon($validate['coupon']);
         }
-
 
         // Validate Delivery Address (auth)
         $shippingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['shipping_address_id']);
@@ -68,13 +52,11 @@ class OrderActionController extends Controller
             return response()->json(['status' => false, 'message' => 'shipping address does not exist'], 422);
         }
         // Check Shipping Is Billing
-        if ($validate['shipping_is_billing'])
-        {
+        if ($validate['shipping_is_billing']) {
             $billingAddress = $shippingAddress;
-        }else{
+        } else {
             $billingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['billing_address_id']);
         }
-
 
         // Can not Place Order With Empty Cart (changed option old cart for stock)
         if ($cart->getTotalQuantity() <= 0) {
@@ -89,13 +71,13 @@ class OrderActionController extends Controller
         }
 
         // Found Payment Provider
-        $paymentProvider = $this->paymentService->getAllProvidersModel()->firstWhere('id','=',$validate['payment_provider_id']);
+        $paymentProvider = $this->paymentService->getAllProvidersModel()->firstWhere('id', '=', $validate['payment_provider_id']);
 
         // Validate Payment Method
         if (is_null($paymentProvider)) {
             return response()->json(['status' => false, 'message' => 'payment service does not exist'], 422);
         }
-        if (!$paymentProvider->status) {
+        if (! $paymentProvider->status) {
             return response()->json(['status' => false, 'message' => 'please choose another payment service'], 422);
         }
         // Load Payment Provider Service
@@ -103,53 +85,45 @@ class OrderActionController extends Controller
 
         // Order UUID Generation
         $uuid = $this->generateUniqueID();
-        if (is_null($uuid))
-        {
+        if (is_null($uuid)) {
             return response()->json([
                 'success' => true,
                 'message' => 'unable to generate unique order id, try again!',
-            ],409);
+            ], 409);
         }
-
 
         // Order Place Process Start
         $cartCustomer = $cart->getCustomer();
-        $orderCreation = new OrderCreationService($paymentProviderService,$cartCustomer,$cartMeta);
-        $orderCreation->placeOrder($uuid,$shippingAddress,$billingAddress);
+        $orderCreation = new OrderCreationService($paymentProviderService, $cartCustomer, $cartMeta);
+        $orderCreation->placeOrder($uuid, $shippingAddress, $billingAddress);
         // Clean Cart Attributes
         $cart->reset();
 
         // Return Based On Error
-        if (!is_null($orderCreation->getError()))
-        {
+        if (! is_null($orderCreation->getError())) {
             // Failure
             return response()->json([
                 'success' => true,
                 'message' => $orderCreation->getError(),
-            ],409);
-        }else{
+            ], 409);
+        } else {
             // Success
-//            dd('order success');
+            //            dd('order success');
             return redirect()->to(($orderCreation->isCashOnDelivery()) ?
-                config('app.client_url').'/orders/'. $orderCreation->getOrder()->uuid :
+                config('app.client_url').'/orders/'.$orderCreation->getOrder()->uuid :
                 route('payment.visit', ['payment' => $orderCreation->getPayment()->receipt]));
         }
 
     }
 
-
-
-
     public function confirmPayment(Payment $payment, OrderConfirmRequest $request): Application|JsonResponse|Redirector|RedirectResponse|\Illuminate\Contracts\Foundation\Application
     {
         // Found Payment Provider
-        $paymentProviderModel = $this->paymentService->getAllProvidersModel()->firstWhere('id',$payment->payment_provider_id);
+        $paymentProviderModel = $this->paymentService->getAllProvidersModel()->firstWhere('id', $payment->payment_provider_id);
         $paymentProviderService = $this->paymentService->provider($paymentProviderModel->code)->getProvider();
-        $paymentVerified = $paymentProviderService->verify()->verifyWith($payment,$request->validationData());
+        $paymentVerified = $paymentProviderService->verify()->verifyWith($payment, $request->validationData());
 
-
-        if (!$paymentVerified || !is_null($paymentProviderService->getError()))
-        {
+        if (! $paymentVerified || ! is_null($paymentProviderService->getError())) {
             return response()->json(['status' => false, 'message' => 'provider order id mismatch'], 403);
         }
 
@@ -158,77 +132,35 @@ class OrderActionController extends Controller
         $orderConfirmService->confirmOrder();
         $order = $orderConfirmService->getOrder();
 
-        if (is_null($orderConfirmService->getError()))
-        {
-            return redirect(config('app.client_url') . '/cart/');
+        if (is_null($orderConfirmService->getError())) {
+            return redirect(config('app.client_url').'/cart/');
         }
 
         //Send Notification To Event Manager
         //$this->notifyManagerOnSuccess($order->event->manager,'new booking found!','a new booking '.$order->uuid.' found for order - '.$order->event->name);
         //Redirect On Success
-        return redirect(config('app.client_url') . '/orders/' . $order->uuid);
+        return redirect(config('app.client_url').'/orders/'.$order->uuid);
 
     }
-
-
-
 
     public function captureCallback()
     {
 
     }
 
-
-
-
-
-
-
-    public function returnOrder(Order $order,Request $request): JsonResponse
+    public function returnOrder(Order $order, Request $request): JsonResponse
     {
         $givenSku = isset($request->product_sku) ? $request->product_sku : null;
-        $newReturnService = new OrderReturnRefundService($order,$this->paymentService,$this->shippingService,$givenSku);
-        if ($newReturnService->return())
-        {
+        $newReturnService = new OrderReturnRefundService($order, $this->paymentService, $this->shippingService, $givenSku);
+        if ($newReturnService->return()) {
             return response()->json(['message' => 'Product returned successfully']);
-        }else{
+        } else {
             return response()->json(['error' => $newReturnService->getError()]);
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    protected function generateUniqueID() {
+    protected function generateUniqueID()
+    {
         $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
         $prefix = now()->format('dHis'); // Timestamp prefix
         $maxAttempts = 10;
@@ -236,7 +168,7 @@ class OrderActionController extends Controller
 
         do {
             $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
-            $id = $prefix . $random;
+            $id = $prefix.$random;
             $attempt++;
         } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
 
@@ -247,10 +179,4 @@ class OrderActionController extends Controller
 
         return $id;
     }
-
-
-
-
-
-
 }

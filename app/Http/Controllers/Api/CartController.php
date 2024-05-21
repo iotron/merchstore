@@ -14,20 +14,16 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-
-
     public function __construct()
     {
         $this->middleware('auth:customer');
     }
 
-
     public function index(Request $request, Cart $cart): CartResource
     {
-//        $cart->empty();
+        //        $cart->empty();
         return new CartResource($cart->getMeta());
     }
-
 
     public function store(CartStoreRequest $request, Cart $cart): JsonResponse
     {
@@ -36,17 +32,14 @@ class CartController extends Controller
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         } else {
-            return response()->json(['success' => true, 'message' => 'product added successfully','data' => new CartResource($metaData)], 200);
+            return response()->json(['success' => true, 'message' => 'product added successfully', 'data' => new CartResource($metaData)], 200);
         }
     }
 
-
     public function add(Product $product, Request $request, Cart $cart): JsonResponse
     {
-        if ($cart->products()->count())
-        {
-            if ($cart->products()->contains('product_id',$product->id))
-            {
+        if ($cart->products()->count()) {
+            if ($cart->products()->contains('product_id', $product->id)) {
                 return response()->json(['success' => false, 'message' => 'another product present with product id '], 403);
             }
         }
@@ -57,10 +50,9 @@ class CartController extends Controller
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         } else {
-            return response()->json(['success' => true, 'message' => 'product added successfully','data' => new CartResource($metaData)], 200);
+            return response()->json(['success' => true, 'message' => 'product added successfully', 'data' => new CartResource($metaData)], 200);
         }
     }
-
 
     public function update(Product $product, CartUpdateRequest $request, Cart $cart): JsonResponse
     {
@@ -68,7 +60,7 @@ class CartController extends Controller
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         } else {
-            return response()->json(['success' => true, 'message' => 'Quantity updated for ' . $product->name . '!', 'data' => new CartResource($cart->getMeta())], 200);
+            return response()->json(['success' => true, 'message' => 'Quantity updated for '.$product->name.'!', 'data' => new CartResource($cart->getMeta())], 200);
         }
     }
 
@@ -79,10 +71,9 @@ class CartController extends Controller
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         } else {
-            return response()->json(['success' => true, 'message' => $product->name . ' removed!', 'data' => new CartResource($cart->getMeta())], 200);
+            return response()->json(['success' => true, 'message' => $product->name.' removed!', 'data' => new CartResource($cart->getMeta())], 200);
         }
     }
-
 
     // Voucher Coupon
 
@@ -93,7 +84,7 @@ class CartController extends Controller
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         } else {
-            return response()->json(['success' => true, 'message' => 'coupon applied successfully','data' => new CartResource($cart->getMeta())], 200);
+            return response()->json(['success' => true, 'message' => 'coupon applied successfully', 'data' => new CartResource($cart->getMeta())], 200);
         }
     }
 
@@ -103,13 +94,7 @@ class CartController extends Controller
         if ($cart->getErrors()) {
             return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
         } else {
-            return response()->json(['success' => true, 'message' => 'coupon remove successfully','data' => new CartResource($cart->getMeta())], 200);
+            return response()->json(['success' => true, 'message' => 'coupon remove successfully', 'data' => new CartResource($cart->getMeta())], 200);
         }
     }
-
-
-
-
-
-
 }

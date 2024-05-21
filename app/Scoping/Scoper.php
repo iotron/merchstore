@@ -6,7 +6,6 @@ use App\Scoping\Contracts\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 
 class Scoper
 {
@@ -21,7 +20,7 @@ class Scoper
     {
 
         foreach ($this->limitScopes($scopes) as $key => $scope) {
-            if (!$scope instanceof Scope) {
+            if (! $scope instanceof Scope) {
                 continue;
             }
 
@@ -32,17 +31,11 @@ class Scoper
         return $builder;
     }
 
-
-    /**
-     * @param array $scopes
-     * @return array
-     */
-    protected function limitScopes(array $scopes):array
+    protected function limitScopes(array $scopes): array
     {
         return Arr::only(
             $scopes,
             array_keys($this->request->all())
         );
     }
-
 }

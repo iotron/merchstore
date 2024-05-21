@@ -6,7 +6,6 @@ use App\Services\ShippingService\Contracts\Provider\ShippingProviderCourierContr
 
 class CourierAction implements ShippingProviderCourierContract
 {
-
     /**
      * @return mixed
      */
@@ -16,13 +15,10 @@ class CourierAction implements ShippingProviderCourierContract
     }
 
     /**
-     * @param int|string $pickup_postal
-     * @param int|string $delivery_postal
-     * @param int $weight
-     * @param int|bool $isCod
+     * @param  int  $weight
      * @return mixed
      */
-    public function getCharge(int|string $pickup_postal, int|string $delivery_postal, array $data=[], bool|int $isCod = 0)
+    public function getCharge(int|string $pickup_postal, int|string $delivery_postal, array $data = [], bool|int $isCod = 0)
     {
         // TODO: Implement getCharge() method.
     }

@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 class MoneyService
 {
     protected LaravelMoney $laravelMoney;
+
     protected LaravelMoney $rawMoney;
 
     public function __construct($value = 0, $currency = null, $convert = false)
@@ -29,6 +30,7 @@ class MoneyService
         if ($value instanceof self || $value instanceof LaravelMoney) {
             return $value->getValue();
         }
+
         return $value;
     }
 
@@ -39,6 +41,7 @@ class MoneyService
         } elseif (is_string($value) && str_contains($value, '.')) {
             return (bool) Str::after($value, '.');
         }
+
         return false;
     }
 
@@ -50,12 +53,14 @@ class MoneyService
     public function sameAs($value, ?string $currency = null): bool
     {
         $givenValue = $this->createNewMoneyObject($value, $currency);
+
         return $this->laravelMoney->equals($givenValue->get());
     }
 
     public function compare($value, ?string $currency = null): int
     {
         $givenValue = $this->createNewMoneyObject($value, $currency);
+
         return $this->laravelMoney->compare($givenValue->get());
     }
 
@@ -117,6 +122,7 @@ class MoneyService
     public static function format(int|float|string $value, ?string $currency = null): string
     {
         $instance = new static($value, $currency);
+
         return $instance->formatted();
     }
 

@@ -12,15 +12,13 @@ use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationCo
 use App\Services\PaymentService\Providers\Custom\Actions\OrderAction;
 use App\Services\PaymentService\Providers\Custom\Actions\RefundAction;
 
-
 class CustomPaymentService implements PaymentProviderContract
 {
-
     protected ?PaymentProvider $providerModel = null;
 
     //
 
-    public function __construct(?PaymentProvider $providerModel,mixed $api=null)
+    public function __construct(?PaymentProvider $providerModel, mixed $api = null)
     {
         $this->providerModel = $providerModel;
     }
@@ -40,34 +38,25 @@ class CustomPaymentService implements PaymentProviderContract
         return get_class($this);
     }
 
-    public function getModel():?PaymentProvider
+    public function getModel(): ?PaymentProvider
     {
         return $this->providerModel;
     }
 
-
-    public function getProvider():static|PaymentProviderContract
+    public function getProvider(): static|PaymentProviderContract
     {
         return $this;
     }
 
-    /**
-     * @param string $error
-     * @return void
-     */
     public function setError(string $error): void
     {
         $this->error = $error;
     }
 
-    /**
-     * @return string|null
-     */
     public function getError(): ?string
     {
         return $this->error;
     }
-
 
     public function payment(): PaymentProviderMethodContract
     {
@@ -81,7 +70,7 @@ class CustomPaymentService implements PaymentProviderContract
 
     public function refund(): PaymentProviderRefundContract
     {
-        return  new RefundAction();
+        return new RefundAction();
     }
 
     public function payout(): PaymentProviderPayoutContract
@@ -89,9 +78,6 @@ class CustomPaymentService implements PaymentProviderContract
         // TODO: Implement payout() method.
     }
 
-    /**
-     * @return PaymentProviderOrderContract
-     */
     public function order(): PaymentProviderOrderContract
     {
         return new OrderAction($this);

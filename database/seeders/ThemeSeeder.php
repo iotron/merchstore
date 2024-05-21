@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category\Theme;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,27 +15,24 @@ class ThemeSeeder extends Seeder
     {
         $allThemes = json_decode(Storage::disk('local')->get('data/theme.json'));
 
-        foreach ($allThemes as $item){
+        foreach ($allThemes as $item) {
 
             // create parent theme
             $theme = Theme::updateOrCreate([
                 'name' => $item->name,
-                'url' => $item->url
+                'url' => $item->url,
             ]);
 
             // create children themes
-            if(!empty($item->children)){
-                foreach($item->children as $child){
+            if (! empty($item->children)) {
+                foreach ($item->children as $child) {
                     $theme->children()->updateOrCreate([
                         'name' => $child->name,
-                        'url' => $child->url
+                        'url' => $child->url,
                     ]);
                 }
             }
         }
 
-
-
     }
-
 }

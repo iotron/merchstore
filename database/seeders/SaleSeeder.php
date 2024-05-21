@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Customer\CustomerGroup;
 use App\Models\Promotion\Sale;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SaleSeeder extends Seeder
@@ -19,7 +18,7 @@ class SaleSeeder extends Seeder
         $sales = Sale::factory()
             ->count(10)
             ->create()
-            ->each(function (Sale $sale) use($allCustomerGroups){
+            ->each(function (Sale $sale) use ($allCustomerGroups) {
                 $sale->customer_groups()->attach($allCustomerGroups->random());
             });
     }

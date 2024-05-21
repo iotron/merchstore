@@ -2,7 +2,6 @@
 
 namespace App\Models\Product;
 
-
 use App\Helpers\Money\MoneyCast;
 use App\Helpers\ProductHelper\Support\ProductTypeSupportContract;
 use App\Models\Category\Category;
@@ -17,37 +16,40 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Image\Exceptions\InvalidManipulation;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property $name
  */
 class Product extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia,CanBeScoped;
+    use CanBeScoped,HasFactory,InteractsWithMedia;
 
-    protected ?ProductTypeSupportContract $typeInstance=null;
+    protected ?ProductTypeSupportContract $typeInstance = null;
 
     // Pivot tables with product
-    public const PRODUCT_CATEGORY_TABLE='product_categories';
+    public const PRODUCT_CATEGORY_TABLE = 'product_categories';
+
     public const PRODUCT_THEME_TABLE = 'product_themes';
 
     // product type
     public const SIMPLE = 'simple';
+
     public const CONFIGURABLE = 'configurable';
 
     public const TYPE_OPTION = [
         self::SIMPLE => 'Simple',
-        self::CONFIGURABLE => 'Configurable'
+        self::CONFIGURABLE => 'Configurable',
     ];
-
 
     // product status
     public const DRAFT = 'draft';
+
     public const REVIEW = 'review';
+
     public const PUBLISHED = 'published';
 
     public const StatusOptions = [
@@ -56,7 +58,7 @@ class Product extends Model implements HasMedia
         self::PUBLISHED => 'Published',
     ];
 
-//    protected $filterDataScope = 'ProductDataScope';
+    //    protected $filterDataScope = 'ProductDataScope';
 
     protected $fillable = [
         'sku',
@@ -87,13 +89,11 @@ class Product extends Model implements HasMedia
         'price' => MoneyCast::class,
         'tax_amount' => MoneyCast::class,
         'is_returnable' => 'boolean',
-        'return_window' => 'datetime'
+        'return_window' => 'datetime',
     ];
-
 
     /**
      * Relation Based On Other Class/Services
-     * @return void
      */
 
     // Spatie Media Library Conversion
@@ -105,19 +105,16 @@ class Product extends Model implements HasMedia
 
         $this->addMediaCollection('productGallery')
             ->useFallbackUrl(asset('display.webp'))
-            ->useFallbackUrl(asset('display.webp'),'thumb_1')
-            ->useFallbackUrl(asset('display.webp'),'thumb_2')
-            ->useFallbackUrl(asset('display.webp'),'thumb_3');
-
+            ->useFallbackUrl(asset('display.webp'), 'thumb_1')
+            ->useFallbackUrl(asset('display.webp'), 'thumb_2')
+            ->useFallbackUrl(asset('display.webp'), 'thumb_3');
 
     }
 
     /**
-     * @param Media|null $media
-     * @return void
      * @throws InvalidManipulation
      */
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         if ($media && $media->extension === Manipulations::FORMAT_GIF) {
             return;
@@ -130,46 +127,31 @@ class Product extends Model implements HasMedia
             ->nonQueued();
     }
 
-
-
-
-    /**
-     * @return ProductTypeSupportContract
-     */
-    public function getTypeInstance():ProductTypeSupportContract
+    public function getTypeInstance(): ProductTypeSupportContract
     {
         if ($this->typeInstance) {
             return $this->typeInstance;
         }
-        $this->typeInstance = app(config('project.product_types.' . $this->type . '.class'));
+        $this->typeInstance = app(config('project.product_types.'.$this->type.'.class'));
         $this->typeInstance->setProduct($this);
+
         return $this->typeInstance;
     }
 
-
-
     public function filterGroup()
     {
-        return $this->belongsTo(FilterGroup::class,'filter_group_id','id');
+        return $this->belongsTo(FilterGroup::class, 'filter_group_id', 'id');
     }
-
-
 
     public function filterOptions(): BelongsToMany
     {
-        return $this->belongsToMany(FilterOption::class,'product_filter_options');
+        return $this->belongsToMany(FilterOption::class, 'product_filter_options');
     }
-
-
-
-
 
     /**
      * STOCK MANAGEMENT
      * in_stock stocks that belong to the product stock. For calculating in_stock/available stocks.
      */
-
-
     public function stocks(): HasMany
     {
         return $this->hasMany(ProductStock::class, 'product_id');
@@ -184,57 +166,43 @@ class Product extends Model implements HasMedia
     {
         //dd($this->availableStocks->pluck('in_stock_quantity'));
         $availableMinStock = $this->availableStocks()->sum('in_stock_quantity');
+
         return min($availableMinStock ?? 0, $count);
     }
 
-
-//    public function allStocks(): \Illuminate\Database\Eloquent\Relations\HasMany
-//    {
-//        return $this->hasMany(ProductStock::class, 'product_id');
-//    }
-
-
-
+    //    public function allStocks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    //    {
+    //        return $this->hasMany(ProductStock::class, 'product_id');
+    //    }
 
     public function stockCount()
     {
         return $this->getTypeInstance()->totalQuantity();
     }
 
-
-
-
-
     /**
      * Sales Price
      * On Sale Products Management
-     * @return HasMany
      */
     public function sale_prices(): HasMany
     {
         return $this->hasMany(SaleProduct::class, 'product_id');
     }
 
-
-
-
     /**
      * Common Relations
      */
-
-
     public function flat(): HasOne
     {
         return $this->hasOne(ProductFlat::class, 'product_id', 'id');
     }
-
 
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, Product::PRODUCT_CATEGORY_TABLE)->withPivot('base_category');
     }
 
-    public function themes():BelongsToMany
+    public function themes(): BelongsToMany
     {
         return $this->belongsToMany(Theme::class, Product::PRODUCT_THEME_TABLE)->withPivot('base_theme');
     }
@@ -243,6 +211,7 @@ class Product extends Model implements HasMedia
     {
         return $this->belongsToMany(Theme::class, Product::PRODUCT_THEME_TABLE)->where('parent_id', null);
     }
+
     /**
      * Get the product variants that owns the product.
      */
@@ -255,6 +224,4 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(ProductFeedback::class, 'product_id');
     }
-
-
 }

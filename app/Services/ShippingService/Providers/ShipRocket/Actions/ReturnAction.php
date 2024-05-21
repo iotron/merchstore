@@ -9,8 +9,6 @@ use App\Services\ShippingService\Providers\ShipRocket\ShipRocketApi;
 
 class ReturnAction implements ShippingProviderReturnContract
 {
-
-
     protected ShipRocketApi $api;
 
     public function __construct(ShipRocketApi $api)
@@ -18,18 +16,12 @@ class ReturnAction implements ShippingProviderReturnContract
         $this->api = $api;
     }
 
-
-    /**
-     * @return mixed
-     */
-    public function create(OrderProduct $orderProduct,OrderShipment $orderShipment): mixed
+    public function create(OrderProduct $orderProduct, OrderShipment $orderShipment): mixed
     {
-        dd($orderShipment,$this->format($orderProduct,$orderShipment));
+        dd($orderShipment, $this->format($orderProduct, $orderShipment));
     }
 
-
-
-    protected function format(OrderProduct $orderProduct,OrderShipment $orderShipment)
+    protected function format(OrderProduct $orderProduct, OrderShipment $orderShipment)
     {
         return [
             'name' => $orderProduct->product->name,
@@ -67,26 +59,18 @@ class ReturnAction implements ShippingProviderReturnContract
             'shipping_phone' => '',
             'order_items' => [
                 [
-                    "sku" => $orderProduct->product->sku,
-                    "name" => $orderProduct->product->name,
-                    "units" => $orderShipment->total_quantity,
-                    "selling_price" => $orderProduct->product->price->getAmount(),
-//                    "discount" => 0,
-//                    "qc_enable" => true,
-//                    "hsn" => "123",
-//                    "brand" => "",
-//                    "qc_size" => "43"
-                ]
+                    'sku' => $orderProduct->product->sku,
+                    'name' => $orderProduct->product->name,
+                    'units' => $orderShipment->total_quantity,
+                    'selling_price' => $orderProduct->product->price->getAmount(),
+                    //                    "discount" => 0,
+                    //                    "qc_enable" => true,
+                    //                    "hsn" => "123",
+                    //                    "brand" => "",
+                    //                    "qc_size" => "43"
+                ],
             ],
-
-
-
-
-
-
 
         ];
     }
-
-
 }

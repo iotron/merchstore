@@ -6,7 +6,6 @@ use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\Providers\Custom\CustomShippingService;
 use App\Services\ShippingService\Providers\Pickrr\PickrrShippingService;
 use App\Services\ShippingService\Providers\ShipRocket\ShipRocketShippingService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ShippingProviderSeeder extends Seeder
@@ -23,9 +22,8 @@ class ShippingProviderSeeder extends Seeder
             'status' => true,
             'is_primary' => true,
             'has_api' => false,
-            'desc' => 'This provider only for cod delivery purpose'
+            'desc' => 'This provider only for cod delivery purpose',
         ]);
-
 
         $shiprocketShippingProvider = ShippingProvider::create([
             'name' => 'ShipRocket',
@@ -34,9 +32,8 @@ class ShippingProviderSeeder extends Seeder
             'status' => true,
             'is_primary' => false,
             'has_api' => true,
-            'desc' => 'This provider only for delivery purpose'
+            'desc' => 'This provider only for delivery purpose',
         ]);
-
 
         $pickrrShippingProvider = ShippingProvider::create([
             'name' => 'Pickrr',
@@ -45,9 +42,8 @@ class ShippingProviderSeeder extends Seeder
             'status' => true,
             'is_primary' => false,
             'has_api' => true,
-            'desc' => 'This provider only for delivery purpose'
+            'desc' => 'This provider only for delivery purpose',
         ]);
-
 
     }
 }

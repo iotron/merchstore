@@ -14,16 +14,14 @@ class ShippingProvider extends Model
     use HasFactory;
 
     public const CUSTOM = 'custom';
-    public const SHIPROCKET = 'shiprocket';
 
+    public const SHIPROCKET = 'shiprocket';
 
     public const AVAILABLE_PROVIDERS = [
         CustomShippingService::class => 'Custom Shipping Provider (Cash On Delivery)',
         ShipRocketShippingService::class => 'ShipRocket Shipping Provider',
-        PickrrShippingService::class => 'Pickrr Shipping Provider'
+        PickrrShippingService::class => 'Pickrr Shipping Provider',
     ];
-
-
 
     protected $fillable = [
         'name',
@@ -38,13 +36,8 @@ class ShippingProvider extends Model
         'desc',
     ];
 
-
     public function shipments()
     {
-        return $this->hasMany(OrderShipment::class,'shipping_provider_id','id');
+        return $this->hasMany(OrderShipment::class, 'shipping_provider_id', 'id');
     }
-
-
-
-
 }

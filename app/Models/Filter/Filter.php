@@ -11,7 +11,6 @@ class Filter extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'code',
         'display_name',
@@ -26,18 +25,14 @@ class Filter extends Model
         'is_visible_on_front',
     ];
 
-
     protected $casts = [
         'validation' => 'array',
         'is_filterable' => 'boolean',
         'is_configurable' => 'boolean',
         'is_user_defined' => 'boolean',
         'is_required' => 'boolean',
-        'is_visible_on_front' => 'boolean'
+        'is_visible_on_front' => 'boolean',
     ];
-
-
-
 
     public function options(): HasMany
     {
@@ -53,13 +48,4 @@ class Filter extends Model
     {
         return $query->where('is_configurable', true)->orderBy('position');
     }
-
-
-
-
-
-
-
-
-
 }

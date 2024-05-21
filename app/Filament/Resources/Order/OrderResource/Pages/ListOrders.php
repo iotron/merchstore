@@ -6,11 +6,11 @@ use App\Filament\Resources\Order\OrderResource;
 use App\Helpers\Money\Money;
 use App\Models\Order\Order;
 use Filament\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables\Table;
 use Filament\Tables;
-use Filament\Resources\Components\Tab;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListOrders extends ListRecords
@@ -24,35 +24,26 @@ class ListOrders extends ListRecords
         ];
     }
 
-
     public function getTabs(): array
     {
         return [
             'all' => Tab::make('All'),
             'pending' => Tab::make('Pending')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status','=', Order::PENDING)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', '=', Order::PENDING)),
             'confirm' => Tab::make('Confirm')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status','=', Order::CONFIRM)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', '=', Order::CONFIRM)),
         ];
     }
 
-
-
-    public  function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
-
-
-
-
 
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('UUID')
                     ->weight(FontWeight::Bold)
                     ->searchable(),
-
-
 
                 Tables\Columns\TextColumn::make('tracking_id')
                     ->label(__('Tracking'))
@@ -60,7 +51,7 @@ class ListOrders extends ListRecords
                     ->copyMessage('copied!')
                     ->default('--not found--')
                     ->badge()
-                    ->color(function ($state){
+                    ->color(function ($state) {
                         return ($state == '--not found--') ? 'danger' : 'success';
                     })
                     ->searchable(),
@@ -73,19 +64,17 @@ class ListOrders extends ListRecords
                 Tables\Columns\TextColumn::make('voucher')
                     ->default('--not found--')
                     ->badge()
-                    ->color(function ($state){
+                    ->color(function ($state) {
 
                         return ($state == '--not found--') ? 'danger' : 'success';
                     })
                     ->searchable(),
 
-
                 Tables\Columns\TextColumn::make('total')
-                    ->formatStateUsing(function ($state){
+                    ->formatStateUsing(function ($state) {
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     })
                     ->sortable(),
-
 
                 Tables\Columns\TextColumn::make('customer.name')
                     ->sortable(),
@@ -100,7 +89,7 @@ class ListOrders extends ListRecords
                     ->default(false)->boolean(),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->formatStateUsing(function ($state){
+                    ->formatStateUsing(function ($state) {
                         return Order::StatusOptions[$state];
                     })
                     ->badge()
@@ -115,17 +104,16 @@ class ListOrders extends ListRecords
                     ->label('Payment')
                     ->boolean(),
 
-
                 Tables\Columns\TextColumn::make('created_at')
-                    ->date("F j, Y, g:i a")
+                    ->date('F j, Y, g:i a')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->sortable()
-                    ->date("F j, Y, g:i a")
+                    ->date('F j, Y, g:i a')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('created_at','desc')
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])
@@ -139,11 +127,4 @@ class ListOrders extends ListRecords
                 ]),
             ]);
     }
-
-
-
-
-
-
-
 }

@@ -12,60 +12,51 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Resources\Pages\Page;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
 use Livewire\Component as Livewire;
-
 
 class CreateProduct extends Page
 {
     use InteractsWithFormActions;
 
     protected static string $resource = ProductResource::class;
+
     public ?array $data = [];
+
     public ?string $type = null;
+
     public int $step = 1;
+
     public bool $isContinue = false;
+
     protected static string $view = 'filament.custom.default.resources.product.pages.product-create';
 
     /**
      * Get Current Form State & Data
-     * @return string
      */
     protected function getFormStatePath(): string
     {
         return 'data';
     }
 
-
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('Create')->action('create')->label(function (){
+            Action::make('Create')->action('create')->label(function () {
                 return ($this->step == 1 && $this->isContinue) ? 'Continue' : 'Create';
-            })->color(function (){
+            })->color(function () {
                 return ($this->step == 1 && $this->isContinue) ? 'primary' : 'success';
             }),
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function configSchema(): array
     {
         return (empty($this->data['filter_group_id'])) ? [] : $this->getFilterDetails($this->data['filter_group_id']);
     }
 
-
-    /**
-     * @param int $id
-     * @return array
-     */
     private function getFilterDetails(int $id): array
     {
         $group = FilterGroup::where('id', $id)->with('filters.options')->first();
-
 
         return $group->filters->map(function ($item, $key) {
             $optionBag = $item->options->mapWithKeys(function ($item, $key) {
@@ -76,8 +67,7 @@ class CreateProduct extends Page
         })->toArray();
     }
 
-
-    public  function getFormSchema(): array
+    public function getFormSchema(): array
     {
         return [
 
@@ -86,7 +76,7 @@ class CreateProduct extends Page
                     Select::make('type')
                         ->options(Product::TYPE_OPTION)
                         ->lazy()
-                        ->afterStateUpdated(function ($state){
+                        ->afterStateUpdated(function ($state) {
                             $this->isContinue = $state == Product::CONFIGURABLE;
                         })
                         ->required(),
@@ -105,15 +95,12 @@ class CreateProduct extends Page
             Section::make('Filter Details')
                 ->description('Description')
                 ->columns(2)
-                ->schema(function (Get $get){
+                ->schema(function (Get $get) {
                     return is_null($get('filter_group_id')) ? [] : $this->configSchema();
                 })
                 ->visible(fn (Livewire $livewire): bool => $livewire->type == 'configurable'),
         ];
     }
-
-
-
 
     public function create(bool $another = false)
     {
@@ -121,44 +108,33 @@ class CreateProduct extends Page
         $formData = $this->form->getState();
         $this->type = $formData['type'];
 
-        if ($formData['type'] == Product::SIMPLE)
-        {
+        if ($formData['type'] == Product::SIMPLE) {
             $this->createSimple($formData);
-        }elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 1)
-        {
+        } elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 1) {
             $this->type = $formData['type'];
             $this->form->fill($formData);
             $this->step = 2;
 
-        }elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 2)
-        {
-             $this->createConfigurable($formData);
-        }else{
-            $this->notify('danger','undefined product type selected');
+        } elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 2) {
+            $this->createConfigurable($formData);
+        } else {
+            $this->notify('danger', 'undefined product type selected');
             $this->halt();
         }
 
-
     }
-
 
     public function createSimple(array $data)
     {
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        $this->redirect(ProductResource::getUrl('edit',['record' => $product->id]));
+        $this->redirect(ProductResource::getUrl('edit', ['record' => $product->id]));
     }
-
 
     public function createConfigurable(array $data)
     {
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        $this->redirect(ProductResource::getUrl('edit',['record' => $product->id]));
+        $this->redirect(ProductResource::getUrl('edit', ['record' => $product->id]));
     }
-
-
-
-
-
 }

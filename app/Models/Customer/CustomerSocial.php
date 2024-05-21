@@ -9,11 +9,10 @@ class CustomerSocial extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'social_id',
         'service',
-        'token'
+        'token',
     ];
 
     /**
@@ -21,10 +20,6 @@ class CustomerSocial extends Model
      */
     public function customer()
     {
-        return $this->belongsTo(Customer::class,'id','customer_id');
+        return $this->belongsTo(Customer::class, 'id', 'customer_id');
     }
-
-
-
-
 }

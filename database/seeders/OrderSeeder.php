@@ -20,60 +20,49 @@ class OrderSeeder extends Seeder
     {
         // Fake Order Seeder
 
-
         $nonReturnableProducts = Product::where([
-            ['type','=',Product::SIMPLE],
-            ['status','=',Product::PUBLISHED],
-            ['is_returnable','=',false]
+            ['type', '=', Product::SIMPLE],
+            ['status', '=', Product::PUBLISHED],
+            ['is_returnable', '=', false],
         ])->limit(3)->get();
 
         $returnableProducts = Product::where([
-            ['type','=',Product::SIMPLE],
-            ['status','=',Product::PUBLISHED],
-            ['is_returnable','=',true]
+            ['type', '=', Product::SIMPLE],
+            ['status', '=', Product::PUBLISHED],
+            ['is_returnable', '=', true],
         ])->limit(3)->get();
 
-
-
-        $customer = Customer::with('addresses')->firstWhere('email','customer@example.com');
-        foreach ($nonReturnableProducts as $product)
-        {
-
+        $customer = Customer::with('addresses')->firstWhere('email', 'customer@example.com');
+        foreach ($nonReturnableProducts as $product) {
 
             $cart = new Cart($customer);
 
-            $cart->add($product->id,rand(2,20));
+            $cart->add($product->id, rand(2, 20));
 
-
-            if (fake()->boolean)
-            {
+            if (fake()->boolean) {
                 // Add More Products
-                $cart->add($nonReturnableProducts->where('id','!=',$product->id)->random()->first()->id,rand(2,20));
+                $cart->add($nonReturnableProducts->where('id', '!=', $product->id)->random()->first()->id, rand(2, 20));
             }
 
-//            if (fake()->boolean)
-//            {
-//                // Add Returnable Product
-//                $cart->add($returnableProducts->random()->first()->id,rand(2,20));
-//            }
+            //            if (fake()->boolean)
+            //            {
+            //                // Add Returnable Product
+            //                $cart->add($returnableProducts->random()->first()->id,rand(2,20));
+            //            }
 
             // Add Returnable Product
-            $cart->add($returnableProducts->random()->first()->id,rand(2,20));
-
-
+            $cart->add($returnableProducts->random()->first()->id, rand(2, 20));
 
             $paymentProviderService = $paymentService->provider(PaymentProvider::CUSTOM)->getProvider();
             $cartCustomer = $cart->getCustomer();
             $cartMeta = $cart->getMeta();
 
-
             $shippingIsBilling = fake()->boolean;
 
-            if ($shippingIsBilling)
-            {
+            if ($shippingIsBilling) {
                 $shippingAddress = $customer->addresses->random()->first();
                 $billingAddress = $customer->addresses->random()->first();
-            }else{
+            } else {
 
                 // Get two different random addresses
                 $shippingAddressIndex = rand(0, $customer->addresses->count() - 1);
@@ -84,9 +73,8 @@ class OrderSeeder extends Seeder
             }
 
             $uuid = $this->generateUniqueID();
-            $orderCreation = new OrderCreationService($paymentProviderService,$cartCustomer,$cartMeta);
-            $orderCreation->placeOrder($uuid,$shippingAddress,$billingAddress);
-
+            $orderCreation = new OrderCreationService($paymentProviderService, $cartCustomer, $cartMeta);
+            $orderCreation->placeOrder($uuid, $shippingAddress, $billingAddress);
 
             $cart->reset();
 
@@ -94,8 +82,8 @@ class OrderSeeder extends Seeder
 
     }
 
-
-    protected function generateUniqueID() {
+    protected function generateUniqueID()
+    {
         $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
         $prefix = now()->format('dHis'); // Timestamp prefix
         $maxAttempts = 10;
@@ -103,7 +91,7 @@ class OrderSeeder extends Seeder
 
         do {
             $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
-            $id = $prefix . $random;
+            $id = $prefix.$random;
             $attempt++;
         } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
 
@@ -114,17 +102,4 @@ class OrderSeeder extends Seeder
 
         return $id;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

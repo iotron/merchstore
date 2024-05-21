@@ -9,21 +9,18 @@ use Stripe\StripeClient;
 
 class PaymentAction implements PaymentProviderMethodContract
 {
-
     protected StripeClient $api;
+
     protected PaymentProviderContract|StripePaymentServiceContract $paymentProvider;
 
-
-    public function __construct(StripeClient $api_key,PaymentProviderContract $paymentProvider)
+    public function __construct(StripeClient $api_key, PaymentProviderContract $paymentProvider)
     {
         $this->api = $api_key;
         $this->paymentProvider = $paymentProvider;
 
-
     }
 
     /**
-     * @param array $data
      * @return mixed
      */
     public function create(array $data)
@@ -32,7 +29,6 @@ class PaymentAction implements PaymentProviderMethodContract
     }
 
     /**
-     * @param string|int $id
      * @return mixed
      */
     public function fetch(int|string $id)
@@ -47,6 +43,4 @@ class PaymentAction implements PaymentProviderMethodContract
     {
         // TODO: Implement all() method.
     }
-
-
 }

@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Promotion\SaleResource\Pages;
 use App\Filament\Resources\Promotion\SaleResource;
 use App\Helpers\Promotion\Sales\SaleHelper;
 use Filament\Actions\EditAction;
-use Filament\Pages\Actions;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewSale extends ViewRecord
@@ -19,8 +18,7 @@ class ViewSale extends ViewRecord
         ];
     }
 
-
-    public function mount(int | string $record): void
+    public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
 
@@ -32,6 +30,4 @@ class ViewSale extends ViewRecord
         $this->form->fill(array_merge($sale));
         // $this->fillForm();
     }
-
-
 }

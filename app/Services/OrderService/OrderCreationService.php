@@ -2,7 +2,6 @@
 
 namespace App\Services\OrderService;
 
-use App\Helpers\Cart\Cart;
 use App\Helpers\Money\Money;
 use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
@@ -17,18 +16,28 @@ use Illuminate\Database\Eloquent\Model;
 class OrderCreationService
 {
     protected PaymentProviderContract $paymentProvider;
+
     protected bool $isCod = false;
+
     protected ?string $error = null;
+
     protected ?string $token = null;
+
     protected ?Address $shippingAddress = null;
+
     protected ?Address $billingAddress = null;
+
     protected Order $order;
+
     protected null|Authenticatable|Customer $customer = null;
+
     protected array $cartMeta = [];
+
     protected Payment|null|Model $payment = null;
+
     protected array $codProducts = [];
 
-    public function __construct(PaymentProviderContract $paymentProvider,Authenticatable|Customer $customer,array $cartMeta)
+    public function __construct(PaymentProviderContract $paymentProvider, Authenticatable|Customer $customer, array $cartMeta)
     {
         $this->paymentProvider = $paymentProvider;
         $this->isCod = ($this->paymentProvider->getProviderName() == PaymentProvider::CUSTOM);
@@ -41,14 +50,12 @@ class OrderCreationService
         return $this->error;
     }
 
-
-    public function placeOrder(string $orderToken,Address $shippingAddress,Address $billing_address):void
+    public function placeOrder(string $orderToken, Address $shippingAddress, Address $billing_address): void
     {
         // Fill First
         $this->token = $orderToken;
         $this->shippingAddress = $shippingAddress;
         $this->billingAddress = $billing_address;
-
 
         // Start Process
         // Step 1
@@ -56,15 +63,12 @@ class OrderCreationService
         // Step 2
         $this->payment = $this->makePayment();
         // Step 3
-        if (!is_null($this->payment))
-        {
+        if (! is_null($this->payment)) {
             $this->attachProducts();
         }
 
-
         // Only For CashOnDelivery Order
-        if ($this->isCod && is_null($this->error))
-        {
+        if ($this->isCod && is_null($this->error)) {
             // Order Will Be Confirmed After Order Placed
             $orderConfirmService = new OrderConfirmService($this->payment);
             $orderConfirmService->confirmOrder();
@@ -72,7 +76,6 @@ class OrderCreationService
         }
 
     }
-
 
     public function isCashOnDelivery(): bool
     {
@@ -84,20 +87,17 @@ class OrderCreationService
         return $this->order;
     }
 
-    public function getPayment():Payment
+    public function getPayment(): Payment
     {
         return $this->payment;
     }
 
-
-
     /**
      * Step 1
-     * @return Order
      */
-    protected function makeAnOrder():Order
+    protected function makeAnOrder(): Order
     {
-        return  $this->customer->orders()->create([
+        return $this->customer->orders()->create([
             'uuid' => $this->token,
             'voucher' => $this->cartMeta['coupon'],
             'quantity' => $this->cartMeta['quantity'],
@@ -106,7 +106,7 @@ class OrderCreationService
             'discount' => $this->cartMeta['discount'],
             'tax' => $this->cartMeta['tax'],
             'total' => $this->cartMeta['total'],
-            'status' => (!$this->isCod) ? Order::PENDING : Order::CONFIRM,
+            'status' => (! $this->isCod) ? Order::PENDING : Order::CONFIRM,
             'payment_success' => false,
             'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
             'customer_id' => $this->customer->id,
@@ -114,27 +114,25 @@ class OrderCreationService
             'shipping_is_billing' => $this->shippingAddress->id == $this->billingAddress->id,
             'billing_address_id' => $this->billingAddress->id,
             'shipping_address_id' => $this->shippingAddress->id,
-            'is_cod'  => $this->isCod,
+            'is_cod' => $this->isCod,
         ]);
     }
 
     /**
      * Step 2
-     * @return Payment|Model|null
      */
-    private function makePayment():Payment|Model|null
+    private function makePayment(): Payment|Model|null
     {
         // Now Make AN Order On Payment Provider Based On This Order
         $newOrder = $this->paymentProvider->order()->create($this->order);
 
-        if (isset($newOrder['error']) && !empty($newOrder['error']))
-        {
-            if (isset($newOrder['error']['description']) && isset($newOrder['error']['reason']))
-            {
-                $this->error = $newOrder['error']['description'] . ' |reason : '. $newOrder['error']['reason'];
+        if (isset($newOrder['error']) && ! empty($newOrder['error'])) {
+            if (isset($newOrder['error']['description']) && isset($newOrder['error']['reason'])) {
+                $this->error = $newOrder['error']['description'].' |reason : '.$newOrder['error']['reason'];
             }
+
             return null;
-        }else{
+        } else {
             return $this->order->payment()->create([
                 'receipt' => 'receipt_'.$this->order->uuid,
                 'provider_gen_id' => $newOrder['id'],
@@ -156,43 +154,28 @@ class OrderCreationService
 
     /**
      * Step 3
-     * @return void
      */
     protected function attachProducts(): void
     {
-        foreach ($this->cartMeta['products'] as $productArray)
-        {
+        foreach ($this->cartMeta['products'] as $productArray) {
             $newOrderProduct = $this->makeOrderProduct($productArray);
         }
     }
 
-
     /**
      * Step 3.1
-     * @param array $item
-     * @return OrderProduct|Model
      */
-    protected function makeOrderProduct(array $item):OrderProduct|Model
+    protected function makeOrderProduct(array $item): OrderProduct|Model
     {
         $discountAmount = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
+
         return $this->order->orderProducts()->create([
             'quantity' => $item['pivot_quantity'],
-            'amount' => ($item['total_base_amount'] instanceof  Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
-            'discount' => ($discountAmount instanceof  Money) ? $discountAmount->getAmount() : $discountAmount,
-            'tax' => ($item['total_tax_amount'] instanceof  Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
-            'total' => ($item['net_total'] instanceof  Money) ? $item['net_total']->getAmount() : $item['net_total'],
-            'product_id' => $item['id']
+            'amount' => ($item['total_base_amount'] instanceof Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
+            'discount' => ($discountAmount instanceof Money) ? $discountAmount->getAmount() : $discountAmount,
+            'tax' => ($item['total_tax_amount'] instanceof Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
+            'total' => ($item['net_total'] instanceof Money) ? $item['net_total']->getAmount() : $item['net_total'],
+            'product_id' => $item['id'],
         ]);
     }
-
-
-
-
-
-
-
-
-
-
-
 }

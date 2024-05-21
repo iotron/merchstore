@@ -11,24 +11,27 @@ use App\Services\PaymentService\Contracts\Provider\PaymentProviderVerificationCo
 
 interface PaymentProviderContract
 {
+    public function getApi(): object;
 
-    public function getApi():object;
-    public function getProviderName():string;
-    public function getClass():string;
-    public function getModel():?PaymentProvider;
+    public function getProviderName(): string;
 
-    public function getProvider():static|PaymentProviderContract;
+    public function getClass(): string;
 
-    public function setError(string $error):void;
-    public function getError():?string;
+    public function getModel(): ?PaymentProvider;
 
+    public function getProvider(): static|PaymentProviderContract;
 
+    public function setError(string $error): void;
 
-    public function order():PaymentProviderOrderContract;
-    public function payment():PaymentProviderMethodContract;
-    public function verify():PaymentProviderVerificationContract;
-    public function refund():PaymentProviderRefundContract;
+    public function getError(): ?string;
 
-    public function payout():PaymentProviderPayoutContract;
+    public function order(): PaymentProviderOrderContract;
 
+    public function payment(): PaymentProviderMethodContract;
+
+    public function verify(): PaymentProviderVerificationContract;
+
+    public function refund(): PaymentProviderRefundContract;
+
+    public function payout(): PaymentProviderPayoutContract;
 }

@@ -11,66 +11,59 @@ use Illuminate\Support\Str;
 
 class VoucherCartService
 {
-
-
     protected Voucher $voucher;
+
     protected ?VoucherCode $voucherCode;
+
     protected array $conditions = [];
+
     protected CartServiceContract $cartService;
+
     protected VoucherConditionValidator $conditionValidator;
 
-    public function __construct(string $coupon_code,CartServiceContract $cartService)
+    public function __construct(string $coupon_code, CartServiceContract $cartService)
     {
 
-        $this->voucherCode = VoucherCode::with('voucher')->firstWhere('code',$coupon_code);
+        $this->voucherCode = VoucherCode::with('voucher')->firstWhere('code', $coupon_code);
 
         $this->voucher = $this->voucherCode->voucher;
         $this->conditions = $this->voucher->conditions;
         $this->cartService = $cartService;
 
-
         $this->conditionValidator = new VoucherConditionValidator();
     }
 
-    public function validate():bool
+    public function validate(): bool
     {
         if (empty($this->conditions)) {
             return true;
         }
         $validConditionCount = 0;
 
-
-
-        foreach ($this->conditions as $condition)
-        {
-            if (!empty($this->cartService->getErrors()))
-            {
+        foreach ($this->conditions as $condition) {
+            if (! empty($this->cartService->getErrors())) {
                 // immediate return if error found
                 return false;
             }
 
-            if ($this->voucher->condition_type == Voucher::MATCH_ALL)
-            {
-                if (!$this->checkCondition($condition))
-                {
+            if ($this->voucher->condition_type == Voucher::MATCH_ALL) {
+                if (! $this->checkCondition($condition)) {
                     // Return false if Single Condition Failed
                     return false;
                 }
                 $validConditionCount++;
             }
 
-
-            if ($this->voucher->condition_type == Voucher::MATCH_ANY)
-            {
-                if ($this->checkCondition($condition))
-                {
+            if ($this->voucher->condition_type == Voucher::MATCH_ANY) {
+                if ($this->checkCondition($condition)) {
                     $validConditionCount++;
+
                     return true;
                 }
+
                 return false;
             }
         }
-
 
         // Validate Valid Condition Count
         if ($this->voucher->condition_type == Voucher::MATCH_ALL) {
@@ -79,28 +72,21 @@ class VoucherCartService
             return $validConditionCount > 0;
         }
 
-
     }
 
-
-
-
-    public function checkCondition(array $condition):bool
+    public function checkCondition(array $condition): bool
     {
 
-        $this->cartService->products()->each(function (Product $product) use($condition) {
+        $this->cartService->products()->each(function (Product $product) use ($condition) {
 
             $attributeValue = $this->getAttributeValue($condition, $product);
-            if (empty($attributeValue))
-            {
+            if (empty($attributeValue)) {
                 $this->cartService->setError($condition['attribute']."'s value not resolved");
             }
 
-            if ($this->conditionValidator->validate($condition,$attributeValue,$product))
-            {
+            if ($this->conditionValidator->validate($condition, $attributeValue, $product)) {
 
             }
-
 
         });
 
@@ -108,8 +94,6 @@ class VoucherCartService
 
         return $this->conditionValidator->validate($condition);
     }
-
-
 
     protected function getAttributeValue(array $condition, Product $product)
     {
@@ -127,11 +111,11 @@ class VoucherCartService
             case 'cart':
                 return $this->getCartAttributeValue($attributeCode);
                 break;
-            // customer->cart->each->pivot
+                // customer->cart->each->pivot
             case 'cart_item':
                 return $this->getCartItemAttributeValue($attributeCode, $product);
                 break;
-            // customer->cart-each
+                // customer->cart-each
             case 'product':
                 return $this->getProductAttributeValue($attributeCode, $product, $condition);
                 break;
@@ -140,29 +124,25 @@ class VoucherCartService
         }
     }
 
-
     protected function getCartAttributeValue(string $attributeCode)
     {
-        if (!in_array($attributeCode, ['postcode', 'state', 'country', 'shipping_method', 'payment_method']))
-        {
+        if (! in_array($attributeCode, ['postcode', 'state', 'country', 'shipping_method', 'payment_method'])) {
             $cartMeta = $this->cartService->getMetaData();
 
-
-            if (isset($cartMeta[$attributeCode]) && $cartMeta[$attributeCode] instanceof Money)
-            {
+            if (isset($cartMeta[$attributeCode]) && $cartMeta[$attributeCode] instanceof Money) {
                 return $cartMeta[$attributeCode]->getAmount();
-            }else{
+            } else {
                 return $cartMeta[$attributeCode];
             }
 
-
-//            if($this->cartService->{$attributeCode} instanceof Money)
-//            {
-//                return $this->cartService->{$attributeCode}->getAmount();
-//            }else{
-//                return $this->cartService->{$attributeCode};
-//            }
+            //            if($this->cartService->{$attributeCode} instanceof Money)
+            //            {
+            //                return $this->cartService->{$attributeCode}->getAmount();
+            //            }else{
+            //                return $this->cartService->{$attributeCode};
+            //            }
         }
+
         return null;
     }
 
@@ -171,12 +151,10 @@ class VoucherCartService
         return $product->pivot->{$attributeCode};
     }
 
-
-
     protected function getProductAttributeValue(string $attributeCode, Product $product, array $condition)
     {
         if ($attributeCode == 'category_id') {
-            return  $product->categories()->pluck('id')->toArray();
+            return $product->categories()->pluck('id')->toArray();
         } else {
             // Product with Flat Join need
             $value = '';
@@ -200,7 +178,6 @@ class VoucherCartService
         }
     }
 
-
     protected function populateProduct(Product $product)
     {
         $products = $product->toArray();
@@ -210,10 +187,4 @@ class VoucherCartService
 
         return array_merge($products, $productFlat, $productFilterAttributes, $productPivot);
     }
-
-
-
-
-
-
 }

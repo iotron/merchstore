@@ -2,8 +2,6 @@
 
 namespace App\Helpers\Promotion;
 
-use App\Models\Attribute\Attribute;
-use App\Models\Attribute\AttributeGroup;
 use App\Models\Category\Category;
 use App\Models\Filter\Filter;
 use App\Models\Filter\FilterGroup;
@@ -11,9 +9,6 @@ use Illuminate\Support\Collection;
 
 abstract class PromotionManager
 {
-
-
-
     protected array $category;
 
     protected array|\Illuminate\Database\Eloquent\Collection $attribute;
@@ -34,15 +29,7 @@ abstract class PromotionManager
             ->get();
     }
 
+    abstract public function getCondition(): array|Collection;
 
-    abstract public function getCondition():array|Collection;
-
-    abstract protected function getOperator(string $operator_type):array;
-
-
-
-
-
-
-
+    abstract protected function getOperator(string $operator_type): array;
 }

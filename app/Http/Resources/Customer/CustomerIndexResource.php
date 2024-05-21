@@ -19,7 +19,7 @@ class CustomerIndexResource extends JsonResource
             'contact' => $this->whenNotNull($this->contact),
             'alt_contact' => $this->whenNotNull($this->alt_contact),
             'email' => $this->whenNotNull($this->email),
-            'has_whatsapp' => $this->when($this->has_whatsapp,$this->has_whatsapp),
+            'has_whatsapp' => $this->when($this->has_whatsapp, $this->has_whatsapp),
             'referrer' => $this->whenNotNull($this->referrer),
             // 'createOn' => $this->whenNotNull($this->created_at),
         ];

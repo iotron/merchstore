@@ -10,21 +10,25 @@ use App\Services\ShippingService\Contracts\Provider\ShippingProviderTrackingCont
 
 interface ShippingProviderContract
 {
-
     public function getProviderName(): string;
-    public function getClass():string;
 
-    public function getProvider():ShippingProviderContract;
+    public function getClass(): string;
 
-    public function getModel():ShippingProvider;
+    public function getProvider(): ShippingProviderContract;
 
-    public function setError(string $error):void;
-    public function getError():?string;
+    public function getModel(): ShippingProvider;
 
-    public function order():ShippingProviderActionContract;
-    public function courier():ShippingProviderCourierContract;
-    public function return():ShippingProviderReturnContract;
+    public function setError(string $error): void;
+
+    public function getError(): ?string;
+
+    public function order(): ShippingProviderActionContract;
+
+    public function courier(): ShippingProviderCourierContract;
+
+    public function return(): ShippingProviderReturnContract;
+
     public function shipment();
-    public function tracking():ShippingProviderTrackingContract;
 
+    public function tracking(): ShippingProviderTrackingContract;
 }

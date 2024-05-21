@@ -11,18 +11,21 @@ use App\Models\Promotion\VoucherCode;
 
 class VoucherValidator
 {
-
     protected array $backListCartAttributes = ['postcode', 'state', 'country', 'shipping_method', 'payment_method'];
 
     protected CartServiceContract $cartService;
-    protected ?VoucherCode $voucherCode=null;
+
+    protected ?VoucherCode $voucherCode = null;
+
     protected ?Voucher $voucher = null;
+
     protected array $conditions = [];
+
     private ConditionValidator $conditionValidator;
+
     protected DiscountCalculator $discountCalculator;
 
     protected array $statusBag = [];
-
 
     public function __construct(CartServiceContract $cartService)
     {
@@ -31,64 +34,59 @@ class VoucherValidator
         $this->voucher = $this->voucherCode->voucher;
         $this->conditions = $this->voucher->conditions;
         $this->conditionValidator = new ConditionValidator($this->cartService);
-        $this->discountCalculator = new DiscountCalculator($this->cartService,$this);
+        $this->discountCalculator = new DiscountCalculator($this->cartService, $this);
     }
 
-    public function validate():bool
+    public function validate(): bool
     {
         if (empty($this->conditions)) {
             return true;
         }
 
         return $this->validateConditions();
-//        dd($this,$this->cartService);
+        //        dd($this,$this->cartService);
     }
 
-    public function setStatus(string $product_sku,bool $status): void
+    public function setStatus(string $product_sku, bool $status): void
     {
         $this->statusBag[$product_sku] = $status;
     }
 
-    public function getStatus(?string $product_sku = null):array|bool
+    public function getStatus(?string $product_sku = null): array|bool
     {
         return is_null($product_sku) ? $this->statusBag : $this->statusBag[$product_sku];
     }
 
-    public function getVoucher():?Voucher
+    public function getVoucher(): ?Voucher
     {
         return $this->voucher;
     }
 
-    protected function validateConditions():bool
+    protected function validateConditions(): bool
     {
         $validConditionCount = 0;
 
-        foreach ($this->conditions as $condition)
-        {
-            if (!empty($this->cartService->getErrors()))
-            {
+        foreach ($this->conditions as $condition) {
+            if (! empty($this->cartService->getErrors())) {
                 // immediate return if error found
                 return false;
             }
 
-            if ($this->voucher->condition_type == Voucher::MATCH_ALL)
-            {
-                if (!$this->checkCondition($condition))
-                {
+            if ($this->voucher->condition_type == Voucher::MATCH_ALL) {
+                if (! $this->checkCondition($condition)) {
                     // Return false if Single Condition Failed
                     return false;
                 }
                 $validConditionCount++;
             }
 
-
-            if ($this->voucher->condition_type == Voucher::MATCH_ANY)
-            {
-                if ($this->checkCondition($condition))
-                {
+            if ($this->voucher->condition_type == Voucher::MATCH_ANY) {
+                if ($this->checkCondition($condition)) {
                     $validConditionCount++;
+
                     return true;
                 }
+
                 return false;
             }
 
@@ -102,34 +100,29 @@ class VoucherValidator
         }
     }
 
-
-    public function checkCondition(array $condition):bool
+    public function checkCondition(array $condition): bool
     {
 
-        $this->cartService->products()->each(function (Product $product) use($condition) {
+        $this->cartService->products()->each(function (Product $product) use ($condition) {
 
             $attributeValue = $this->getAttributeValue($condition, $product);
-            if (empty($attributeValue))
-            {
+            if (empty($attributeValue)) {
                 $this->cartService->setError($condition['attribute']."'s value not resolved");
-                $this->statusBag [$product->sku] = false;
-            }else{
-                $this->statusBag [$product->sku] = true;
+                $this->statusBag[$product->sku] = false;
+            } else {
+                $this->statusBag[$product->sku] = true;
             }
 
-            if (!$this->conditionValidator->validate($condition,$attributeValue,$product))
-            {
+            if (! $this->conditionValidator->validate($condition, $attributeValue, $product)) {
                 $this->cartService->setError($condition['attribute']."'s value not resolved");
-                $this->statusBag [$product->sku] = false;
-            }else{
-                $this->statusBag [$product->sku] = true;
+                $this->statusBag[$product->sku] = false;
+            } else {
+                $this->statusBag[$product->sku] = true;
             }
-
 
         });
 
-
-//        dd('sdds',$this->conditions);
+        //        dd('sdds',$this->conditions);
         return true;
 
         //return $this->conditionValidator->validate($condition);
@@ -149,11 +142,11 @@ class VoucherValidator
             case 'cart':
                 return $this->getCartAttributeValue($attributeCode);
                 break;
-            // customer->cart->each->pivot
+                // customer->cart->each->pivot
             case 'cart_item':
                 return $this->getCartItemAttributeValue($attributeCode, $product);
                 break;
-            // customer->cart-each
+                // customer->cart-each
             case 'product':
                 return $this->getProductAttributeValue($attributeCode, $product, $condition);
                 break;
@@ -164,14 +157,13 @@ class VoucherValidator
 
     protected function getCartAttributeValue(string $attributeCode)
     {
-        if (!in_array($attributeCode, $this->backListCartAttributes))
-        {
-//            if($this->cartService->getAttribute($attributeCode) instanceof Money)
-//            {
-//                return $this->cartService->getAttribute($attributeCode)->getAmount();
-//            }else{
-//                return $this->cartService->getAttribute($attributeCode);
-//            }
+        if (! in_array($attributeCode, $this->backListCartAttributes)) {
+            //            if($this->cartService->getAttribute($attributeCode) instanceof Money)
+            //            {
+            //                return $this->cartService->getAttribute($attributeCode)->getAmount();
+            //            }else{
+            //                return $this->cartService->getAttribute($attributeCode);
+            //            }
             return $this->cartService->getAttribute($attributeCode);
         }
     }
@@ -184,23 +176,20 @@ class VoucherValidator
     protected function getProductAttributeValue(string $attributeCode, Product $product, array $condition)
     {
         if ($attributeCode == 'category_id') {
-            return  $product->categories()->pluck('id')->toArray();
-        }else{
+            return $product->categories()->pluck('id')->toArray();
+        } else {
             $value = null;
-            if (isset($product->{$attributeCode}))
-            {
+            if (isset($product->{$attributeCode})) {
                 $value = $product->{$attributeCode};
-            }elseif (isset($product->{ucfirst($attributeCode)}))
-            {
+            } elseif (isset($product->{ucfirst($attributeCode)})) {
                 $value = $product->{ucfirst($attributeCode)};
             }
 
             if ($value) {
 
-                if (!is_string($value))
-                {
+                if (! is_string($value)) {
                     return $value;
-                }else{
+                } else {
                     $chunk = explode(',', $value);
 
                     if (isset($chunk[1]) && ! empty($chunk[1])) {
@@ -213,13 +202,13 @@ class VoucherValidator
             }
 
         }
+
         return null;
     }
 
-
     public function getDiscount()
     {
-        return $this->cartService->products()->each(function (Product $product)  {
+        return $this->cartService->products()->each(function (Product $product) {
             return match ($this->voucher->action_type) {
                 'by_percent' => $this->discountCalculator->byProductPercentage($product),
                 'by_fixed' => $this->discountCalculator->byProductFixed($product),
@@ -230,6 +219,4 @@ class VoucherValidator
         });
 
     }
-
-
 }

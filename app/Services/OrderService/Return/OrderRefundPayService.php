@@ -6,13 +6,14 @@ use App\Models\Payment\Payment;
 use App\Models\Payment\Refund;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 
-
 class OrderRefundPayService
 {
-
     protected ?string $error = null;
+
     protected PaymentProviderContract $paymentProvider;
+
     protected Refund $refund;
+
     protected Payment $payment;
 
     public function __construct(PaymentProviderContract $paymentProvider, Refund $refund)
@@ -25,28 +26,25 @@ class OrderRefundPayService
 
     }
 
-    public function getError():?string
+    public function getError(): ?string
     {
         return $this->error;
     }
 
-
     public function refund()
     {
-        $response =  $this->paymentProvider->refund()->create($this->payment->provider_ref_id,$this->refund->amount);
+        $response = $this->paymentProvider->refund()->create($this->payment->provider_ref_id, $this->refund->amount);
 
-        if (isset($response['status']) && $response['status'] == 'processed')
-        {
+        if (isset($response['status']) && $response['status'] == 'processed') {
 
-            if ($response['payment_id'] === $this->payment->provider_ref_id)
-            {
+            if ($response['payment_id'] === $this->payment->provider_ref_id) {
 
                 // Update Payment
-//                $this->payment->fill([
-//                    'status' => Payment::REFUND
-//                ])->save();
+                //                $this->payment->fill([
+                //                    'status' => Payment::REFUND
+                //                ])->save();
                 // Create And Return Refund Model
-                 $this->refund->fill([
+                $this->refund->fill([
                     'refund_id' => $response['id'],
                     'amount' => $response['amount'],
                     'currency' => $response['currency'],
@@ -59,15 +57,14 @@ class OrderRefundPayService
                     'details' => is_array($response) ? $response : $response->toArray(),
                     'error' => $response['error'] ?? null,
                 ])->save();
-            }else{
+            } else {
                 $this->error = 'Payment Info Not Matched With Refund';
             }
 
-
-        }else{
+        } else {
             $this->error = $response['error']['description'];
         }
+
         return is_null($this->error);
     }
-
 }

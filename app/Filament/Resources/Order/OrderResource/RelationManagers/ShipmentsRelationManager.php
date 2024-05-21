@@ -8,14 +8,10 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ShipmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'shipments';
-
-
 
     public function form(Form $form): Form
     {
@@ -37,9 +33,8 @@ class ShipmentsRelationManager extends RelationManager
                     ->required(),
 
                 Forms\Components\Select::make('shippingProvider')
-                        ->relationship('shippingProvider','name')
-                        ->required(),
-
+                    ->relationship('shippingProvider', 'name')
+                    ->required(),
 
                 Forms\Components\KeyValue::make('tracking_data'),
 

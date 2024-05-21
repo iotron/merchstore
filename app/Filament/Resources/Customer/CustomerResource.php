@@ -13,8 +13,11 @@ use Filament\Resources\Resource;
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-user';
+
     protected static ?string $navigationGroup = 'User Management';
+
     protected static ?string $slug = 'customers';
 
     public static function form(Form $form): Form
@@ -60,13 +63,10 @@ class CustomerResource extends Resource
                         ->default(false)
                         ->required(),
 
-
                     Select::make(__('customer_group_id'))
                         ->default(1)
                         ->label(__('Group'))->inlineLabel()
                         ->relationship('group', 'name'),
-
-
 
                 ])->columns(3),
 
@@ -83,18 +83,13 @@ class CustomerResource extends Resource
                         ->maxLength(255),
                 ])->columns(2),
 
-
-
-
             ]);
     }
-
-
 
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AddressesRelationManager::class
+            RelationManagers\AddressesRelationManager::class,
         ];
     }
 

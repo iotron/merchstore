@@ -14,6 +14,7 @@ class Voucher extends Model
     use HasFactory;
 
     public const MATCH_ALL = 1;
+
     public const MATCH_ANY = 0;
 
     public const CONDITION_TYPE = [
@@ -22,9 +23,13 @@ class Voucher extends Model
     ];
 
     public const ACTION_BY_PERCENTAGE = 'by_percent';
+
     public const ACTION_BY_FIXED = 'by_fixed';
+
     public const ACTION_CART_FIXED = 'cart_fixed';
+
     public const ACTION_BY_X_GET_Y = 'buy_x_get_y';
+
     public const ACTION_CART_PERCENTAGE = 'cart_percent';
 
     public const ACTION_TYPES = [
@@ -35,28 +40,27 @@ class Voucher extends Model
     ];
 
     public const SHIPPING_TRUE = 1;
+
     public const SHIPPING_FALSE = 0;
+
     public const APPLY_TO_SHIPPING_OPTIONS = [
         self::SHIPPING_FALSE => 'No',
-        self::SHIPPING_TRUE => 'Yes'
+        self::SHIPPING_TRUE => 'Yes',
     ];
 
     public const FREE_SHIPPING_OPTIONS = [
         self::SHIPPING_FALSE => 'No',
-        self::SHIPPING_TRUE => 'Yes'
+        self::SHIPPING_TRUE => 'Yes',
     ];
 
     public const END_OTHER_RULE_TRUE = 1;
+
     public const END_OTHER_RULE_FALSE = 0;
 
     public const END_OTHER_RULE_OPTION = [
         self::END_OTHER_RULE_FALSE => 'No',
-        self::END_OTHER_RULE_TRUE => 'Yes'
+        self::END_OTHER_RULE_TRUE => 'Yes',
     ];
-
-
-
-
 
     protected $fillable = [
         'name',
@@ -84,11 +88,8 @@ class Voucher extends Model
 
     protected $casts = [
         'conditions' => 'array',
-        'discount_amount' => MoneyCast::class
+        'discount_amount' => MoneyCast::class,
     ];
-
-
-
 
     public function customer_groups(): BelongsToMany
     {
@@ -100,12 +101,8 @@ class Voucher extends Model
         return $this->hasMany(VoucherCode::class);
     }
 
-
     public function coupon_code(): HasOne
     {
         return $this->coupons()->where('is_primary', 1);
     }
-
-
-
 }

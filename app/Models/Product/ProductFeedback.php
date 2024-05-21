@@ -10,13 +10,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductFeedback extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
+
     protected $fillable = [
-        'product_id', 'customer_id', 'rating', 'comment'
+        'product_id', 'customer_id', 'rating', 'comment',
     ];
 
-
-    public function product():BelongsTo
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
@@ -25,5 +26,4 @@ class ProductFeedback extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
-
 }

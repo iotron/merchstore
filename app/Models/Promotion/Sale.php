@@ -6,14 +6,11 @@ use App\Helpers\Money\MoneyCast;
 use App\Models\Customer\CustomerGroup;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sale extends Model
 {
     use HasFactory;
-
-
 
     protected $fillable = [
         'name',
@@ -29,23 +26,17 @@ class Sale extends Model
         'sort_order',
     ];
 
-
     protected $casts = [
         'conditions' => 'array',
-        'discount_amount' => MoneyCast::class
+        'discount_amount' => MoneyCast::class,
     ];
-
-
-
-
-
 
     /**
      * Get the customer groups that will have the sale.
      */
     public function customer_groups()
     {
-        return $this->belongsToMany(CustomerGroup::class, 'sale_customer_groups','sale_id');
+        return $this->belongsToMany(CustomerGroup::class, 'sale_customer_groups', 'sale_id');
     }
 
     /**
@@ -55,7 +46,4 @@ class Sale extends Model
     {
         return $this->hasMany(SaleProduct::class);
     }
-
-
-
 }

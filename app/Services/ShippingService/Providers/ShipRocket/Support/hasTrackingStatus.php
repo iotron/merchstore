@@ -4,16 +4,14 @@ namespace App\Services\ShippingService\Providers\ShipRocket\Support;
 
 trait hasTrackingStatus
 {
-
-
-    protected function updateStatusViaCode(string|object $response):string|object
+    protected function updateStatusViaCode(string|object $response): string|object
     {
         $data = json_decode($response);
         $statusMsg = $this->getMatchedStatus($data);
         $data->tracking_data->trackingMsg = $statusMsg;
+
         return $data;
     }
-
 
     protected function getMatchedStatus($data): ?string
     {
@@ -61,8 +59,4 @@ trait hasTrackingStatus
             default => null,
         };
     }
-
-
-
-
 }

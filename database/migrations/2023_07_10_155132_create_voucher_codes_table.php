@@ -27,7 +27,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-
         Schema::create('voucher_code_usages', function (Blueprint $table) {
             $table->id();
 
@@ -37,7 +36,6 @@ return new class extends Migration
 
             $table->timestamps();
         });
-
 
     }
 

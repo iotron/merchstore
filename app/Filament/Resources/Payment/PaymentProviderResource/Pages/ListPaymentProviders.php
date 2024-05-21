@@ -3,13 +3,10 @@
 namespace App\Filament\Resources\Payment\PaymentProviderResource\Pages;
 
 use App\Filament\Resources\Payment\PaymentProviderResource;
-use App\Models\Payment\PaymentProvider;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables\Table;
 use Filament\Tables;
-use Illuminate\Support\Str;
+use Filament\Tables\Table;
 
 class ListPaymentProviders extends ListRecords
 {
@@ -21,30 +18,28 @@ class ListPaymentProviders extends ListRecords
         ];
     }
 
-    public  function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\Layout\Stack::make([
-                    Tables\Columns\Layout\Split::make([ Tables\Columns\TextColumn::make('name')
-                    ->size(Tables\Columns\TextColumn\TextColumnSize::Large)
-                    ->weight(FontWeight::Bold),
-                    Tables\Columns\IconColumn::make('status')
-                    ->tooltip('Provider Status')
-                    ->boolean()->alignRight(),]),
+                    Tables\Columns\Layout\Split::make([Tables\Columns\TextColumn::make('name')
+                        ->size(Tables\Columns\TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold),
+                        Tables\Columns\IconColumn::make('status')
+                            ->tooltip('Provider Status')
+                            ->boolean()->alignRight(), ]),
 
                     Tables\Columns\IconColumn::make('is_primary')
-                    ->boolean()
-                    ->tooltip('Is Primary Provider?')
-                    ->alignRight(),
+                        ->boolean()
+                        ->tooltip('Is Primary Provider?')
+                        ->alignRight(),
 
                 ]),
 
-
-
             ])
             ->contentGrid([
-                'md' => 2
+                'md' => 2,
             ])
             ->filters([
                 //
@@ -57,16 +52,4 @@ class ListPaymentProviders extends ListRecords
 
             ]);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 }

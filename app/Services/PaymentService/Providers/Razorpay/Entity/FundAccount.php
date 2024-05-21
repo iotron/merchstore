@@ -6,22 +6,18 @@ use Razorpay\Api\Entity;
 
 class FundAccount extends Entity
 {
-
-
     public function fetch($id)
     {
         return parent::fetch($id);
     }
 
-    public function all($options = array())
+    public function all($options = [])
     {
         return parent::all($options);
     }
 
-    public function create($attributes = array())
+    public function create($attributes = [])
     {
         return parent::create($attributes);
     }
-
-
 }

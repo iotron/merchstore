@@ -26,8 +26,8 @@ class OrderStoreRequest extends FormRequest
             'payment_provider_id' => 'int|required',
             'shipping_address_id' => 'int|required',
             'billing_address_id' => 'int|required_if:shipping_is_billing,false',
-            'coupon'            => 'string|nullable',
-            'shipping_is_billing' => 'boolean'
+            'coupon' => 'string|nullable',
+            'shipping_is_billing' => 'boolean',
         ];
     }
 
@@ -41,5 +41,4 @@ class OrderStoreRequest extends FormRequest
 
         ];
     }
-
 }

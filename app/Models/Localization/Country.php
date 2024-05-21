@@ -9,7 +9,6 @@ class Country extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'name',
         'iso_code_2',
@@ -19,12 +18,8 @@ class Country extends Model
         'postcode_required',
     ];
 
-
-
     public function address()
     {
-        return $this->hasMany(Address::class,'country_code','iso_code_2');
+        return $this->hasMany(Address::class, 'country_code', 'iso_code_2');
     }
-
-
 }

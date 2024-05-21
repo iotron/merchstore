@@ -8,29 +8,20 @@ use App\Services\ShippingService\Contracts\Provider\ShippingProviderReturnContra
 
 class ReturnAction implements ShippingProviderReturnContract
 {
-
-
-
-
-
-
-
-
-    public function create(OrderProduct $orderProduct,OrderShipment $orderShipment): mixed
+    public function create(OrderProduct $orderProduct, OrderShipment $orderShipment): mixed
     {
-        $default =[
-            "order_id"=> $orderShipment->provider_order_id,
-            "shipment_id"=> $orderShipment->shipment_id,
-            "status"=> "RETURN PENDING",
-            "status_code"=> 21,
-            "company_name"=> "custom"
+        $default = [
+            'order_id' => $orderShipment->provider_order_id,
+            'shipment_id' => $orderShipment->shipment_id,
+            'status' => 'RETURN PENDING',
+            'status_code' => 21,
+            'company_name' => 'custom',
         ];
+
         return $default;
     }
 
-
-
-    protected function format(OrderProduct $orderProduct,OrderShipment $orderShipment)
+    protected function format(OrderProduct $orderProduct, OrderShipment $orderShipment)
     {
         return [
             'name' => $orderProduct->product->name,
@@ -65,33 +56,6 @@ class ReturnAction implements ShippingProviderReturnContract
             'shipping_phone' => null,
             'order_items' => [],
 
-
-
-
-
-
-
         ];
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

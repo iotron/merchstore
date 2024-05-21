@@ -16,8 +16,6 @@ class PaymentProviderSeeder extends Seeder
     public function run(): void
     {
 
-
-
         $cashOnDeliveryProvider = PaymentProvider::create([
             'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::CUSTOM],
             'code' => PaymentProvider::CUSTOM,
@@ -25,9 +23,8 @@ class PaymentProviderSeeder extends Seeder
             'status' => true,
             'is_primary' => false,
             'has_api' => false,
-            'desc' => 'This provider only for testing purpose'
+            'desc' => 'This provider only for testing purpose',
         ]);
-
 
         $razorpay = PaymentProvider::create([
             'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::RAZORPAY],
@@ -36,9 +33,8 @@ class PaymentProviderSeeder extends Seeder
             'status' => true,
             'is_primary' => true,
             'has_api' => true,
-            'desc' => 'Take Payment and Disburse Payout On Fly'
+            'desc' => 'Take Payment and Disburse Payout On Fly',
         ]);
-
 
         $stripe = PaymentProvider::create([
             'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::STRIPE],
@@ -47,7 +43,7 @@ class PaymentProviderSeeder extends Seeder
             'status' => true,
             'is_primary' => false,
             'has_api' => true,
-            'desc' => 'Take Payment On Fly'
+            'desc' => 'Take Payment On Fly',
         ]);
 
     }

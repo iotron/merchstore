@@ -12,44 +12,39 @@ class ProductStock extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'init_quantity',
         'sold_quantity',
         'in_stock',
         'priority',
-        'address_id'
+        'address_id',
     ];
 
-//    protected static function booted()
-//    {
-////        ProductStock::observe(ProductStockObserver::class);
-//    }
+    //    protected static function booted()
+    //    {
+    ////        ProductStock::observe(ProductStockObserver::class);
+    //    }
 
     //    public function address()
-//    {
-//        return $this->belongsTo(Address::class, 'vendor_address_id', 'addressable_id', 'vendor');
-//    }
-
+    //    {
+    //        return $this->belongsTo(Address::class, 'vendor_address_id', 'addressable_id', 'vendor');
+    //    }
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
-    /**
-     * @return bool
-     */
     public function inStock(): bool
     {
         return $this->in_stock_quantity > 0;
     }
 
-
     public function minStock(int $count)
     {
         return min($this->in_stock_quantity, $count);
     }
+
     /**
      * @return MorphMany
      */
@@ -57,6 +52,4 @@ class ProductStock extends Model
     {
         return $this->morphMany(Address::class, 'addressable');
     }
-
-
 }

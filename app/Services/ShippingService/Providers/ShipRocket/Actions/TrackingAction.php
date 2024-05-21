@@ -18,40 +18,25 @@ class TrackingAction implements ShippingProviderTrackingContract
         $this->api = $api;
     }
 
-
-    /**
-     * @param int|string $order_id
-     * @param int|string $channel_id
-     * @return mixed
-     */
     public function fetch(int|string $order_id, int|string $channel_id): mixed
     {
         $buildUrl = 'courier/track?order_id='.$order_id;
-        if ($channel_id)
-        {
-            $buildUrl = $buildUrl. '&channel_id='.$channel_id;
+        if ($channel_id) {
+            $buildUrl = $buildUrl.'&channel_id='.$channel_id;
         }
 
         $response = $this->api->httpGet($buildUrl)->json();
+
         return $this->updateStatusViaCode($response);
     }
 
-    /**
-     * @param int|string $shipment_id
-     * @return mixed
-     */
     public function shipment(int|string $shipment_id): mixed
     {
-        $response =  $this->api->httpGet('courier/track/shipment/'.$shipment_id)->json();
+        $response = $this->api->httpGet('courier/track/shipment/'.$shipment_id)->json();
+
         return $this->updateStatusViaCode($response);
     }
 
-
-
-    /**
-     * @param array $tracking_ids
-     * @return mixed
-     */
     public function all(array $tracking_ids): mixed
     {
         $response = $this->api->http()

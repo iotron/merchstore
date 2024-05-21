@@ -22,19 +22,19 @@ class AddressStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'              => 'string|required',
-            'contact'           => 'string|required|max:15|min:10',
+            'name' => 'string|required',
+            'contact' => 'string|required|max:15|min:10',
             'alternate_contact' => 'string|nullable|max:15|min:10',
-            'type'              => 'in:Home,Work,Other|required',
-            'address_1'         => 'string|required',
-            'address_2'         => 'string|nullable',
-            'landmark'          => 'string|nullable',
-            'city'              => 'string|required',
-            'postal_code'       => 'string|required',
-            'state'             => 'string|required',
-            'default'           => 'boolean',
-            'priority'          => 'integer',
-            'country_code'      => 'string|nullable|exists:countries,iso_code_2',
+            'type' => 'in:Home,Work,Other|required',
+            'address_1' => 'string|required',
+            'address_2' => 'string|nullable',
+            'landmark' => 'string|nullable',
+            'city' => 'string|required',
+            'postal_code' => 'string|required',
+            'state' => 'string|required',
+            'default' => 'boolean',
+            'priority' => 'integer',
+            'country_code' => 'string|nullable|exists:countries,iso_code_2',
         ];
     }
 }

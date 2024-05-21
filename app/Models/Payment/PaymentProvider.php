@@ -15,23 +15,25 @@ class PaymentProvider extends Model implements PaymentProviderModelContract
     use HasFactory;
 
     public const RAZORPAY = 'razorpay';
+
     public const RAZORPAYX = 'razorpay-x';
+
     public const STRIPE = 'stripe';
+
     public const CUSTOM = 'custom';
 
     public const CODE_OPTIONS = [
-        self::CUSTOM       => 'Custom',
-        self::RAZORPAY  => 'Razorpay',
+        self::CUSTOM => 'Custom',
+        self::RAZORPAY => 'Razorpay',
         self::RAZORPAYX => 'Razorpay X',
-        self::STRIPE    => 'Stripe',
+        self::STRIPE => 'Stripe',
     ];
 
     public const AVAILABLE_PROVIDERS = [
-        CustomPaymentService::class       => 'Cash On Delivery Payment Provider',
-        RazorpayPaymentService::class  => 'Razorpay Payment Provider',
-        StripePaymentService::class    => 'Stripe Payment Provider',
+        CustomPaymentService::class => 'Cash On Delivery Payment Provider',
+        RazorpayPaymentService::class => 'Razorpay Payment Provider',
+        StripePaymentService::class => 'Stripe Payment Provider',
     ];
-
 
     protected $fillable = [
         'name',
@@ -46,17 +48,13 @@ class PaymentProvider extends Model implements PaymentProviderModelContract
         'desc',
     ];
 
-
     public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Payment::class,'payment_provider_id','id');
+        return $this->hasMany(Payment::class, 'payment_provider_id', 'id');
     }
 
     public function orders(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Order::class,'payment_provider_id','id');
+        return $this->hasMany(Order::class, 'payment_provider_id', 'id');
     }
-
-
-
 }

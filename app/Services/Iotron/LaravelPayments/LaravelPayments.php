@@ -2,7 +2,6 @@
 
 namespace App\Services\Iotron\LaravelPayments;
 
-
 use App\Models\Payment\PaymentProvider;
 use Illuminate\Database\Eloquent\Collection;
 

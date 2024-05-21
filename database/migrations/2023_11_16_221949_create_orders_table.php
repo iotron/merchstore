@@ -37,8 +37,7 @@ return new class extends Migration
             // delivery/shipping address
             $table->foreignId('shipping_address_id')->nullable()->constrained('addresses')->cascadeOnUpdate()->cascadeOnDelete();
 
-            $table->unique(['uuid','customer_id']);
-
+            $table->unique(['uuid', 'customer_id']);
 
             $table->timestamps();
         });

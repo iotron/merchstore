@@ -15,25 +15,24 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Theme extends Model implements HasMedia
 {
-    use HasFactory, HasChildren, InteractsWithMedia;
+    use HasChildren, HasFactory, InteractsWithMedia;
 
     protected $fillable = [
-            'name',
-            'url',
-            'parent_id',
-            'banners'
+        'name',
+        'url',
+        'parent_id',
+        'banners',
     ];
 
     protected $casts = [
-        'banners' => AsArrayObject::class
+        'banners' => AsArrayObject::class,
     ];
 
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('banners')
-        ->useFallbackUrl(asset('display.webp'));
+            ->useFallbackUrl(asset('display.webp'));
     }
-
 
     public function children(): HasMany
     {

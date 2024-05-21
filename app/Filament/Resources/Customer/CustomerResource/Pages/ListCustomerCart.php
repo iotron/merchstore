@@ -10,37 +10,31 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Pages\Concerns\UsesResourceForm;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Livewire\TemporaryUploadedFile;
 
 class ListCustomerCart extends ListRecords
 {
-
     protected static string $resource = CustomerResource::class;
 
-
     protected static ?string $title = 'Customer Cart';
+
     public $customerId;
+
     public $customer;
+
     public $scannedData;
 
-
-    public function mount($record=''): void
+    public function mount($record = ''): void
     {
         $this->customerId = $record;
         $this->customer = Customer::find($record);
         $this->record = $this->customer;
     }
-
-
-
-
 
     // TABLE AREA
     // _______________________________________________________________________________
@@ -49,28 +43,30 @@ class ListCustomerCart extends ListRecords
         return $this->customer->cart()->getQuery();
     }
 
-    public  function table(Table $table): Table
+    public function table(Table $table): Table
     {
 
         return $table
             ->columns([
 
-                TextColumn::make('sku')->label(__('SKU'))->formatStateUsing(function ($record){
+                TextColumn::make('sku')->label(__('SKU'))->formatStateUsing(function ($record) {
                     return $record->sku;
                 }),
 
-                TextColumn::make('price')->label(__('Price'))->formatStateUsing(function ($record){
+                TextColumn::make('price')->label(__('Price'))->formatStateUsing(function ($record) {
                     return $record->price->formatted();
                 }),
 
                 TextColumn::make('quantity'),
-                TextColumn::make('discount')->formatStateUsing(function ($record){
+                TextColumn::make('discount')->formatStateUsing(function ($record) {
                     $discount = new Money($record->discount);
+
                     return $discount->formatted();
                 }),
-                TextColumn::make('total')->formatStateUsing(function ($record){
+                TextColumn::make('total')->formatStateUsing(function ($record) {
 
                     $total = $record->price->multiplyOnce($record->quantity);
+
                     return $total->formatted();
 
                 }),
@@ -79,38 +75,30 @@ class ListCustomerCart extends ListRecords
             ->actions([
 
                 \Filament\Tables\Actions\Action::make('remove')
-                    ->url(function (Model $record){
+                    ->url(function (Model $record) {
 
-                        return route('remove-cart',[
+                        return route('remove-cart', [
                             'customer' => $record->customer_id,
                             'product' => $record->product_id,
                         ]);
                     })
-                    //->visible(fn (Product $record): bool => auth()->user()->can('remove', $record))
-                    ,
+                //->visible(fn (Product $record): bool => auth()->user()->can('remove', $record))
+                ,
 
             ])
             ->filters([]);
 
-
     }
 
-//    public function getTableRecordTitle($record): string
-//    {
-//        if ($record instanceof \Illuminate\Database\Eloquent\Model) {
-//            // Modify this code to return the appropriate title for the record
-//            return $record->name;
-//        }
-//
-//        return '';
-//    }
-
-
-
-
-
-
-
+    //    public function getTableRecordTitle($record): string
+    //    {
+    //        if ($record instanceof \Illuminate\Database\Eloquent\Model) {
+    //            // Modify this code to return the appropriate title for the record
+    //            return $record->name;
+    //        }
+    //
+    //        return '';
+    //    }
 
     // PAGE ACTIONS
 
@@ -118,22 +106,18 @@ class ListCustomerCart extends ListRecords
     {
         return [
 
-
             Action::make('scan_sku')
                 ->label(__('Scan SKU'))
                 ->action('scanQr')
                 ->color('warning')
                 ->modalContent(view('filament.custom.qr-scanner')),
 
-
-
             Action::make('addProduct')
                 ->label(__('Add To Cart'))
                 ->color('primary')
                 ->action(function (array $data): void {
-                    if ($data['stock'] >= $data['quantity'])
-                    {
-                        $this->customer->cart()->attach($data['product_id'],['quantity' => $data['quantity'],'discount' => $data['discount']]);
+                    if ($data['stock'] >= $data['quantity']) {
+                        $this->customer->cart()->attach($data['product_id'], ['quantity' => $data['quantity'], 'discount' => $data['discount']]);
                     }
 
                 })
@@ -143,131 +127,111 @@ class ListCustomerCart extends ListRecords
                 ->label(__('Place Order'))
                 ->color('success')
                 ->action('placeOrder')
-                ->visible(function (){
+                ->visible(function () {
                     return $this->customer->cart->count();
                 })->requiresConfirmation(),
 
         ];
     }
 
-
-
-
     // MODAL FORM
     public function customPOSForm()
     {
         return [
 
-
             Select::make('product_id')
-                ->options(Product::where('status','=',Product::PUBLISHED)->get()->pluck('sku','id'))
+                ->options(Product::where('status', '=', Product::PUBLISHED)->get()->pluck('sku', 'id'))
                 ->label(__('Select Product'))
                 ->searchable()
                 ->placeholder(__('select or search product by sku'))
                 ->lazy()
-                ->afterStateUpdated(function ($state,\Filament\Forms\Set $set){
-                    $selectedProduct = Product::firstWhere('id',$state);
-                    $set('stock',$selectedProduct->availableStocks()->sum('in_stock_quantity'));
-                    $set('sku',$selectedProduct->sku);
-                    $set('name',$selectedProduct->name);
-                    $set('formatted_price',$selectedProduct->price->formatted());
+                ->afterStateUpdated(function ($state, \Filament\Forms\Set $set) {
+                    $selectedProduct = Product::firstWhere('id', $state);
+                    $set('stock', $selectedProduct->availableStocks()->sum('in_stock_quantity'));
+                    $set('sku', $selectedProduct->sku);
+                    $set('name', $selectedProduct->name);
+                    $set('formatted_price', $selectedProduct->price->formatted());
                 }),
 
+            Fieldset::make('product_details')
+                ->label(__('Bill Details'))
+                ->schema([
+                    TextInput::make('stock')->inlineLabel()->disabled(),
+                    TextInput::make('name')->inlineLabel()->disabled(),
+                    TextInput::make('sku')->inlineLabel()->disabled(),
+                    TextInput::make('formatted_price')->label(__('Price'))->inlineLabel()->disabled(),
 
+                    TextInput::make('quantity')
+                        ->numeric()
+                        ->inlineLabel()
+                        ->minValue(1)
+                        ->maxValue(999999999)
+                        ->lazy()
+                        ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
+                            $stockCount = $get('stock');
+                            if ($state <= $stockCount) {
+                                $product = Product::firstWhere('id', $get('product_id'));
+                                $total = $product->price->multiplyOnce($state);
+                                $set('total', $total->getAmount());
+                                $set('formatted_total', $total->formatted());
+                            } else {
+                                $set('formatted_total', 'Error');
+                            }
+                        })
+                        ->helperText(function (\Filament\Forms\Get $get) {
+                            return empty($get('stock')) ? 'no stock available' : 'available stock :'.$get('stock');
+                        })
+                        ->disabled(function (\Filament\Forms\Get $get) {
+                            return empty($get('stock'));
+                        })
+                        ->required(),
 
-                Fieldset::make('product_details')
-                    ->label(__('Bill Details'))
-                    ->schema([
-                        TextInput::make('stock')->inlineLabel()->disabled(),
-                        TextInput::make('name')->inlineLabel()->disabled(),
-                        TextInput::make('sku')->inlineLabel()->disabled(),
-                        TextInput::make('formatted_price')->label(__('Price'))->inlineLabel()->disabled(),
+                    TextInput::make('discount')
+                        ->label(__('Discount'))
+                        ->helperText(__('Use Promo Code'))
+                        ->numeric()
+                        ->inlineLabel()
+                        ->minValue(1)
+                        ->maxValue(999999999)
+                        ->lazy()
+                        ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state) {
 
-
-                        TextInput::make('quantity')
-                            ->numeric()
-                            ->inlineLabel()
-                            ->minValue(1)
-                            ->maxValue(999999999)
-                            ->lazy()
-                            ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state){
+                            if (! empty($state)) {
                                 $stockCount = $get('stock');
-                                if ($state <= $stockCount)
-                                {
-                                    $product = Product::firstWhere('id',$get('product_id'));
-                                    $total = $product->price->multiplyOnce($state);
-                                    $set('total',$total->getAmount());
-                                    $set('formatted_total',$total->formatted());
-                                }else{
-                                    $set('formatted_total','Error');
+                                $quantityAsk = $get('quantity');
+                                if ($quantityAsk <= $stockCount) {
+                                    $discount = new Money($state);
+                                    $product = Product::firstWhere('id', $get('product_id'));
+                                    // Flat Discount On Cart Total
+                                    $total = $product->price->multiplyOnce($quantityAsk)->subOnce($discount);
+                                    $set('total', $total->getAmount());
+                                    $set('formatted_total', $total->formatted());
+                                } else {
+                                    $set('formatted_total', 'Error');
                                 }
-                            })
-                            ->helperText(function (\Filament\Forms\Get $get){
-                                return empty($get('stock')) ? 'no stock available' : 'available stock :'.$get('stock');
-                            })
-                            ->disabled(function (\Filament\Forms\Get $get){
-                                return empty($get('stock'));
-                            })
-                            ->required(),
+                            } else {
+                                $stockCount = $get('stock');
+                                $quantityAsk = $get('quantity');
+                                if ($quantityAsk <= $stockCount) {
+                                    $product = Product::firstWhere('id', $get('product_id'));
+                                    $total = $product->price->multiplyOnce($quantityAsk);
 
-                        TextInput::make('discount')
-                            ->label(__('Discount'))
-                            ->helperText(__('Use Promo Code'))
-                            ->numeric()
-                            ->inlineLabel()
-                            ->minValue(1)
-                            ->maxValue(999999999)
-                            ->lazy()
-                            ->afterStateUpdated(function (\Filament\Forms\Get $get, \Filament\Forms\Set $set, $state){
-
-                                if (!empty($state))
-                                {
-                                    $stockCount = $get('stock');
-                                    $quantityAsk = $get('quantity');
-                                    if ($quantityAsk <= $stockCount)
-                                    {
-                                        $discount = new Money($state);
-                                        $product = Product::firstWhere('id',$get('product_id'));
-                                        // Flat Discount On Cart Total
-                                        $total = $product->price->multiplyOnce($quantityAsk)->subOnce($discount);
-                                        $set('total',$total->getAmount());
-                                        $set('formatted_total',$total->formatted());
-                                    }else{
-                                        $set('formatted_total','Error');
-                                    }
-                                }else{
-                                    $stockCount = $get('stock');
-                                    $quantityAsk = $get('quantity');
-                                    if ($quantityAsk <= $stockCount)
-                                    {
-                                        $product = Product::firstWhere('id',$get('product_id'));
-                                        $total = $product->price->multiplyOnce($quantityAsk);
-
-
-                                        $set('total',$total->getAmount());
-                                        $set('formatted_total',$total->formatted());
-                                    }
+                                    $set('total', $total->getAmount());
+                                    $set('formatted_total', $total->formatted());
                                 }
+                            }
 
+                        }),
 
-                            }),
+                    TextInput::make('total')->disabled()->inlineLabel()->hidden(),
+                    TextInput::make('formatted_total')->label(__('Total'))->disabled()->inlineLabel(),
 
-
-                        TextInput::make('total')->disabled()->inlineLabel()->hidden(),
-                        TextInput::make('formatted_total')->label(__('Total'))->disabled()->inlineLabel(),
-
-
-
-                    ])->visible(function (\Filament\Forms\Get $get){
-                        return !empty($get('product_id'));
-                    })->columns(1),
-
+                ])->visible(function (\Filament\Forms\Get $get) {
+                    return ! empty($get('product_id'));
+                })->columns(1),
 
         ];
     }
-
-
-
 
     // METHODS
 
@@ -279,9 +243,6 @@ class ListCustomerCart extends ListRecords
             }
         )->toArray();
     }
-
-
-
 
     public function scanQr()
     {
@@ -297,26 +258,17 @@ class ListCustomerCart extends ListRecords
         // ...
     }
 
-
     public function placeOrder()
     {
 
         $cart = $this->customer->cart;
 
-        if ($cart->count())
-        {
+        if ($cart->count()) {
             $cartData = $this->calculateCart($cart);
-
 
         }
 
-
-
-
-
     }
-
-
 
     protected function calculateCart(array|Collection $cartDetail)
     {
@@ -326,9 +278,7 @@ class ListCustomerCart extends ListRecords
         $totalDiscount = new Money(0);
         $totalQuantity = 0;
 
-
-        foreach ($cartDetail as $item)
-        {
+        foreach ($cartDetail as $item) {
 
             $totalQuantity = $totalQuantity + $item->pivot->quantity;
             $subTotal->add($item->price->multiplyOnce($item->pivot->quantity));
@@ -348,20 +298,13 @@ class ListCustomerCart extends ListRecords
             ];
         }
 
-
         dd([
-           'quantity' => $totalQuantity,
-           'subTotal' => $subTotal->formatted(),
-           'discount' => $totalDiscount->formatted(),
-           'customer' => $this->customer,
-           'meta' => $cartMeta,
+            'quantity' => $totalQuantity,
+            'subTotal' => $subTotal->formatted(),
+            'discount' => $totalDiscount->formatted(),
+            'customer' => $this->customer,
+            'meta' => $cartMeta,
         ]);
 
     }
-
-
-
-
-
-
 }

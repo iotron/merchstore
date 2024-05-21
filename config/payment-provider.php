@@ -1,6 +1,5 @@
 <?php
 
-
 return [
 
     'providers' => [
@@ -9,7 +8,7 @@ return [
         // ----- Razorpay Payment Provider -----
         // -------------------------------------
         'razorpay' => [
-            'speed' => 'normal' // options: normal, optimum
+            'speed' => 'normal', // options: normal, optimum
         ],
 
         // -------------------------------------
@@ -42,10 +41,5 @@ return [
         // ----- Other Payment Provider --------
         // -------------------------------------
     ],
-
-
-
-
-
 
 ];

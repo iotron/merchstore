@@ -2,7 +2,6 @@
 
 namespace App\Services\ShippingService\Providers\ShipRocket\Actions;
 
-use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;
 use App\Services\ShippingService\Contracts\Provider\ShippingProviderActionContract;
 use App\Services\ShippingService\Providers\ShipRocket\ShipRocketApi;
@@ -25,21 +24,24 @@ class OrderAction implements ShippingProviderActionContract
      */
     public function create(OrderShipment $orderShipment)
     {
-        $response = $this->api->httpPost('orders/create/adhoc',$this->format($orderShipment))
+        $response = $this->api->httpPost('orders/create/adhoc', $this->format($orderShipment))
             ->throw()
             ->json();
+
         return $response;
     }
 
     public function all()
     {
         $response = $this->api->httpGet('orders');
+
         return $response->json();
     }
 
     public function fetch(int|string $id)
     {
         $response = $this->api->httpGet('orders/show/'.$id);
+
         return $response->json();
     }
 

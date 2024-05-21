@@ -5,7 +5,6 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -32,36 +31,36 @@ class AdminPanelProvider extends PanelProvider
             ->passwordReset()
             ->profile()
             ->plugin(
-                 BreezyCore::make()->myProfile()
-             )
+                BreezyCore::make()->myProfile()
+            )
             ->sidebarCollapsibleOnDesktop()
             ->collapsibleNavigationGroups()
             //->favicon(asset('favicon.ico'))
             ->colors([
-                'primary' => Color::Amber,
+               'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+               Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+               Widgets\AccountWidget::class,
             ])
             ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
+               EncryptCookies::class,
+               AddQueuedCookiesToResponse::class,
+               StartSession::class,
+               AuthenticateSession::class,
+               ShareErrorsFromSession::class,
+               VerifyCsrfToken::class,
+               SubstituteBindings::class,
+               DisableBladeIconComponents::class,
+               DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+               Authenticate::class,
             ]);
     }
 }

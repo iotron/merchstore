@@ -16,7 +16,6 @@ class CustomerGroup extends Model
         'status',
     ];
 
-
     public function customer(): HasMany
     {
         return $this->hasMany(Customer::class);
@@ -26,7 +25,4 @@ class CustomerGroup extends Model
     {
         return $this->belongsToMany(Sale::class, 'sale_customer_groups', 'customer_group_id');
     }
-
-
-
 }

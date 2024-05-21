@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Customer\CustomerGroup;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CustomerGroupSeeder extends Seeder
@@ -14,7 +13,6 @@ class CustomerGroupSeeder extends Seeder
     public function run(): void
     {
 
-
         $regularCustomerGroup = CustomerGroup::factory()->create([
             'name' => 'Regular',
             'status' => true,
@@ -24,8 +22,6 @@ class CustomerGroupSeeder extends Seeder
             'name' => 'Exclusive',
             'status' => true,
         ]);
-
-
 
     }
 }

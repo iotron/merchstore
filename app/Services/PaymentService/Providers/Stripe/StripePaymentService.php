@@ -14,26 +14,33 @@ use App\Services\PaymentService\Providers\Stripe\Actions\RefundAction;
 use App\Services\PaymentService\Providers\Stripe\Actions\VerifyAction;
 use Stripe\StripeClient;
 
-class StripePaymentService implements PaymentProviderContract,StripePaymentServiceContract
+class StripePaymentService implements PaymentProviderContract, StripePaymentServiceContract
 {
     protected ?PaymentProvider $providerModel = null;
+
     protected ?string $error = null;
+
     protected StripeClient $api;
-    protected bool $intentMode=false;
+
+    protected bool $intentMode = false;
+
     protected bool $checkoutSessionMode = false;
+
     protected string $intentModeType = 'card';
+
     protected bool $isWallet = false;
+
     protected ?string $wallet_type = null;
 
     private int $transactionFee = 0;
 
     private bool $takeTransactionFee = false;
 
-    private bool $isSubscribable =false;
+    private bool $isSubscribable = false;
+
     protected bool $display_terms = false;
 
-
-    public function __construct(?PaymentProvider $providerModel,StripeClient $api_key)
+    public function __construct(?PaymentProvider $providerModel, StripeClient $api_key)
     {
         $this->providerModel = $providerModel;
         $this->api = $api_key;
@@ -44,35 +51,33 @@ class StripePaymentService implements PaymentProviderContract,StripePaymentServi
     {
         // Stripe Payment Mode (PaymentIntent as intent, CheckoutSession as checkout)
         $mode = config('payment-provider.providers.stripe.mode');
-        throw_unless(in_array($mode,['intent','checkout']),'stripe payment provider must be ');
+        throw_unless(in_array($mode, ['intent', 'checkout']), 'stripe payment provider must be ');
         // Setup Stripe
         $modeData = config('payment-provider.providers.stripe.mode_data')[$mode];
         $this->intentMode = $mode == 'intent';
         $this->checkoutSessionMode = $mode == 'checkout';
         // Setup Payment Intent
-        if ($this->intentMode)
-        {
+        if ($this->intentMode) {
             $this->intentModeType = $modeData['type'];
-            if ($this->intentModeType == 'wallet')
-            {
+            if ($this->intentModeType == 'wallet') {
                 $this->isWallet = true;
                 $this->wallet_type = $modeData['wallet']['type'];
 
             }
         }
 
-        $this->isSubscribable =  config('payment-provider.providers.stripe.subscription');
+        $this->isSubscribable = config('payment-provider.providers.stripe.subscription');
         $this->takeTransactionFee = config('payment-provider.providers.stripe.take_transaction_fee');
         $this->transactionFee = config('payment-provider.providers.stripe.fee_amount');
         $this->display_terms = config('payment-provider.providers.stripe.terms');
 
     }
 
-
     public function hasIntent(): static
     {
         $this->intentMode = true;
         $this->checkoutSessionMode = false;
+
         return $this;
     }
 
@@ -80,17 +85,14 @@ class StripePaymentService implements PaymentProviderContract,StripePaymentServi
     {
         $this->checkoutSessionMode = true;
         $this->intentMode = false;
+
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function displayTerms(): bool
     {
         return $this->display_terms;
     }
-
 
     public function isIntent(): bool
     {
@@ -122,7 +124,6 @@ class StripePaymentService implements PaymentProviderContract,StripePaymentServi
         return $this->wallet_type;
     }
 
-
     public function isSubscribable(): bool
     {
         return $this->isSubscribable;
@@ -138,99 +139,63 @@ class StripePaymentService implements PaymentProviderContract,StripePaymentServi
         return $this->transactionFee;
     }
 
-
-
-
-
-    /**
-     * @return PaymentProviderOrderContract
-     */
     public function order(): PaymentProviderOrderContract
     {
-        return new OrderAction($this->api,$this);
+        return new OrderAction($this->api, $this);
     }
 
-    /**
-     * @return PaymentProviderMethodContract
-     */
     public function payment(): PaymentProviderMethodContract
     {
         // TODO: Implement payment() method.
     }
 
-    /**
-     * @return PaymentProviderVerificationContract
-     */
     public function verify(): PaymentProviderVerificationContract
     {
-        return new VerifyAction($this->api,$this);
+        return new VerifyAction($this->api, $this);
     }
 
-    /**
-     * @return PaymentProviderRefundContract
-     */
     public function refund(): PaymentProviderRefundContract
     {
-        return new RefundAction($this->api,$this);
+        return new RefundAction($this->api, $this);
     }
 
-    /**
-     * @return object
-     */
     public function getApi(): object
     {
         return $this->api;
     }
 
-    /**
-     * @return string
-     */
     public function getProviderName(): string
     {
         return 'stripe';
     }
 
-    /**
-     * @return string
-     */
     public function getClass(): string
     {
         return get_class($this);
     }
 
-    public function getProvider():static|PaymentProviderContract
+    public function getProvider(): static|PaymentProviderContract
     {
         return $this;
     }
 
-    public function getModel():?PaymentProvider
+    public function getModel(): ?PaymentProvider
     {
         return $this->providerModel;
     }
 
-
-    /**
-     * @param string $error
-     * @return void
-     */
     public function setError(string $error): void
     {
         $this->error = $error;
     }
 
-    /**
-     * @return string|null
-     */
     public function getError(): ?string
     {
         return $this->error;
     }
 
-    /**
-     * @return PaymentProviderPayoutContract
-     */
     public function payout(): PaymentProviderPayoutContract
     {
-        throw_unless(0>1,'Wrong Payment Provider Selected For Payout');
+        throw_unless(0 > 1, 'Wrong Payment Provider Selected For Payout');
     }
 }

@@ -7,16 +7,8 @@ use App\Models\Category\Category;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-
 class VoucherHelper extends PromotionManager
 {
-
-
-
-
-    /**
-     * @return array|Collection
-     */
     public function getCondition(): array|Collection
     {
 
@@ -45,19 +37,7 @@ class VoucherHelper extends PromotionManager
 
         return collect(array_merge($conditions[0]->toArray(), $conditions[1]->toArray(), $conditions[2]->toArray()));
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
     protected function getOperator(string $operator_type): array
     {
@@ -161,6 +141,4 @@ class VoucherHelper extends PromotionManager
 
         return $attrBag;
     }
-
-
 }

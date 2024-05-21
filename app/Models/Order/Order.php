@@ -6,15 +6,12 @@ use App\Helpers\Money\MoneyCast;
 use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Payment\Payment;
-use App\Models\Payment\PaymentProvider;
 use App\Models\Payment\Refund;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Order\OrderShipment;
-use App\Models\Order\OrderInvoice;
 
 /**
  * @property $shipping_is_billing;
@@ -36,15 +33,25 @@ class Order extends Model
 
     // order status
     const PROCESSING = 'processing';
+
     const PENDING = 'pending';
+
     const PAYMENT_FAILED = 'payment_failed';
+
     public const REVIEW = 'review';
+
     public const ACCEPTED = 'accepted';
+
     public const READYTOSHIP = 'readytoship';
+
     public const INTRANSIT = 'intransit';
+
     const COMPLETED = 'completed';
+
     public const CANCELLED = 'cancelled';
+
     const CONFIRM = 'confirm';
+
     const REFUNED = 'refunded';
 
     public const StatusOptions = [
@@ -60,7 +67,6 @@ class Order extends Model
         self::CANCELLED => 'Cancelled',
         self::REFUNED => 'Refunded',
     ];
-
 
     protected $fillable = [
         'uuid',
@@ -92,9 +98,8 @@ class Order extends Model
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class,'customer_id','id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
-
 
     public function payment(): HasOne
     {
@@ -103,19 +108,17 @@ class Order extends Model
 
     public function refunds()
     {
-        return $this->hasMany(Refund::class, 'order_id','id');
+        return $this->hasMany(Refund::class, 'order_id', 'id');
     }
-
-
 
     public function billingAddress(): BelongsTo
     {
-        return $this->belongsTo(Address::class,'billing_address_id','id');
+        return $this->belongsTo(Address::class, 'billing_address_id', 'id');
     }
 
     public function shippingAddress(): BelongsTo
     {
-        return $this->belongsTo(Address::class,'shipping_address_id','id');
+        return $this->belongsTo(Address::class, 'shipping_address_id', 'id');
     }
 
     public function orderProducts(): HasMany
@@ -123,18 +126,13 @@ class Order extends Model
         return $this->hasMany(OrderProduct::class, 'order_id', 'id');
     }
 
-
-
     public function shipments(): HasMany
     {
-        return $this->hasMany(OrderShipment::class,'order_id','id');
+        return $this->hasMany(OrderShipment::class, 'order_id', 'id');
     }
 
     public function invoices()
     {
-        return $this->hasMany(OrderInvoice::class,'order_id','id');
+        return $this->hasMany(OrderInvoice::class, 'order_id', 'id');
     }
-
-
-
 }

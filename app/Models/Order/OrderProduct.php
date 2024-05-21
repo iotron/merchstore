@@ -15,21 +15,17 @@ class OrderProduct extends Model
 {
     use HasFactory;
 
-
-//    public const PROCESSING = 'processing';
-//    public const SHIPPED = 'shipped';
-//    public const RETURNED = 'returned';
-//    public const RESTOCKED_AFTER_RETURN = 'restock_after_return';
-//
-//    public const STATUS_OPTIONS = [
-//        self::PROCESSING => 'Processing',
-//        self::SHIPPED => 'Shipped',
-//        self::RETURNED => 'Returned',
-//        self::RESTOCKED_AFTER_RETURN => 'Restock',
-//    ];
-
-
-
+    //    public const PROCESSING = 'processing';
+    //    public const SHIPPED = 'shipped';
+    //    public const RETURNED = 'returned';
+    //    public const RESTOCKED_AFTER_RETURN = 'restock_after_return';
+    //
+    //    public const STATUS_OPTIONS = [
+    //        self::PROCESSING => 'Processing',
+    //        self::SHIPPED => 'Shipped',
+    //        self::RETURNED => 'Returned',
+    //        self::RESTOCKED_AFTER_RETURN => 'Restock',
+    //    ];
 
     protected $fillable = [
         'quantity',
@@ -40,7 +36,7 @@ class OrderProduct extends Model
         'has_tax',
         'product_id',
         'status',
-        'status_feedback'
+        'status_feedback',
     ];
 
     protected $casts = [
@@ -51,35 +47,28 @@ class OrderProduct extends Model
         'total' => MoneyCast::class,
     ];
 
-
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
-
 
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
-
     public function shipment(): BelongsToMany
     {
-        return $this->belongsToMany(OrderShipment::class, 'shipment_products','order_product_id');
+        return $this->belongsToMany(OrderShipment::class, 'shipment_products', 'order_product_id');
     }
-
 
     public function refund(): HasOne
     {
-        return $this->hasOne(Refund::class,'order_product_id','id');
+        return $this->hasOne(Refund::class, 'order_product_id', 'id');
     }
 
     public function invoices()
     {
-        return $this->hasMany(OrderInvoice::class,'order_product_id','id');
+        return $this->hasMany(OrderInvoice::class, 'order_product_id', 'id');
     }
-
-
-
 }

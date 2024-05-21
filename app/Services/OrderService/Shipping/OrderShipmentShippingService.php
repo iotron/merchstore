@@ -10,9 +10,10 @@ use Filament\Notifications\Notification;
 
 class OrderShipmentShippingService
 {
-
     protected ?string $error = null;
+
     protected OrderShipment $orderShipment;
+
     protected ShippingProviderContract $shippingProvider;
 
     public function __construct(OrderShipment $orderShipment, ShippingProviderContract $shippingProvider)
@@ -29,35 +30,30 @@ class OrderShipmentShippingService
         return $this->error;
     }
 
-
     protected function isShippable(): bool
     {
-        if (!is_null($this->orderShipment->weight) && !is_null($this->orderShipment->length) && !is_null($this->orderShipment->breadth) && !is_null($this->orderShipment->height))
-        {
+        if (! is_null($this->orderShipment->weight) && ! is_null($this->orderShipment->length) && ! is_null($this->orderShipment->breadth) && ! is_null($this->orderShipment->height)) {
             return true;
         }
         $this->error = 'OrderShipment::'.$this->orderShipment->id.' - not fulfil this parameters "weight","length","breadth","height" ';
+
         return false;
     }
 
-
-    public function shipped():bool
+    public function shipped(): bool
     {
-        if ($this->isShippable())
-        {
+        if ($this->isShippable()) {
             $newProviderOrder = $this->shippingProvider->order()->create($this->orderShipment);
 
-            if (!$this->isFailed($newProviderOrder))
-            {
+            if (! $this->isFailed($newProviderOrder)) {
                 // Fetch Full Order Details From Provider
                 $orderDetails = $this->shippingProvider->order()->fetch($newProviderOrder['order_id']);
                 // Fetch Full Tracking Details From Provider
-                $trackingInfo =  $this->shippingProvider->tracking()->shipment($newProviderOrder['shipment_id']);
+                $trackingInfo = $this->shippingProvider->tracking()->shipment($newProviderOrder['shipment_id']);
 
                 // Get Tracking ID
                 $trackingId = null;
-                if (isset($trackingInfo[0]['tracking_data']['shipment_track'][0]['awb_code']))
-                {
+                if (isset($trackingInfo[0]['tracking_data']['shipment_track'][0]['awb_code'])) {
                     $trackingId = $trackingInfo[0]['tracking_data']['shipment_track'][0]['awb_code'];
                 }
                 // Get Tracking Activities
@@ -82,7 +78,7 @@ class OrderShipmentShippingService
                     'provider_channel_id' => $channelID,
                     'status' => OrderShipment::READYTOSHIP,
                     'last_update' => now(),
-                    'shipping_provider_id' => $this->shippingProvider->getModel()->id
+                    'shipping_provider_id' => $this->shippingProvider->getModel()->id,
                 ];
 
                 $this->orderShipment->fill($insertableData)->save();
@@ -94,22 +90,21 @@ class OrderShipmentShippingService
         return is_null($this->error);
     }
 
-
-    protected function isFailed(array $newProviderOrder):bool
+    protected function isFailed(array $newProviderOrder): bool
     {
-        if (isset($newProviderOrder['message']))
-        {
+        if (isset($newProviderOrder['message'])) {
             // has error
             // Pickup location need to added.. in shiprocket.. Wrong Pickup location entered. Please choose one location from the data given
             $this->error = $newProviderOrder['message'];
             // Throw a Notification (Filament)
-//            Notification::make()
-//                ->danger()
-//                ->title('OrderShipment ID:'.$this->orderShipment->id.' Failed For Shipped!')
-//                ->body('Shipping Request Try To Placed With '.ucwords($this->shippingProvider->getProviderName()))
-//                ->send();
+            //            Notification::make()
+            //                ->danger()
+            //                ->title('OrderShipment ID:'.$this->orderShipment->id.' Failed For Shipped!')
+            //                ->body('Shipping Request Try To Placed With '.ucwords($this->shippingProvider->getProviderName()))
+            //                ->send();
         }
-        return !is_null($this->error);
+
+        return ! is_null($this->error);
     }
 
     protected function updateOrderStatus()
@@ -117,10 +112,8 @@ class OrderShipmentShippingService
         $order = $this->orderShipment->order;
 
         $order->fill([
-            'status' => Order::READYTOSHIP
+            'status' => Order::READYTOSHIP,
         ])->save();
 
     }
-
-
 }

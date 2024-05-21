@@ -17,12 +17,16 @@ class Payment extends Model
     use HasFactory;
 
     const PENDING = 'pending';
-    const PROCESSING = 'processing';
-    const PAYMENT_FAILED = 'payment_failed';
-    const COMPLETED = 'completed';
-    const REFUND = 'refund';
-    const CANCEL_REFUND = 'cancel_refund';
 
+    const PROCESSING = 'processing';
+
+    const PAYMENT_FAILED = 'payment_failed';
+
+    const COMPLETED = 'completed';
+
+    const REFUND = 'refund';
+
+    const CANCEL_REFUND = 'cancel_refund';
 
     public const STATUS_OPTION = [
         self::PENDING => 'Pending',
@@ -30,9 +34,8 @@ class Payment extends Model
         self::PROCESSING => 'Processing',
         self::COMPLETED => 'Completed',
         self::PAYMENT_FAILED => 'Payment Failed',
-        self::REFUND => 'Refund'
+        self::REFUND => 'Refund',
     ];
-
 
     protected $fillable = [
         'receipt',
@@ -52,9 +55,8 @@ class Payment extends Model
         'status',
         'expire_at',
         'payment_provider_id',
-        'customer_id'
+        'customer_id',
     ];
-
 
     protected $casts = [
         'details' => 'array',
@@ -64,26 +66,23 @@ class Payment extends Model
         'total' => MoneyCast::class,
     ];
 
-
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class,'customer_id','id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     public function order(): BelongsTo
     {
-        return $this->belongsTo(Order::class,'order_id','id');
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
-
 
     public function provider(): BelongsTo
     {
-        return $this->belongsTo(PaymentProvider::class,'payment_provider_id','id');
+        return $this->belongsTo(PaymentProvider::class, 'payment_provider_id', 'id');
     }
 
     public function refunds(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Refund::class,'payment_id','id');
+        return $this->hasMany(Refund::class, 'payment_id', 'id');
     }
-
 }

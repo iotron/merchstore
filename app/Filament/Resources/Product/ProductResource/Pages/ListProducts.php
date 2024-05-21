@@ -26,13 +26,7 @@ class ListProducts extends ListRecords
         ];
     }
 
-
-
-
-
-
-
-    public  function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -53,15 +47,15 @@ class ListProducts extends ListRecords
                     ->label('Status')
                     ->sortable()
                     ->badge()
-                    ->formatStateUsing(function ($state){
+                    ->formatStateUsing(function ($state) {
                         return ucfirst($state);
                     })
                     ->colors([
-                    'primary',
-                    'danger' => 'draft',
-                    'warning' => 'review',
-                    'success' => 'published',
-                ]),
+                        'primary',
+                        'danger' => 'draft',
+                        'warning' => 'review',
+                        'success' => 'published',
+                    ]),
                 TextColumn::make('view_count')->label('Views')->toggleable()->sortable(),
                 TextColumn::make('popularity')->label('Popularity')->toggleable()->sortable(),
                 TextColumn::make('created_at')
@@ -81,10 +75,4 @@ class ListProducts extends ListRecords
                 DeleteBulkAction::make(),
             ]);
     }
-
-
-
-
-
-
 }

@@ -9,10 +9,10 @@ use App\Models\Product\Product;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -22,16 +22,14 @@ class Customer extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory,Notifiable;
 
-
-
     protected $fillable = [
         'name',
         'email',
         'contact',
         'password',
         'email_verified',
-//        'referrer',
-//        'has_push',
+        //        'referrer',
+        //        'has_push',
         //'whatsapp',
     ];
 
@@ -44,22 +42,15 @@ class Customer extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-
-
-    /**
-     * @return BelongsTo
-     */
     public function group(): BelongsTo
     {
         return $this->belongsTo(CustomerGroup::class, 'customer_group_id');
     }
 
-
     public function socials()
     {
         return $this->hasMany(CustomerSocial::class, 'customer_id', 'id');
     }
-
 
     /**
      * @return MorphMany
@@ -69,25 +60,19 @@ class Customer extends Authenticatable implements MustVerifyEmail
         return $this->morphMany(Address::class, 'addressable');
     }
 
-
     public function cart(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class,'cart_customer')
-            ->withPivot('quantity','discount')->withTimestamps();
+        return $this->belongsToMany(Product::class, 'cart_customer')
+            ->withPivot('quantity', 'discount')->withTimestamps();
     }
 
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class,'customer_id','id');
+        return $this->hasMany(Payment::class, 'customer_id', 'id');
     }
-
 
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class,'customer_id','id');
+        return $this->hasMany(Order::class, 'customer_id', 'id');
     }
-
-
-
-
 }

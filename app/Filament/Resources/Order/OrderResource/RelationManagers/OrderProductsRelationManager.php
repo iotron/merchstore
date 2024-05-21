@@ -8,9 +8,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderProductsRelationManager extends RelationManager
 {
@@ -35,19 +33,19 @@ class OrderProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('product.sku')->label('SKU'),
                 Tables\Columns\TextColumn::make('quantity')->label('Quantity'),
                 Tables\Columns\TextColumn::make('amount')->label('Amount')
-                    ->formatStateUsing(function ($state){
+                    ->formatStateUsing(function ($state) {
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),
                 Tables\Columns\TextColumn::make('discount')->label('Discount')
-                    ->formatStateUsing(function ($state){
+                    ->formatStateUsing(function ($state) {
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),
                 Tables\Columns\TextColumn::make('tax')->label('Tax')
-                    ->formatStateUsing(function ($state){
+                    ->formatStateUsing(function ($state) {
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),
                 Tables\Columns\TextColumn::make('total')->label('Total')
-                    ->formatStateUsing(function ($state){
+                    ->formatStateUsing(function ($state) {
                         return ($state instanceof Money) ? $state->formatted() : $state;
                     }),
             ])
@@ -58,13 +56,15 @@ class OrderProductsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->fillForm(function (Model $record){
+                Tables\Actions\ViewAction::make()->fillForm(function (Model $record) {
                     $data = $record->toArray();
+
                     return $this->normalizeFillableData($data);
                 }),
                 Tables\Actions\EditAction::make()
-                    ->fillForm(function (Model $record){
+                    ->fillForm(function (Model $record) {
                         $data = $record->toArray();
+
                         return $this->normalizeFillableData($data);
                     }),
                 Tables\Actions\DeleteAction::make(),
@@ -76,20 +76,18 @@ class OrderProductsRelationManager extends RelationManager
             ]);
     }
 
-
-
-    public function normalizeFillableData(array $data):array
+    public function normalizeFillableData(array $data): array
     {
         $data['amount'] = ($data['amount'] instanceof Money) ? $data['amount']->getAmount() : $data['amount'];
         $data['discount'] = ($data['discount'] instanceof Money) ? $data['discount']->getAmount() : $data['discount'];
         $data['tax'] = ($data['tax'] instanceof Money) ? $data['tax']->getAmount() : $data['tax'];
         $data['total'] = ($data['total'] instanceof Money) ? $data['total']->getAmount() : $data['total'];
-        if (isset($data['product']))
-        {
+        if (isset($data['product'])) {
             $data['product']['base_price'] = ($data['product']['base_price'] instanceof Money) ? $data['product']['base_price']->getAmount() : $data['product']['base_price'];
-            $data['product']['tax_amount'] =  ($data['product']['tax_amount'] instanceof Money) ? $data['product']['tax_amount']->getAmount() : $data['product']['tax_amount'];
-            $data['product']['price'] =  ($data['product']['price'] instanceof Money) ? $data['product']['price']->getAmount() : $data['product']['price'];
+            $data['product']['tax_amount'] = ($data['product']['tax_amount'] instanceof Money) ? $data['product']['tax_amount']->getAmount() : $data['product']['tax_amount'];
+            $data['product']['price'] = ($data['product']['price'] instanceof Money) ? $data['product']['price']->getAmount() : $data['product']['price'];
         }
+
         return $data;
     }
 }

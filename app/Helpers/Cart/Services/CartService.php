@@ -13,20 +13,27 @@ use Illuminate\Support\Facades\App;
 
 abstract class CartService implements CartServiceContract
 {
-
     protected Customer|Authenticatable|Model $customer;
+
     protected bool $changed = false;
+
     protected array $errors = [];
+
     protected ?string $couponCode = null;
+
     public int $totalQuantity = 0;
-    protected bool $validCoupon=false;
+
+    protected bool $validCoupon = false;
+
     protected ?VoucherCode $couponModel = null;
 
     protected ?Money $subTotal = null;
-    protected ?Money $taxTotal = null;
-    protected ?Money $discountTotal = null;
-    protected ?Money $total = null;
 
+    protected ?Money $taxTotal = null;
+
+    protected ?Money $discountTotal = null;
+
+    protected ?Money $total = null;
 
     protected array $meta = [];
 
@@ -40,7 +47,6 @@ abstract class CartService implements CartServiceContract
         $this->total = new Money(0.00);
     }
 
-
     public function getCustomer(): Customer|Authenticatable
     {
         return $this->customer;
@@ -51,7 +57,7 @@ abstract class CartService implements CartServiceContract
         return $this->couponCode;
     }
 
-    public function getCouponModel():?VoucherCode
+    public function getCouponModel(): ?VoucherCode
     {
         return $this->couponModel;
     }
@@ -61,12 +67,12 @@ abstract class CartService implements CartServiceContract
         return $this->changed;
     }
 
-    public function setError(string $msg):void
+    public function setError(string $msg): void
     {
         $this->errors[] = $msg;
     }
 
-    public function getErrors():array
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -75,7 +81,6 @@ abstract class CartService implements CartServiceContract
     {
         $this->subTotal = $subTotal;
     }
-
 
     public function setTaxTotal(Money $taxTotal)
     {
@@ -87,56 +92,52 @@ abstract class CartService implements CartServiceContract
         $this->total = $total;
     }
 
-    public function setMeta(array $meta=[])
+    public function setMeta(array $meta = [])
     {
         $this->meta = $meta;
     }
 
-
-
     public function getAttribute($attribute)
     {
-        if (property_exists($this, $attribute))
-        {
+        if (property_exists($this, $attribute)) {
             return $this->$attribute;
-        }else{
+        } else {
             $this->setError($attribute.' not present in CartService');
+
             return null;
         }
     }
 
-    public function setAttribute(int|string $attribute, mixed $data):void
+    public function setAttribute(int|string $attribute, mixed $data): void
     {
-        throw_unless(property_exists($this, $attribute),$attribute.' not present in CartService');
+        throw_unless(property_exists($this, $attribute), $attribute.' not present in CartService');
         $this->$attribute = $data;
     }
-
-
 
     public function isEmpty(): bool
     {
         return $this->customer->cart->sum('pivot.quantity') === 0;
     }
 
-    public function products():Collection
+    public function products(): Collection
     {
         if (App::runningInConsole()) {
-            if ($this->customer->cart->count())
-            {
+            if ($this->customer->cart->count()) {
                 return $this->customer->cart;
-            }else{
+            } else {
                 return $this->customer->fresh()->cart;
             }
         }
+
         return $this->customer->cart;
     }
 
     public function getProduct()
     {
-        if ($this->products()->count())
-        {
+        if ($this->products()->count()) {
             return $this->products()->first();
         }
+
         return null;
 
     }
@@ -145,6 +146,7 @@ abstract class CartService implements CartServiceContract
     {
 
         $this->totalQuantity = $this->products()->sum('pivot.quantity');
+
         return $this->totalQuantity;
     }
 
@@ -161,44 +163,39 @@ abstract class CartService implements CartServiceContract
         });
     }
 
-
     /**
      * Cart CURD Methods
      */
-
     public function add(int $itemID, int $quantity): void
     {
 
         $existIDs = $this->customer->cart->pluck('id')->toArray();
 
-        if (in_array($itemID,$existIDs))
-        {
+        if (in_array($itemID, $existIDs)) {
             // Update Exist Product/Item Id Quantity In Cart
-            $this->update($itemID,$quantity);
+            $this->update($itemID, $quantity);
 
-        }else{
+        } else {
             // Fresh Add in Cart
-            $this->customer->cart()->attach($itemID,['quantity' => $quantity]);
+            $this->customer->cart()->attach($itemID, ['quantity' => $quantity]);
         }
 
     }
 
     public function update(int $itemID, int $quantity): void
     {
-        $this->customer->cart()->updateExistingPivot($itemID,[
-            'quantity' => $quantity
+        $this->customer->cart()->updateExistingPivot($itemID, [
+            'quantity' => $quantity,
         ]);
     }
-
 
     public function delete(int $itemID): void
     {
 
-        if ($this->products()->contains('id',$itemID))
-        {
+        if ($this->products()->contains('id', $itemID)) {
             $this->customer->cart()->detach($itemID);
 
-        }else{
+        } else {
             $this->errors[] = 'product not found!';
         }
     }
@@ -208,7 +205,6 @@ abstract class CartService implements CartServiceContract
         $this->customer->cart()->detach();
     }
 
-
     public function reset()
     {
         $this->empty();
@@ -217,82 +213,72 @@ abstract class CartService implements CartServiceContract
         }
     }
 
-
     // Bulk Operation
 
     public function addBulk(array $products): void
     {
         $this->customer->cart()->syncWithoutDetaching($this->getStorePayload($products));
     }
+
     protected function getStorePayload(array $items): array
     {
-        return collect($items)->keyBy('id')->map(function ($item){
-            return [ 'quantity' => $item['quantity'] + $this->getCurrentQuantity($item['id']) ];
+        return collect($items)->keyBy('id')->map(function ($item) {
+            return ['quantity' => $item['quantity'] + $this->getCurrentQuantity($item['id'])];
         })->toArray();
     }
 
     protected function getCurrentQuantity($itemID): int
     {
-        if ($product = $this->products()->where('id',$itemID)->first())
-        {
+        if ($product = $this->products()->where('id', $itemID)->first()) {
             return $product->pivot->quantity;
         }
+
         return 0;
     }
 
-
     // COUPON (VOUCHER CODE) HANDLES
 
-
-
-    public function setCouponStatus(bool $status):void
+    public function setCouponStatus(bool $status): void
     {
         $this->validCoupon = $status;
     }
+
     public function getCouponStatus(): bool
     {
         return $this->validCoupon;
     }
 
-    public function setCouponModel(?VoucherCode $voucherCode=null)
+    public function setCouponModel(?VoucherCode $voucherCode = null)
     {
         $this->couponModel = $voucherCode;
     }
 
-     /**
-      * @param string $code
-      * @return void
-      */
-     public function addCoupon(string $code): void
-     {
-         $couponService = new CartCouponService($this);
-         $couponService->validated($code);
+    public function addCoupon(string $code): void
+    {
+        $couponService = new CartCouponService($this);
+        $couponService->validated($code);
 
-         if (!$couponService->isValid())
-         {
-             $this->errors[] = 'coupon code not applicable';
-         }else{
-             $this->couponCode = $code;
-         }
-     }
+        if (! $couponService->isValid()) {
+            $this->errors[] = 'coupon code not applicable';
+        } else {
+            $this->couponCode = $code;
+        }
+    }
 
-     /**
-      * @param string $code
-      * @return bool
-      */
-     public function removeCoupon(string $code): bool
-     {
-         if (!is_null($this->couponCode) && $this->couponCode == $code)
-         {
-             $couponService = new CartCouponService($this);
-             $this->validCoupon = false;
-             session()->forget('coupon');
-             $this->couponCode = null;
-             $couponService->destroy();
-             return true;
-         }else{
-             $this->errors[] = 'no coupon code found for remove';
-             return false;
-         }
-     }
- }
+    public function removeCoupon(string $code): bool
+    {
+        if (! is_null($this->couponCode) && $this->couponCode == $code) {
+            $couponService = new CartCouponService($this);
+            $this->validCoupon = false;
+            session()->forget('coupon');
+            $this->couponCode = null;
+            $couponService->destroy();
+
+            return true;
+        } else {
+            $this->errors[] = 'no coupon code found for remove';
+
+            return false;
+        }
+    }
+}

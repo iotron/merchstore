@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Console\Commands\Support\UserCreation;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\App;
@@ -29,16 +28,12 @@ class JetPaxInstall extends Command
      *
      * @return int
      */
-
-
     private bool $canRun = false;
 
     private array $bag = [];
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {
@@ -50,8 +45,8 @@ class JetPaxInstall extends Command
         $this->canRun();
 
         if ($this->canRun) {
-            $this->warn("iotron: Preparation Complete...");
-            $this->info("iotron: Starting...");
+            $this->warn('iotron: Preparation Complete...');
+            $this->info('iotron: Starting...');
 
             $this->setAppKey();
             $this->migrateTable();
@@ -61,8 +56,6 @@ class JetPaxInstall extends Command
             // $this->resetCache();
             // $this->composerDumpAutoload();
 
-
-
             // waiting for 2 seconds
             $this->warn('iotron: Please wait...');
             sleep(2);
@@ -70,9 +63,10 @@ class JetPaxInstall extends Command
             sleep(2);
             $this->info('-------------------------------');
             $this->info('Congratulations!');
-            $this->info('The installation has been finished and you can now use ' . config('app.name'));
+            $this->info('The installation has been finished and you can now use '.config('app.name'));
             $this->line('Made With <3 @iotron');
         }
+
         return 1;
     }
 
@@ -84,13 +78,13 @@ class JetPaxInstall extends Command
             $this->warn('iotron: Please wait...');
             sleep(2);
             if (App::version() > 10) {
-                $this->bag[] = ['Framework', 'Pass [' . App::version() . ']', 'OK'];
+                $this->bag[] = ['Framework', 'Pass ['.App::version().']', 'OK'];
             } else {
                 $this->canRun = false;
-                $this->bag[] = ['Framework', 'Fail', 'Minimum v.9 And Currently have :' . App::version()];
+                $this->bag[] = ['Framework', 'Fail', 'Minimum v.9 And Currently have :'.App::version()];
             }
             if (DB::connection()->getDatabaseName()) {
-                $this->bag[] = ['Database', 'Active [' . DB::connection()->getDatabaseName() . ']', 'OK'];
+                $this->bag[] = ['Database', 'Active ['.DB::connection()->getDatabaseName().']', 'OK'];
             } else {
                 $this->canRun = false;
                 $this->bag[] = ['Database', 'InActive', 'Check Your DB Credentials'];
@@ -102,7 +96,7 @@ class JetPaxInstall extends Command
                 $this->bag
             );
         } else {
-            $this->error("iotron: Please Correct The App Version And Database Credentials for installation...");
+            $this->error('iotron: Please Correct The App Version And Database Credentials for installation...');
         }
     }
 
@@ -128,7 +122,7 @@ class JetPaxInstall extends Command
 
     private function seedTable()
     {
-        if ($this->confirm("iotron: Do You Wish To Seed Dummy Records", true)) {
+        if ($this->confirm('iotron: Do You Wish To Seed Dummy Records', true)) {
             // waiting for 2 seconds
             $this->warn('iotron: Please wait...');
             sleep(2);
@@ -148,13 +142,13 @@ class JetPaxInstall extends Command
             $this->warn('iotron: Please wait...');
             sleep(2);
 
-             $this->createSuperAdmin();
+            $this->createSuperAdmin();
         }
     }
 
     private function storageLink()
     {
-        if ($this->confirm("iotron: Do You Wish To Symlink Storage Directory?", true)) {
+        if ($this->confirm('iotron: Do You Wish To Symlink Storage Directory?', true)) {
             // waiting for 2 seconds
             $this->warn('iotron: Please wait...');
             sleep(2);
@@ -194,7 +188,7 @@ class JetPaxInstall extends Command
 
     private function composerDumpAutoload()
     {
-        if ($this->confirm("iotron: Do You Wish To Dump Composer For Auto loading Everything?", true)) {
+        if ($this->confirm('iotron: Do You Wish To Dump Composer For Auto loading Everything?', true)) {
             // waiting for 2 seconds
             $this->warn('iotron: Please wait...');
             sleep(2);

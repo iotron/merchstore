@@ -18,7 +18,7 @@ class ProductFeedbackResource extends JsonResource
             'customer' => $this->customer->name,
             'product' => $this->product->name,
             'rating' => $this->rating,
-            'comment' => $this->comment
+            'comment' => $this->comment,
         ];
     }
 }

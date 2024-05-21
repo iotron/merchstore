@@ -14,11 +14,14 @@ class Refund extends Model
     use HasFactory;
 
     const PENDING = 'pending';
-    const PROCESSING = 'processing';
-    const FAILED = 'payment_failed';
-    const COMPLETED = 'completed';
-    const CANCEL = 'cancel';
 
+    const PROCESSING = 'processing';
+
+    const FAILED = 'payment_failed';
+
+    const COMPLETED = 'completed';
+
+    const CANCEL = 'cancel';
 
     public const STATUS_OPTION = [
         self::PENDING => 'Pending',
@@ -27,7 +30,6 @@ class Refund extends Model
         self::COMPLETED => 'Completed',
         self::FAILED => 'Payment Failed',
     ];
-
 
     protected $fillable = [
         'refund_id',
@@ -44,9 +46,8 @@ class Refund extends Model
         'error',
         'order_id',
         'verified',
-		'provider_payment_id'
+        'provider_payment_id',
     ];
-
 
     protected $casts = [
         'notes' => 'array',
@@ -54,28 +55,21 @@ class Refund extends Model
         'details' => 'array',
         'error' => 'array',
         'verified' => 'bool',
-        'amount' => MoneyCast::class
+        'amount' => MoneyCast::class,
     ];
-
 
     public function payment(): BelongsTo
     {
-        return $this->belongsTo(Payment::class,'payment_id','id');
+        return $this->belongsTo(Payment::class, 'payment_id', 'id');
     }
 
     public function order(): BelongsTo
     {
-        return $this->belongsTo(Order::class,'order_id','id');
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
     public function orderProduct(): BelongsTo
     {
-        return $this->belongsTo(OrderProduct::class,'order_product_id','id');
+        return $this->belongsTo(OrderProduct::class, 'order_product_id', 'id');
     }
-
-
-
-
-
-
 }

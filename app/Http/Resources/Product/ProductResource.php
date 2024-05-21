@@ -4,12 +4,9 @@ namespace App\Http\Resources\Product;
 
 use App\Http\Resources\Category\ThemeResource;
 use App\Http\Resources\Filter\FilterOptionIndexResource;
-use App\Http\Resources\Filter\FilterOptionResource;
 use App\Http\Resources\MediaResource;
-use App\Models\Filter\FilterOption;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends ProductIndexResource
 {
@@ -23,10 +20,10 @@ class ProductResource extends ProductIndexResource
 
         return array_merge(parent::toArray($request), [
             //
-//            'productGallerys' => [
-//                'src' => $this->getFirstMediaUrl('productGallery'),
-//                'srcset' => $this->getFirstMedia('productGallery') ? $this->getFirstMedia('productGallery')->getSrcset('optimized') : null,
-//            ],
+            //            'productGallerys' => [
+            //                'src' => $this->getFirstMediaUrl('productGallery'),
+            //                'srcset' => $this->getFirstMedia('productGallery') ? $this->getFirstMedia('productGallery')->getSrcset('optimized') : null,
+            //            ],
             'productGallery' => new MediaResource($this->getMediaCollection('productGallery')), // temp
             'returnable' => $this->is_returnable,
             'sku' => $this->sku,
@@ -49,7 +46,7 @@ class ProductResource extends ProductIndexResource
             //'filter_options' => FilterOptionIndexResource::collection($this->whenLoaded('filterOptions')),
             'filter_options' => $this->getFilterOptions(),
             'themes' => ThemeResource::collection($this->whenLoaded('themes')),
-            'feedbacks' => ProductFeedbackResource::collection($this->whenLoaded('feedbacks'))
+            'feedbacks' => ProductFeedbackResource::collection($this->whenLoaded('feedbacks')),
         ]);
     }
 
@@ -59,8 +56,7 @@ class ProductResource extends ProductIndexResource
         foreach ($this->filterOptions as $option) {
             $bag[$option->filter->display_name][] = $option->display_name;
         }
+
         return $bag;
     }
-
-
 }

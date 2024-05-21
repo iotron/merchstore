@@ -22,7 +22,6 @@ class VoucherCode extends Model
         'ends_till',
     ];
 
-
     public function voucher(): BelongsTo
     {
         return $this->belongsTo(Voucher::class);
@@ -32,7 +31,4 @@ class VoucherCode extends Model
     {
         return $this->belongsToMany(Customer::class, 'voucher_code_usages')->using(CouponUsage::class)->withPivot('times_used');
     }
-
-
-
 }

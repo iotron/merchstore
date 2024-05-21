@@ -16,20 +16,21 @@ use App\Services\PaymentService\Providers\Razorpay\Actions\PayoutAction;
 use App\Services\PaymentService\Providers\Razorpay\Actions\RefundAction;
 use App\Services\PaymentService\Providers\Razorpay\Actions\VerifyAction;
 
-
-
-
-class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentServiceContract
+class RazorpayPaymentService implements PaymentProviderContract, RazorpayPaymentServiceContract
 {
-
     private RazorpayApi $api;
+
     private ?string $error = null;
+
     protected string $speed = 'normal';
-    private ?RazorpayApi $apiX=null;
+
+    private ?RazorpayApi $apiX = null;
+
     protected bool $razorpayX = false;
+
     protected ?PaymentProvider $providerModel = null;
 
-    public function __construct(?PaymentProvider $providerModel,RazorpayApi $api,bool $activateX=false)
+    public function __construct(?PaymentProvider $providerModel, RazorpayApi $api, bool $activateX = false)
     {
 
         $this->providerModel = $providerModel;
@@ -39,16 +40,12 @@ class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentS
 
     }
 
-
-
-
     protected function discoverConfig()
     {
         $this->speed = config('payment-provider.providers.razorpay.speed');
-        if ($this->razorpayX)
-        {
-            throw_if(empty(config('services.razorpay.api_x_key')),'Razorpay-X Key not found!',500);
-            throw_if(empty(config('services.razorpay.api_x_secret')),'Razorpay-X Secret not found!',500);
+        if ($this->razorpayX) {
+            throw_if(empty(config('services.razorpay.api_x_key')), 'Razorpay-X Key not found!', 500);
+            throw_if(empty(config('services.razorpay.api_x_secret')), 'Razorpay-X Secret not found!', 500);
 
             $this->apiX = $this->getRazorpayXApi();
         }
@@ -59,70 +56,46 @@ class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentS
         return $this->speed;
     }
 
-
-    public function getModel():?PaymentProvider
+    public function getModel(): ?PaymentProvider
     {
         return $this->providerModel;
     }
 
-
-
-    /**
-     * @return PaymentProviderOrderContract
-     */
     public function order(): PaymentProviderOrderContract
     {
-        return new OrderAction($this->api,$this);
+        return new OrderAction($this->api, $this);
     }
 
-    /**
-     * @return PaymentProviderMethodContract
-     */
     public function payment(): PaymentProviderMethodContract
     {
         // TODO: Implement payment() method.
     }
 
-    /**
-     * @return PaymentProviderVerificationContract
-     */
     public function verify(): PaymentProviderVerificationContract
     {
-        return new VerifyAction($this->api,$this);
+        return new VerifyAction($this->api, $this);
     }
 
-    /**
-     * @return PaymentProviderRefundContract
-     */
     public function refund(): PaymentProviderRefundContract
     {
-        return new RefundAction($this->api,$this);
+        return new RefundAction($this->api, $this);
     }
 
-
-    /**
-     * @return PaymentProviderPayoutContract
-     */
     public function payout(): PaymentProviderPayoutContract
     {
-        return new PayoutAction($this->apiX,$this);
+        return new PayoutAction($this->apiX, $this);
     }
 
     public function contact()
     {
-        return new ContactAction($this->apiX,$this);
+        return new ContactAction($this->apiX, $this);
     }
 
     public function fundAccount()
     {
-        return new FundAccountAction($this->apiX,$this);
+        return new FundAccountAction($this->apiX, $this);
     }
 
-
-
-    /**
-     * @return object
-     */
     public function getApi(): object
     {
         return $this->api;
@@ -133,65 +106,43 @@ class RazorpayPaymentService implements PaymentProviderContract,RazorpayPaymentS
         return new RazorpayApi(config('services.razorpay.api_x_key'), config('services.razorpay.api_x_secret'));
     }
 
-    /**
-     * @return string
-     */
     public function getProviderName(): string
     {
         return 'razorpay';
     }
 
-    /**
-     * @return string
-     */
     public function getClass(): string
     {
         return get_class($this);
     }
 
-    public function getProvider():static|PaymentProviderContract
+    public function getProvider(): static|PaymentProviderContract
     {
         return $this;
     }
 
-
-    /**
-     * @param string $error
-     * @return void
-     */
     public function setError(string $error): void
     {
         $this->error = $error;
     }
 
-    /**
-     * @return string|null
-     */
     public function getError(): ?string
     {
         return $this->error;
     }
 
-
-    /**
-     * @return string
-     */
     public function getWebhookSecret(): string
     {
         return config('services.razorpay.webhook_secret');
     }
 
-
-    public function getCompanyBankAccount():string
+    public function getCompanyBankAccount(): string
     {
         return config('services.razorpay.payout.account_no');
     }
 
-    public function payoutMode():string
+    public function payoutMode(): string
     {
         return config('services.razorpay.payout.mode');
     }
-
-
-
 }

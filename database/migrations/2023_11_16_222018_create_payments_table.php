@@ -27,7 +27,6 @@ return new class extends Migration
             $table->integer('tax')->default(0);
             $table->integer('total')->default(0);
 
-
             $table->json('details')->nullable();
             $table->json('error')->nullable();
             $table->boolean('verified')->default(false);

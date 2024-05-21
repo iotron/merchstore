@@ -15,24 +15,20 @@ use App\Services\ShippingService\Providers\Custom\Actions\TrackingAction;
 
 class CustomShippingService implements ShippingProviderContract
 {
-
     private ?string $error = null;
+
     protected ShippingProvider $providerModel;
 
-    public function __construct(ShippingProvider $providerModel,mixed $api = null)
+    public function __construct(ShippingProvider $providerModel, mixed $api = null)
     {
         $this->providerModel = $providerModel;
     }
-
 
     public function getProviderName(): string
     {
         return 'custom';
     }
 
-    /**
-     * @return string
-     */
     public function getClass(): string
     {
         return get_class($this);
@@ -48,35 +44,27 @@ class CustomShippingService implements ShippingProviderContract
         return $this->providerModel;
     }
 
-    /**
-     * @param string $error
-     * @return void
-     */
     public function setError(string $error): void
     {
         $this->error = $error;
     }
 
-    /**
-     * @return string|null
-     */
     public function getError(): ?string
     {
         return $this->error;
     }
 
-    public function order():ShippingProviderActionContract
+    public function order(): ShippingProviderActionContract
     {
         return new OrderAction();
     }
-
 
     public function courier(): ShippingProviderCourierContract
     {
         return new CourierAction();
     }
 
-    public function return():ShippingProviderReturnContract
+    public function return(): ShippingProviderReturnContract
     {
         return new ReturnAction();
     }
@@ -86,10 +74,8 @@ class CustomShippingService implements ShippingProviderContract
         // TODO: Implement shipment() method.
     }
 
-    public function tracking():ShippingProviderTrackingContract
+    public function tracking(): ShippingProviderTrackingContract
     {
         return new TrackingAction();
     }
-
-
 }

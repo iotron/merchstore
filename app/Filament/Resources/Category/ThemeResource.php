@@ -11,53 +11,53 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ThemeResource extends Resource
 {
     protected static ?string $model = Theme::class;
+
     protected static ?string $slug = 'themes';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-            Forms\Components\Section::make('Req')
-                ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->required()
-                        ->columnSpan(2)
-                        ->hint(__('Max: 100'))
-                        ->maxLength(100),
-    
-                    Forms\Components\Select::make('parent_id')
-                        ->relationship('parent', 'name')
-                        ->nullable()
-                        ->columnSpan(1)
-                        ->label(__('Choose Parent Theme')),
-    
-                    Forms\Components\TextInput::make('url')
-                        ->required()
-                        ->columnSpan(3)
-                        ->hint(__('Max: 100'))
-                        ->maxLength(100),
-                    
-                ]),
+                Forms\Components\Section::make('Req')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->columnSpan(2)
+                            ->hint(__('Max: 100'))
+                            ->maxLength(100),
 
-            Forms\Components\Section::make('Banners')
-                ->schema([
-                    Forms\Components\Repeater::make('banners')
-                        ->schema([
-                            Forms\Components\TextInput::make('link')
-                                ->url(),
-                            SpatieMediaLibraryFileUpload::make('banner')
-                                ->multiple()
-                                ->collection('banners')
-                                ->columnSpan(3)
-                        ])
-                ])
+                        Forms\Components\Select::make('parent_id')
+                            ->relationship('parent', 'name')
+                            ->nullable()
+                            ->columnSpan(1)
+                            ->label(__('Choose Parent Theme')),
+
+                        Forms\Components\TextInput::make('url')
+                            ->required()
+                            ->columnSpan(3)
+                            ->hint(__('Max: 100'))
+                            ->maxLength(100),
+
+                    ]),
+
+                Forms\Components\Section::make('Banners')
+                    ->schema([
+                        Forms\Components\Repeater::make('banners')
+                            ->schema([
+                                Forms\Components\TextInput::make('link')
+                                    ->url(),
+                                SpatieMediaLibraryFileUpload::make('banner')
+                                    ->multiple()
+                                    ->collection('banners')
+                                    ->columnSpan(3),
+                            ]),
+                    ]),
             ]);
     }
 
@@ -71,11 +71,11 @@ class ThemeResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('Parent')
-                    ->relationship('parent', 'name')
+                    ->relationship('parent', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -86,14 +86,14 @@ class ThemeResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -102,5 +102,5 @@ class ThemeResource extends Resource
             'edit' => Pages\EditTheme::route('/{record}/edit'),
             'view' => Pages\ViewThemes::route('/{record}'),
         ];
-    }    
+    }
 }

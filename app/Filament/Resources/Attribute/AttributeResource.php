@@ -17,8 +17,11 @@ use Filament\Tables\Table;
 class AttributeResource extends Resource
 {
     protected static ?string $model = Filter::class;
+
     protected static ?string $navigationGroup = 'Filters';
+
     protected static ?string $slug = 'attributes';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -118,25 +121,25 @@ class AttributeResource extends Resource
                 Tables\Columns\TextColumn::make('display_name')->label(__('Name')),
                 Tables\Columns\TextColumn::make('type'),
                 //                Tables\Columns\TextColumn::make('position'),
-            Tables\Columns\IconColumn::make('is_filterable')->label(__('Filterable'))
-                        ->boolean()
-                        ->toggleable(),
-            Tables\Columns\IconColumn::make('is_configurable')->label(__('Configurable'))
-                        ->boolean()
-                        ->toggleable(),
-            Tables\Columns\IconColumn::make('is_user_defined')->label(__('User Define'))
-                        ->boolean()
-                        ->toggleable(),
-            Tables\Columns\IconColumn::make('is_required')->label(__('Required'))
-                        ->boolean()
-                        ->toggleable(),
-            Tables\Columns\IconColumn::make('is_visible_on_front')->label(__('Visibility'))
-                        ->boolean()
-                        ->toggleable(),
-            Tables\Columns\TextColumn::make('created_at')
-                        ->dateTime(),
-            Tables\Columns\TextColumn::make('updated_at')
-                        ->dateTime(),
+                Tables\Columns\IconColumn::make('is_filterable')->label(__('Filterable'))
+                    ->boolean()
+                    ->toggleable(),
+                Tables\Columns\IconColumn::make('is_configurable')->label(__('Configurable'))
+                    ->boolean()
+                    ->toggleable(),
+                Tables\Columns\IconColumn::make('is_user_defined')->label(__('User Define'))
+                    ->boolean()
+                    ->toggleable(),
+                Tables\Columns\IconColumn::make('is_required')->label(__('Required'))
+                    ->boolean()
+                    ->toggleable(),
+                Tables\Columns\IconColumn::make('is_visible_on_front')->label(__('Visibility'))
+                    ->boolean()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime(),
             ])
             ->filters([
                 //
@@ -153,7 +156,7 @@ class AttributeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\OptionsRelationManager::class
+            RelationManagers\OptionsRelationManager::class,
         ];
     }
 

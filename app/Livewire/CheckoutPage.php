@@ -10,14 +10,20 @@ use Livewire\Component;
 
 class CheckoutPage extends Component
 {
-
     protected Payment $payment;
+
     public $status;
+
     public int $timeout = 0;
+
     public bool $paymentExpire = true;
+
     public int $quantity = 0;
+
     public ?Order $order = null;
+
     public bool $payable = false;
+
     public function mount(Payment $payment, Request $request)
     {
 
@@ -46,12 +52,10 @@ class CheckoutPage extends Component
         return redirect()->to(config('app.client_url'));
     }
 
-
-
     public function render()
     {
-        return view('livewire.checkout-page',[
-            'payment' =>$this->payment,
+        return view('livewire.checkout-page', [
+            'payment' => $this->payment,
         ])->layout(AppLayout::class);
     }
 }

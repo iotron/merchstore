@@ -51,14 +51,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-
-
         Schema::create('shipment_products', function (Blueprint $table) {
             $table->foreignId('order_shipment_id')->constrained('order_shipments')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('order_product_id')->constrained('order_products')->cascadeOnUpdate()->cascadeOnDelete();
         });
-
-
 
     }
 

@@ -5,13 +5,7 @@ namespace App\Filament\Resources\Promotion;
 use App\Filament\Resources\Promotion\VoucherResource\Pages;
 use App\Filament\Resources\Promotion\VoucherResource\RelationManagers;
 use App\Models\Promotion\Voucher;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Table;
-use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class VoucherResource extends Resource
 {
@@ -20,7 +14,6 @@ class VoucherResource extends Resource
     protected static ?string $navigationGroup = 'Promotion';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
 
     public static function getRelations(): array
     {

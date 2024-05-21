@@ -22,7 +22,7 @@ class VoucherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'coupon' => 'required|string|exists:voucher_codes,code'
+            'coupon' => 'required|string|exists:voucher_codes,code',
         ];
     }
 }

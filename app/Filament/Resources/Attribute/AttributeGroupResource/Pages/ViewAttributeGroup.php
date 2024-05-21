@@ -51,6 +51,4 @@ class ViewAttributeGroup extends ViewRecord
 
             ]);
     }
-
-
 }

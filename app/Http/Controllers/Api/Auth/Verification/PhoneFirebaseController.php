@@ -7,17 +7,14 @@ use App\Models\Customer\Otp;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class PhoneFirebaseController extends Controller
 {
-
     /**
      * Check if the contact number is already registered in the system
      *
-     * @param Request $request
-     * @return JsonResponse
      * @throws ValidationException
      */
     public function checkExistingContact(Request $request): JsonResponse
@@ -25,7 +22,7 @@ class PhoneFirebaseController extends Controller
         // STEP 1: add validation rules
         $validator = Validator::make($request->all(), [
             'type' => 'bail|required|in:register,reset',
-            'contact' => 'required|numeric|min_digits:10|max_digits:10'
+            'contact' => 'required|numeric|min_digits:10|max_digits:10',
         ]);
 
         // STEP 2: if type is register, check if contact is unique
@@ -48,10 +45,6 @@ class PhoneFirebaseController extends Controller
 
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function saveVerifiedContact(Request $request): JsonResponse
     {
         // Validate the request
@@ -62,7 +55,7 @@ class PhoneFirebaseController extends Controller
             'type' => 'contact',
             'token' => Str::ulid(),
             'expires_at' => NOW()->addMinutes(30),
-            'verified_at' => NOW()
+            'verified_at' => NOW(),
         ]);
 
         // If the OTP record was successfully created or updated
@@ -79,7 +72,4 @@ class PhoneFirebaseController extends Controller
             ], 500);
         }
     }
-
-
-
 }

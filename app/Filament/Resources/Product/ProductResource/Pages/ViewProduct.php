@@ -17,7 +17,6 @@ class ViewProduct extends ViewRecord
         ];
     }
 
-
     public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
@@ -26,13 +25,10 @@ class ViewProduct extends ViewRecord
         $product['base_price'] = $product['base_price']->getAmount();
         $product['price'] = $product['price']->getAmount();
 
-
         // Add Product Flat Too
         $productFlat = $this->record->flat->toArray();
         // Fill Form With Data
         $this->form->fill(array_merge($product, $productFlat));
 
     }
-
-
 }

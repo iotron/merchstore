@@ -14,13 +14,8 @@ use Illuminate\Validation\ValidationException;
 
 class AccountController extends Controller
 {
-
-
-
     /**
      * Customer Registration
-     * @param Request $request
-     * @return JsonResponse
      */
     public function register(Request $request): JsonResponse
     {
@@ -31,12 +26,12 @@ class AccountController extends Controller
             'password' => 'bail|required',
             'c_password' => 'bail|required|same:password',
             'contact' => 'bail|nullable|numeric|min_digits:10|max_digits:15|unique:customers,contact',
-            'token' => 'required|string|exists:otps,token'
+            'token' => 'required|string|exists:otps,token',
         ]);
 
         if ($validator) {
             $otpTokenModel = Otp::firstWhere('token', $validator['token']);
-            if (!$otpTokenModel->expires_at->isPast()) {
+            if (! $otpTokenModel->expires_at->isPast()) {
                 $identifier = $otpTokenModel->identifier;
                 $type = $otpTokenModel->type;
 
@@ -70,10 +65,7 @@ class AccountController extends Controller
 
     }
 
-
     /**
-     * @param Request $request
-     * @return JsonResponse
      * @throws ValidationException
      */
     public function reset(Request $request): JsonResponse
@@ -86,7 +78,7 @@ class AccountController extends Controller
                 'method' => 'bail|required|in:email,contact',
                 'password' => 'bail|required',
                 'c_password' => 'bail|required|same:password',
-                'token' => 'required|string|exists:otps,token'
+                'token' => 'required|string|exists:otps,token',
             ],
             // do not change the validation message, view will ask customer to register based on this
             ['identifier.exists' => 'User not found!']
@@ -108,12 +100,11 @@ class AccountController extends Controller
             $validated = $validator->safe()->only(['method', 'identifier', 'password', 'token']);
 
             $otpTokenModel = Otp::firstWhere('token', $validated['token']);
-            if (!$otpTokenModel->expires_at->isPast()) {
+            if (! $otpTokenModel->expires_at->isPast()) {
 
                 if ($otpTokenModel->type !== $validated['method'] || $validated['identifier'] !== $otpTokenModel->identifier) {
                     return response()->json(['success' => false, 'message' => 'Invalid token identifier'], 500);
                 }
-
 
                 // update password
                 $user = Customer::where($validated['method'], $validated['identifier'])->update(['password' => bcrypt($validated['password'])]);
@@ -131,11 +122,9 @@ class AccountController extends Controller
                 return response()->json(['success' => false, 'message' => 'token expire'], 500);
             }
 
-
         }
 
     }
-
 
     // request token validation for reset password and register
     public function checkTokenValidity(Request $request): JsonResponse
@@ -167,9 +156,4 @@ class AccountController extends Controller
         // token passed all the validations
         return response()->json(['success' => true, 'message' => 'token validated!', 'data' => $tokenModel], 200);
     }
-
-
-
-
-
 }

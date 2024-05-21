@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Filter\Filter;
 use App\Models\Filter\FilterGroup;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -54,24 +53,14 @@ class FilterSeeder extends Seeder
                 'position' => $key,
             ]);
             $filters = $finalAttributes->whereIn('code', $data->attributes)->pluck('id');
-//            // Attach attribute
+            //            // Attach attribute
             $filterGroup->filters()->attach($filters);
         }
 
     }
 
-
-
-
-
-
-
     protected function getFromStorage(string $path)
     {
         return json_decode(Storage::disk('local')->get($path));
     }
-
-
-
-
 }

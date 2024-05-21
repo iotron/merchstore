@@ -15,8 +15,8 @@ class CustomerSocialResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'social_id' => $this->when(isset($this->social_id),$this->social_id),
-            'service' => $this->when(isset($this->service),$this->service),
+            'social_id' => $this->when(isset($this->social_id), $this->social_id),
+            'service' => $this->when(isset($this->service), $this->service),
         ];
     }
 }

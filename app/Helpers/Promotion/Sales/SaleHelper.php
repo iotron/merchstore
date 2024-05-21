@@ -8,10 +8,6 @@ use Illuminate\Support\Str;
 
 class SaleHelper extends PromotionManager
 {
-
-    /**
-     * @return Collection
-     */
     public function getCondition(): Collection
     {
         $collection = collect([[
@@ -27,11 +23,6 @@ class SaleHelper extends PromotionManager
         return $conditions[0];
     }
 
-
-    /**
-     * @param  string  $operator_type
-     * @return array
-     */
     protected function getOperator(string $operator_type): array
     {
         return match ($operator_type) {
@@ -53,11 +44,6 @@ class SaleHelper extends PromotionManager
         };
     }
 
-
-
-    /**
-     * @return Collection
-     */
     private function getChildren(): Collection
     {
         $result = collect([
@@ -73,9 +59,6 @@ class SaleHelper extends PromotionManager
         return $result->merge($this->getStaticAttributes());
     }
 
-    /**
-     * @return array
-     */
     private function getStaticAttributes(): array
     {
         $attrBag = [];
@@ -93,6 +76,4 @@ class SaleHelper extends PromotionManager
 
         return $attrBag;
     }
-
-
 }

@@ -12,11 +12,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(array_merge($this->getProductionSeeders(),$this->getLocalSeeders()));
+        $this->call(array_merge($this->getProductionSeeders(), $this->getLocalSeeders()));
     }
-
-
-
 
     protected function getProductionSeeders(): array
     {
@@ -31,7 +28,6 @@ class DatabaseSeeder extends Seeder
         ];
     }
 
-
     protected function getLocalSeeders(): array
     {
         return [
@@ -41,9 +37,7 @@ class DatabaseSeeder extends Seeder
             SaleSeeder::class,
             VoucherSeeder::class,
             ProductFeedbackSeeder::class,
-            OrderSeeder::class
+            OrderSeeder::class,
         ];
     }
-
-
 }

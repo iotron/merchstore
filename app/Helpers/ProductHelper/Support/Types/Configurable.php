@@ -8,11 +8,10 @@ use Illuminate\Support\Str;
 
 class Configurable extends AbstractSupportProductSupport
 {
-
-
     protected function getCleanProductData(array $data)
     {
         unset($data['filter_attributes']);
+
         return $data;
     }
 
@@ -23,16 +22,15 @@ class Configurable extends AbstractSupportProductSupport
         $product = parent::create($cleanData);
         // Create Product Flat
         $productFlat = $product->flat()->create([
-//            'sku' => $data['sku'],
-//            'filter_attributes' => $data['filter_attributes'],
+            //            'sku' => $data['sku'],
+            //            'filter_attributes' => $data['filter_attributes'],
         ]);
 
         // If Multiple Attributes Present
-        return $this->createMultipleVariants($data,$product);
+        return $this->createMultipleVariants($data, $product);
     }
 
-
-    private function createMultipleVariants(array $data,Product $product): Product
+    private function createMultipleVariants(array $data, Product $product): Product
     {
         // Multiple Case
         $allFilterable = $this->array_permutation($data['filter_attributes']);
@@ -44,21 +42,20 @@ class Configurable extends AbstractSupportProductSupport
             $dataBag[$key]['sku'] = $product->sku.'-variant-'.implode('-', $permutation);
             $dataBag[$key]['filter_group_id'] = $product->filter_group_id;
             $dataBag[$key]['type'] = 'simple';
-//            $dataBag[$key]['vendor_id'] = $product->vendor_id;
-  //          $dataBag[$key]['product_id'] = $product->id;
-        //    $dataBag[$key]['filter_attributes'] = $permutation;
+            //            $dataBag[$key]['vendor_id'] = $product->vendor_id;
+            //          $dataBag[$key]['product_id'] = $product->id;
+            //    $dataBag[$key]['filter_attributes'] = $permutation;
         }
         // Create Variants Products
         $variants = $product->variants()->createMany($dataBag);
 
-        $variants->each(function ($item, $key) use ($dataBag) {
-//            dd($dataBag[$key]);
+        $variants->each(function ($item, $key) {
+            //            dd($dataBag[$key]);
             // update
             $item->flat()->create();
-//            dd($dataBag[$key]['filter_attributes']);
+            //            dd($dataBag[$key]['filter_attributes']);
             // attach filterOptions  ('filter_attributes') must hold ids
             //$item->filterOptions()->attach($filter->options->first->id);
-
 
             // old
             //$item->flat()->create($dataBag[$key]);
@@ -67,11 +64,6 @@ class Configurable extends AbstractSupportProductSupport
         return $product;
     }
 
-
-    /**
-     * @param $input
-     * @return array
-     */
     public function array_permutation($input): array
     {
         $results = [];
@@ -108,25 +100,13 @@ class Configurable extends AbstractSupportProductSupport
         return $results;
     }
 
-
-
-
-
-    /**
-     * @return bool
-     */
     public function isSaleable(): bool
     {
         // TODO: Implement isSaleable() method.
     }
 
-    /**
-     * @return int
-     */
     public function haveSufficientQuantity(): int
     {
         // TODO: Implement haveSufficientQuantity() method.
     }
-
-
 }
