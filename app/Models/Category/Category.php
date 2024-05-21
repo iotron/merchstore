@@ -76,15 +76,15 @@ class Category extends Model implements HasMedia
         return 'url';
     }
 
-    public function children(): HasMany
-    {
-        return $this->hasMany(Category::class, 'parent_id', 'id');
-    }
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(static::class, 'parent_id', 'id');
-    }
+//    public function children(): HasMany
+//    {
+//        return $this->hasMany(Category::class, 'parent_id', 'id');
+//    }
+//
+//    public function parent(): BelongsTo
+//    {
+//        return $this->belongsTo(static::class, 'parent_id', 'id');
+//    }
 
     public function products(): BelongsToMany
     {

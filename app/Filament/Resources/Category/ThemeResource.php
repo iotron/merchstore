@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Category;
 
+use App\Filament\Common\Schema\AdjacencySchema\HasAdjacencyFormSchema;
 use App\Filament\Resources\Category\ThemeResource\Pages;
 use App\Models\Category\Theme;
 use Filament\Forms;
@@ -14,78 +15,29 @@ use Filament\Tables\Table;
 
 class ThemeResource extends Resource
 {
+    use HasAdjacencyFormSchema;
     protected static ?string $model = Theme::class;
 
     protected static ?string $slug = 'themes';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $recordRouteKeyName = 'url';
 
-    public static function form(Form $form): Form
+
+    public static function getForm(): array
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Req')
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->columnSpan(2)
-                            ->hint(__('Max: 100'))
-                            ->maxLength(100),
-
-                        Forms\Components\Select::make('parent_id')
-                            ->relationship('parent', 'name')
-                            ->nullable()
-                            ->columnSpan(1)
-                            ->label(__('Choose Parent Theme')),
-
-                        Forms\Components\TextInput::make('url')
-                            ->required()
-                            ->columnSpan(3)
-                            ->hint(__('Max: 100'))
-                            ->maxLength(100),
-
-                    ]),
-
-                Forms\Components\Section::make('Banners')
-                    ->schema([
-                        Forms\Components\Repeater::make('banners')
-                            ->schema([
-                                Forms\Components\TextInput::make('link')
-                                    ->url(),
-                                SpatieMediaLibraryFileUpload::make('banner')
-                                    ->multiple()
-                                    ->collection('banners')
-                                    ->columnSpan(3),
-                            ]),
-                    ]),
-            ]);
+        return self::getAdjacencyResourceFormSchema();
     }
 
-    public static function table(Table $table): Table
+    public static function getParentForm(): array
     {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('parent.name'),
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('url'),
-            ])
-            ->filters([
-                SelectFilter::make('Parent')
-                    ->relationship('parent', 'name'),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
-            ]);
+        return self::getAdjacencyResourceParentFormSchema();
     }
+
+
+
+
+
 
     public static function getRelations(): array
     {
@@ -99,8 +51,8 @@ class ThemeResource extends Resource
         return [
             'index' => Pages\ListThemes::route('/'),
             'create' => Pages\CreateTheme::route('/create'),
-            'edit' => Pages\EditTheme::route('/{record}/edit'),
-            'view' => Pages\ViewThemes::route('/{record}'),
+            'edit' => Pages\EditTheme::route('/{record:url}/edit'),
+            'view' => Pages\ViewThemes::route('/{record:url}'),
         ];
     }
 }

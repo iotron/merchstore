@@ -12,10 +12,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class Theme extends Model implements HasMedia
 {
-    use HasChildren, HasFactory, InteractsWithMedia;
+    use HasRecursiveRelationships, HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -34,15 +35,15 @@ class Theme extends Model implements HasMedia
             ->useFallbackUrl(asset('display.webp'));
     }
 
-    public function children(): HasMany
-    {
-        return $this->hasMany(Theme::class, 'parent_id', 'id');
-    }
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(static::class, 'parent_id', 'id');
-    }
+//    public function children(): HasMany
+//    {
+//        return $this->hasMany(Theme::class, 'parent_id', 'id');
+//    }
+//
+//    public function parent(): BelongsTo
+//    {
+//        return $this->belongsTo(static::class, 'parent_id', 'id');
+//    }
 
     public function products(): BelongsToMany
     {

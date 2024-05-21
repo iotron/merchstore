@@ -2,15 +2,18 @@
 
 namespace App\Filament\Resources\Category\ThemeResource\Pages;
 
+use App\Filament\Common\Schema\AdjacencySchema\HasAdjacencyTableSchema;
 use App\Filament\Resources\Category\ThemeResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListThemes extends ListRecords
 {
+    use HasAdjacencyTableSchema;
     protected static string $resource = ThemeResource::class;
 
     protected function getHeaderActions(): array
@@ -20,28 +23,14 @@ class ListThemes extends ListRecords
         ];
     }
 
-    public function table(Table $table): Table
+    public  function table(Table $table): Table
     {
         return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('url'),
-            ])
-            ->filters([
-                SelectFilter::make('Parent')
-                    ->relationship('parent', 'name'),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-            ])
+            ->columns($this->getAdjacencyTableColumns())
+            ->filters($this->getAdjacencyTableFilters())
+            ->actions($this->getAdjacencyTableActions())
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 }
