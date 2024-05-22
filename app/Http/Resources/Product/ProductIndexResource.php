@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Product;
 
+use App\Services\Iotron\MoneyService\Money;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,7 @@ class ProductIndexResource extends JsonResource
             'name' => $this->name,
             'url' => $this->url,
             'sku' => $this->sku,
-            'price' => $this->price->formatted(),
+            'price' => Money::format($this->price),
             'type' => $this->type,
             'productDisplay' => [
                 'src' => $this->getFirstMediaUrl('productDisplay'),
