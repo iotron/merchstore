@@ -79,27 +79,27 @@
                 {{--                </td>--}}
 
                 <td class="center">
-                    @if($orderProduct->discount instanceof \App\Services\Iotron\Money\Money)
+                    @if($orderProduct->discount instanceof \App\Services\Iotron\MoneyService\Money)
                         {{$orderProduct->discount->formatted()}}
                     @else
-                        {{\App\Services\Iotron\Money\Money::format($orderProduct->discount)}}
+                        {{\App\Services\Iotron\MoneyService\Money::format($orderProduct->discount)}}
                     @endif
                 </td>
 
                 <td class="center">
-                    @if($orderProduct->tax instanceof \App\Services\Iotron\Money\Money)
+                    @if($orderProduct->tax instanceof \App\Services\Iotron\MoneyService\Money)
                         {{$orderProduct->tax->formatted()}}
                     @else
-                        {{\App\Services\Iotron\Money\Money::format($orderProduct->tax)}}
+                        {{\App\Services\Iotron\MoneyService\Money::format($orderProduct->tax)}}
                     @endif
                 </td>
 
 
                 <td class="total">
-                    @if($orderProduct->total instanceof \App\Services\Iotron\Money\Money)
+                    @if($orderProduct->total instanceof \App\Services\Iotron\MoneyService\Money)
                         {{$orderProduct->total->formatted()}}
                     @else
-                        {{\App\Services\Iotron\Money\Money::format($orderProduct->total)}}
+                        {{\App\Services\Iotron\MoneyService\Money::format($orderProduct->total)}}
                     @endif
                 </td>
 

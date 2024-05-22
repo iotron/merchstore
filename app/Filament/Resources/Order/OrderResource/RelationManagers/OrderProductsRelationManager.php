@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Order\OrderResource\RelationManagers;
 
-use App\Services\Iotron\Money\Money;
+use App\Services\Iotron\MoneyService\Money;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;

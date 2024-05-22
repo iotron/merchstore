@@ -2,7 +2,7 @@
 
 namespace App\Services\PaymentService\Providers\Razorpay\Actions;
 
-use App\Services\Iotron\Money\Money;
+use App\Services\Iotron\MoneyService\Money;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\Provider\PaymentProviderRefundContract;
 use App\Services\PaymentService\Providers\Razorpay\RazorpayApi;

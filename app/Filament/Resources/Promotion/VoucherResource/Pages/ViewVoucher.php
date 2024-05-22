@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Promotion\VoucherResource\Pages;
 
 use App\Filament\Resources\Promotion\VoucherResource;
 use App\Helpers\Promotion\Voucher\VoucherHelper;
-use App\Services\Iotron\Money\Money;
+use App\Services\Iotron\MoneyService\Money;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;

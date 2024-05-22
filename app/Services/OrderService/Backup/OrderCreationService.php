@@ -12,7 +12,7 @@ use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
 use App\Models\Shipping\ShippingProvider;
-use App\Services\Iotron\Money\Money;
+use App\Services\Iotron\MoneyService\Money;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;
 use App\Services\PaymentService\Contracts\PaymentServiceContract;
 use Illuminate\Contracts\Auth\Authenticatable;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Iotron\Money;
+namespace App\Services\Iotron\MoneyService;
 
 use Akaunting\Money\Currency;
 

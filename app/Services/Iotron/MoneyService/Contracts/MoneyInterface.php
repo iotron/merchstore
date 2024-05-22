@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Iotron\Money\Contracts;
+namespace App\Services\Iotron\MoneyService\Contracts;
 
-use App\Services\Iotron\Money\Money;
+use App\Services\Iotron\MoneyService\Money;
 
 interface MoneyInterface
 {

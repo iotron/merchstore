@@ -6,7 +6,7 @@ use App\Filament\Resources\Product\ProductResource;
 use App\Helpers\ProductHelper\Support\Attributes\AttributeHelper;
 use App\Models\Category\Category;
 use App\Models\Product\Product;
-use App\Services\Iotron\Money\Money;
+use App\Services\Iotron\MoneyService\Money;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Section;

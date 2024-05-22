@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Iotron\Money\Contracts;
+namespace App\Services\Iotron\MoneyService\Contracts;
 
 use Akaunting\Money\Currency;
 use Akaunting\Money\Money as LaravelMoney;

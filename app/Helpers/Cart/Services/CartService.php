@@ -3,9 +3,10 @@
 namespace App\Helpers\Cart\Services;
 
 use App\Helpers\Cart\Contracts\CartServiceContract;
-use App\Helpers\Money\Money;
+
 use App\Models\Customer\Customer;
 use App\Models\Promotion\VoucherCode;
+use App\Services\Iotron\MoneyService\Money;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -77,7 +78,7 @@ abstract class CartService implements CartServiceContract
         return $this->errors;
     }
 
-    public function setSubTotal(Money $subTotal)
+    public function setSubTotal(Money $subTotal):void
     {
         $this->subTotal = $subTotal;
     }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\Iotron\Money;
+namespace App\Services\Iotron\MoneyService;
 
 use Akaunting\Money\Currency;
 use Akaunting\Money\Money as LaravelMoney;
-use App\Services\Iotron\Money\Contracts\MoneyServiceContract;
+use App\Services\Iotron\MoneyService\Contracts\MoneyServiceContract;
 use Illuminate\Support\Str;
 
 class MoneyService implements MoneyServiceContract

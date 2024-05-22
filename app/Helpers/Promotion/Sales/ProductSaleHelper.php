@@ -6,7 +6,7 @@ use App\Models\Category\Category;
 use App\Models\Product\Product;
 use App\Models\Promotion\Sale;
 use App\Models\Promotion\SaleProduct;
-use App\Services\Iotron\Money\Money;
+use App\Services\Iotron\MoneyService\Money;
 use Carbon\Carbon;
 use Filament\Notifications\Notification;
 
