@@ -10,6 +10,7 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTheme extends CreateRecord
 {
     use HasAdjacencyFormSchema;
+
     protected static string $resource = ThemeResource::class;
 
     protected static bool $canCreateAnother = false;

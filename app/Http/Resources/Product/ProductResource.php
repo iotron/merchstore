@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Product;
 
 use App\Http\Resources\Category\ThemeResource;
-use App\Http\Resources\Filter\FilterOptionIndexResource;
 use App\Http\Resources\MediaResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

@@ -2,9 +2,7 @@
 
 namespace App\Services\ShippingService\Providers\ShipRocket\Support;
 
-use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;
-use Illuminate\Support\Facades\Validator;
 
 trait hasShippableOrders
 {

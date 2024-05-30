@@ -6,7 +6,6 @@ use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;
 use App\Models\Shipping\ShippingProvider;
 use App\Services\ShippingService\Contracts\ShippingProviderContract;
-use Filament\Notifications\Notification;
 
 class OrderShipmentShippingService
 {

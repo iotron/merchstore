@@ -2,7 +2,6 @@
 
 namespace App\Helpers\Cart\Contracts;
 
-
 use App\Models\Customer\Customer;
 use App\Models\Promotion\VoucherCode;
 use App\Services\Iotron\MoneyService\Money;

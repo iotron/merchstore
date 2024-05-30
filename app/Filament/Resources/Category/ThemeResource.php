@@ -5,24 +5,19 @@ namespace App\Filament\Resources\Category;
 use App\Filament\Common\Schema\AdjacencySchema\HasAdjacencyFormSchema;
 use App\Filament\Resources\Category\ThemeResource\Pages;
 use App\Models\Category\Theme;
-use Filament\Forms;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 
 class ThemeResource extends Resource
 {
     use HasAdjacencyFormSchema;
+
     protected static ?string $model = Theme::class;
 
     protected static ?string $slug = 'themes';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $recordRouteKeyName = 'url';
 
+    protected static ?string $recordRouteKeyName = 'url';
 
     public static function getForm(): array
     {
@@ -33,11 +28,6 @@ class ThemeResource extends Resource
     {
         return self::getAdjacencyResourceParentFormSchema();
     }
-
-
-
-
-
 
     public static function getRelations(): array
     {

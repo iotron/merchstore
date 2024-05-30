@@ -3,7 +3,6 @@
 namespace App\Helpers\Cart\Services;
 
 use App\Helpers\Cart\Contracts\CartServiceContract;
-
 use App\Models\Customer\Customer;
 use App\Models\Promotion\VoucherCode;
 use App\Services\Iotron\MoneyService\Money;
@@ -78,7 +77,7 @@ abstract class CartService implements CartServiceContract
         return $this->errors;
     }
 
-    public function setSubTotal(Money $subTotal):void
+    public function setSubTotal(Money $subTotal): void
     {
         $this->subTotal = $subTotal;
     }

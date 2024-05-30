@@ -2,20 +2,12 @@
 
 namespace App\Filament\Common\Schema\AdjacencySchema;
 
-use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Filament\Forms\Set;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
-use Filament\Forms;
+
 trait HasAdjacencyTableSchema
 {
-
-
-
     public function getAdjacencyTableColumns(): array
     {
         return [
@@ -38,15 +30,13 @@ trait HasAdjacencyTableSchema
         ];
     }
 
-
-    public function getAdjacencyTableActions():array
+    public function getAdjacencyTableActions(): array
     {
         return [
             Tables\Actions\ViewAction::make(),
             Tables\Actions\EditAction::make(),
         ];
     }
-
 
     public function getAdjacencyTableFilters(): array
     {
@@ -56,14 +46,13 @@ trait HasAdjacencyTableSchema
             SelectFilter::make('status')
                 ->options([true => 'True', false => 'False']),
 
-
             Tables\Filters\TernaryFilter::make('toggle_category_type')
                 ->label('Category type')
                 ->placeholder('All categories')
                 ->trueLabel('Parent Categories Only')
                 ->falseLabel('Subcategories Only')
                 ->queries(
-                // parent only
+                    // parent only
                     true: fn (Builder $query) => $query->whereNull('parent_id'),
                     // children only
                     false: fn (Builder $query) => $query->whereNotNull('parent_id'),
@@ -73,11 +62,4 @@ trait HasAdjacencyTableSchema
         ];
 
     }
-
-
-
-
-
-
-
 }

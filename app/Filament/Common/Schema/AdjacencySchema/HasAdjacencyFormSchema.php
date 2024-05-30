@@ -4,7 +4,6 @@ namespace App\Filament\Common\Schema\AdjacencySchema;
 
 use App\Models\Category\Category;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Filament\Forms\Form;
 use Filament\Forms;
 use Filament\Forms\Set;
 use Illuminate\Support\HtmlString;
@@ -13,8 +12,6 @@ use Saade\FilamentAdjacencyList\Forms\Components\AdjacencyList;
 
 trait HasAdjacencyFormSchema
 {
-
-
     public function getAdjacencyFormSchema(): array
     {
         return array_merge(
@@ -41,20 +38,11 @@ trait HasAdjacencyFormSchema
         );
     }
 
-
-
-
-
-
-
     /**
      * This Part For Resource Methods
      * Required For Form.
      * Placed In Resource
      */
-
-
-
     public static function getAdjacencyResourceFormSchema(): array
     {
         return [
@@ -92,5 +80,4 @@ trait HasAdjacencyFormSchema
 
         ];
     }
-
 }

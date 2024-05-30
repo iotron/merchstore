@@ -7,13 +7,12 @@ use App\Filament\Resources\Category\ThemeResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class ListThemes extends ListRecords
 {
     use HasAdjacencyTableSchema;
+
     protected static string $resource = ThemeResource::class;
 
     protected function getHeaderActions(): array
@@ -23,7 +22,7 @@ class ListThemes extends ListRecords
         ];
     }
 
-    public  function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns($this->getAdjacencyTableColumns())

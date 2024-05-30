@@ -2,7 +2,7 @@
 
 namespace App\Models\Payment;
 
-use App\Helpers\Money\MoneyCast;
+use App\Casts\MoneyCast;
 use App\Models\Order\Order;
 use App\Models\Order\OrderProduct;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

@@ -5,7 +5,6 @@ namespace App\Helpers\Cart\Services;
 use App\Helpers\Cart\Contracts\CartCalculatorContract;
 use App\Helpers\Cart\Contracts\CartServiceContract;
 use App\Helpers\Cart\Services\Voucher\VoucherValidator;
-
 use App\Services\Iotron\MoneyService\Money;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

@@ -11,6 +11,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditTheme extends EditRecord
 {
     use HasAdjacencyFormSchema;
+
     protected static string $resource = ThemeResource::class;
 
     protected function getHeaderActions(): array

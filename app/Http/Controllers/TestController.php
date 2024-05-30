@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Customer\Customer;
 use App\Models\Filter\FilterGroup;
 use App\Models\Order\Order;
-use App\Models\Order\OrderShipment;
 use App\Services\PaymentService\PaymentService;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as SimpleQR;

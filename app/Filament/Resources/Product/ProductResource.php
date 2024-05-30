@@ -5,8 +5,6 @@ namespace App\Filament\Resources\Product;
 use App\Filament\Resources\Product\ProductResource\Pages;
 use App\Filament\Resources\Product\ProductResource\RelationManagers;
 use App\Models\Product\Product;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 
 class ProductResource extends Resource

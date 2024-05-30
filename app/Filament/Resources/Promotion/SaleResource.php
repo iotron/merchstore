@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Promotion;
 
 use App\Filament\Resources\Promotion\SaleResource\Pages;
-use App\Filament\Resources\Promotion\SaleResource\RelationManagers;
 use App\Models\Promotion\Sale;
 use Filament\Resources\Resource;
 use Filament\Tables;
