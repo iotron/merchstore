@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Promotion;
 
 use App\Filament\Resources\Promotion\SaleResource\Pages;
 use App\Models\Promotion\Sale;
+use App\Services\Iotron\MoneyService\Money;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -31,9 +32,7 @@ class SaleResource extends Resource
                 Tables\Columns\IconColumn::make('end_other_rules')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('action_type'),
-                Tables\Columns\TextColumn::make('discount_amount')->formatStateUsing(function ($state) {
-                    return $state->formatted();
-                }),
+                Tables\Columns\TextColumn::make('discount_amount')->money(Money::defaultCurrency()),
                 Tables\Columns\TextColumn::make('sort_order'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()->toggleable()->toggledHiddenByDefault(),

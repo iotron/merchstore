@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Promotion\VoucherResource\Pages;
 
 use App\Filament\Resources\Promotion\VoucherResource;
+use App\Services\Iotron\MoneyService\Money;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -45,9 +46,7 @@ class ListVouchers extends ListRecords
                 //                IconColumn::make('end_other_rules')
                 //                    ->boolean(),
                 //                TextColumn::make('action_type'),
-                TextColumn::make('discount_amount')->formatStateUsing(function ($state) {
-                    return $state->formatted();
-                }),
+                TextColumn::make('discount_amount')->money(Money::defaultCurrency()),
                 //                TextColumn::make('discount_quantity'),
                 //                TextColumn::make('discount_step'),
                 //                IconColumn::make('apply_to_shipping')

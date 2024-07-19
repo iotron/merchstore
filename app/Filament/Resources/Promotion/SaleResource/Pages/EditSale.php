@@ -38,7 +38,7 @@ class EditSale extends EditRecord
         $this->record = $this->resolveRecord($record);
 
         $sale = $this->record->toArray();
-        $sale['discount_amount'] = $sale['discount_amount']->getAmount();
+
 
         $this->saleHelper = new SaleHelper();
         $this->conditions = $this->saleHelper->getCondition();

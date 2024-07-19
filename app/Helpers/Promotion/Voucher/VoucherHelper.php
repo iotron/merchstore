@@ -116,7 +116,8 @@ class VoucherHelper extends PromotionManager
                 'type' => 'multiselect',
                 'operator' => $this->getOperator('multiselect'),
                 'label' => trans('Product::Categories(Parent)'),
-                'options' => Category::Parents()->pluck('name', 'id')->toArray(),
+//                'options' => Category::Parents()->pluck('name', 'id')->toArray(),
+                'options' => Category::where('parent_id',null)->pluck('name', 'id')->toArray(),
             ],
         ];
 
