@@ -44,10 +44,6 @@ class EditProduct extends EditRecord
     {
         $this->record = $this->resolveRecord($record);
         $product = $this->record->toArray();
-        // Check Money Instances
-        //        $product['base_price'] = $product['base_price']->getAmount();
-        //        $product['price'] = $product['price']->getAmount();
-        //        $product['tax_amount'] = $product['tax_amount']->getAmount();
 
         // Add Product Flat Too
         $productFlat = $this->record->flat->toArray();
@@ -74,7 +70,8 @@ class EditProduct extends EditRecord
             // Create Product From App\Type Class->create
             $product = $typeInstance->update($this->record->id, $data);
             $product->save();
-            $this->notify('success', 'You have successfully modify product details', isAfterRedirect: true);
+           // $this->notify('success', 'You have successfully modify product details', isAfterRedirect: true);
+            $this->getSavedNotification()?->send();
         }
     }
 

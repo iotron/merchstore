@@ -18,8 +18,11 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
 
-        $parentCategories = Category::with('children')->whereHas('children')->parents()->where('status', true)->get();
-        $parentThemes = Theme::Parents()->with('children')->get();
+        $parentCategories = Category::where([
+            ['status','=', true],
+            ['parent_id','=', null]
+        ])->with('children')->whereHas('children')->get();
+        $parentThemes = Theme::where('parent_id','=',null)->with('children')->get();
 
         // Create Simple
         $this->simpleProductSeed($parentCategories, $parentThemes);

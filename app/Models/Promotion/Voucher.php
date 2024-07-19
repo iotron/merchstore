@@ -2,6 +2,7 @@
 
 namespace App\Models\Promotion;
 
+use App\Casts\MoneyCast;
 use App\Models\Customer\CustomerGroup;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

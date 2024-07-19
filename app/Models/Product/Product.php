@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Image\Exceptions\InvalidManipulation;
-use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\Conversions\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -116,12 +116,12 @@ class Product extends Model implements HasMedia
      */
     public function registerMediaConversions(?Media $media = null): void
     {
-        if ($media && $media->extension === Manipulations::FORMAT_GIF) {
-            return;
-        }
+//        if ($media && $media->extension === Manipulations::FORMAT_GIF) {
+//            return;
+//        }
 
         $this->addMediaConversion('optimized')
-            ->format(Manipulations::FORMAT_WEBP)
+           // ->format(Manipulations::FORMAT_WEBP)
             ->withResponsiveImages()
             // uncomment in production
             ->nonQueued();
