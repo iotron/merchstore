@@ -3,10 +3,10 @@
 namespace App\Helpers\Cart\Services\Voucher;
 
 use App\Helpers\Cart\Contracts\CartServiceContract;
-use App\Helpers\Money\Money;
 use App\Models\Product\Product;
 use App\Models\Promotion\Voucher;
 use App\Models\Promotion\VoucherCode;
+use App\Services\MoneyServices\Money;
 
 class VoucherValidator
 {

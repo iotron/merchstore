@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\PaymentService\Contracts;
+namespace App\Services\Backup\PaymentService\Contracts;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

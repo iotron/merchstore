@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\PaymentService;
+namespace App\Services\Backup\PaymentService;
 
 use App\Models\Payment\PaymentProvider as PaymentProviderModel;
 use App\Services\PaymentService\Contracts\PaymentProviderContract;

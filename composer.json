@@ -10,6 +10,7 @@
         "awcodes/filament-tiptap-editor": "^3.3",
         "barryvdh/laravel-dompdf": "^2.1",
         "codewithdennis/filament-select-tree": "^3.1",
+        "dedoc/scramble": "^0.11.24",
         "filament/filament": "^3.2",
         "filament/notifications": "^3.2",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
