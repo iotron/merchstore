@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Services\MoneyServices;
+
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+
+class OLdMoneyCast implements CastsAttributes
+{
+    /**
+     * Transform the stored value into a Money instance.
+     *
+     * @param  mixed  $model
+     */
+    public function get($model, string $key, mixed $value, array $attributes): Money
+    {
+        return new Money($value);
+    }
+
+    /**
+     * Transform the attribute's value before persisting it.
+     *
+     * @param  mixed  $model
+     * @return int[]
+     */
+    public function set($model, string $key, mixed $value, array $attributes): array
+    {
+        if ($value instanceof Money) {
+            return [$key => (int) $value->getAmount()];
+        } else {
+            return [$key => (int) $value];
+        }
+    }
+}
