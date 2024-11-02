@@ -25,13 +25,13 @@ class OrderActionController extends Controller
 
     public ShippingService $shippingService;
 
-    public function __construct(PaymentService $paymentService, ShippingService $shippingService)
-    {
-
-        $this->middleware('auth:customer')->except('captureCallback', 'verifyPayment', 'confirmPayment');
-        $this->paymentService = $paymentService;
-        $this->shippingService = $shippingService;
-    }
+//    public function __construct(PaymentService $paymentService, ShippingService $shippingService)
+//    {
+//
+//        $this->middleware('auth:customer')->except('captureCallback', 'verifyPayment', 'confirmPayment');
+//        $this->paymentService = $paymentService;
+//        $this->shippingService = $shippingService;
+//    }
 
     public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|RedirectResponse
     {
