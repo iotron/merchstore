@@ -16,13 +16,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Livewire\Attributes\Locked;
 
 class ListCustomerCart extends ListRecords
 {
     protected static string $resource = CustomerResource::class;
 
     protected static ?string $title = 'Customer Cart';
-
+    public  $record = null;
+    #[Locked]
     public $customerId;
 
     public $customer;
@@ -53,21 +55,19 @@ class ListCustomerCart extends ListRecords
                     return $record->sku;
                 }),
 
-                TextColumn::make('price')->label(__('Price'))->formatStateUsing(function ($record) {
-                    return $record->price->formatted();
-                }),
+                TextColumn::make('price')->label(__('Price'))
+//                    ->formatStateUsing(function ($record) {
+//                        return $record->price;
+//                    })
+                    ->money(Money::defaultCurrency()),
 
                 TextColumn::make('quantity'),
-                TextColumn::make('discount')->formatStateUsing(function ($record) {
-                    $discount = new Money($record->discount);
-
-                    return $discount->formatted();
-                }),
+                TextColumn::make('discount'),
                 TextColumn::make('total')->formatStateUsing(function ($record) {
 
-                    $total = $record->price->multiplyOnce($record->quantity);
+                    $total = $record->price * $record->quantity;
 
-                    return $total->formatted();
+                    return $total;
 
                 }),
 
@@ -150,7 +150,7 @@ class ListCustomerCart extends ListRecords
                     $set('stock', $selectedProduct->availableStocks()->sum('in_stock_quantity'));
                     $set('sku', $selectedProduct->sku);
                     $set('name', $selectedProduct->name);
-                    $set('formatted_price', $selectedProduct->price->formatted());
+                    $set('formatted_price', $selectedProduct->price);
                 }),
 
             Fieldset::make('product_details')
@@ -171,7 +171,8 @@ class ListCustomerCart extends ListRecords
                             $stockCount = $get('stock');
                             if ($state <= $stockCount) {
                                 $product = Product::firstWhere('id', $get('product_id'));
-                                $total = $product->price->multiplyOnce($state);
+                                $amount = new Money($product->price);
+                                $total =  $amount->multiplyOnce($state);
                                 $set('total', $total->getAmount());
                                 $set('formatted_total', $total->formatted());
                             } else {
@@ -203,7 +204,8 @@ class ListCustomerCart extends ListRecords
                                     $discount = new Money($state);
                                     $product = Product::firstWhere('id', $get('product_id'));
                                     // Flat Discount On Cart Total
-                                    $total = $product->price->multiplyOnce($quantityAsk)->subOnce($discount);
+                                    $amount = new Money($product->price);
+                                    $total = $amount->multiplyOnce($quantityAsk)->subOnce($discount);
                                     $set('total', $total->getAmount());
                                     $set('formatted_total', $total->formatted());
                                 } else {
@@ -214,7 +216,8 @@ class ListCustomerCart extends ListRecords
                                 $quantityAsk = $get('quantity');
                                 if ($quantityAsk <= $stockCount) {
                                     $product = Product::firstWhere('id', $get('product_id'));
-                                    $total = $product->price->multiplyOnce($quantityAsk);
+                                    $amount = new Money($product->price);
+                                    $total = $amount->multiplyOnce($quantityAsk);
 
                                     $set('total', $total->getAmount());
                                     $set('formatted_total', $total->formatted());
