@@ -29,6 +29,7 @@ class ListProducts extends ListRecords
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn($query) => $query->latest())
             ->columns([
                 SpatieMediaLibraryImageColumn::make('thumb')
                     ->circular()
