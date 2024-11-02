@@ -18,4 +18,18 @@ class EditCustomer extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        foreach (['email_verified_at', 'contact_verified_at'] as $field) {
+            // Set timestamp if true and previously unset, otherwise nullify if false
+            $data[$field] = $data[$field] ? ($this->record->{$field} ?? now()->timestamp) : null;
+        }
+
+        return parent::mutateFormDataBeforeSave($data);
+    }
+
+
+
 }

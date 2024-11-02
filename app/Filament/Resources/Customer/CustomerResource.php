@@ -56,11 +56,19 @@ class CustomerResource extends Resource
                 ])->columns(3),
 
                 Forms\Components\Fieldset::make(__('Manage Information'))->schema([
-                    Forms\Components\Toggle::make('contact_verified')
+                    Forms\Components\Toggle::make('contact_verified_at')
+                        ->label(__("Contact Verified"))
                         ->default(false)
+                        ->afterStateHydrated(function ($component, $state) {
+                            $component->state(!is_null($state));
+                        })
                         ->required(),
-                    Forms\Components\Toggle::make('email_verified')
+                    Forms\Components\Toggle::make('email_verified_at')
+                        ->label(__("Email Verified"))
                         ->default(false)
+                        ->afterStateHydrated(function ($component, $state) {
+                            $component->state(!is_null($state));
+                        })
                         ->required(),
 
                     Select::make(__('customer_group_id'))

@@ -27,7 +27,8 @@ class Customer extends Authenticatable implements MustVerifyEmail
         'email',
         'contact',
         'password',
-        'email_verified',
+        'email_verified_at',
+        'contact_verified_at',
         //        'referrer',
         //        'has_push',
         //'whatsapp',
@@ -40,6 +41,7 @@ class Customer extends Authenticatable implements MustVerifyEmail
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'contact_verified_at' => 'datetime',
     ];
 
     public function group(): BelongsTo
