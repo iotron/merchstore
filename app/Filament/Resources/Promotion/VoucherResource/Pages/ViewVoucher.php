@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Promotion\VoucherResource\Pages;
 
 use App\Filament\Resources\Promotion\VoucherResource;
 use App\Helpers\Promotion\Voucher\VoucherHelper;
-use App\Services\Iotron\MoneyService\Money;
+use App\Services\MoneyServices\Money;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\Section;

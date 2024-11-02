@@ -10,7 +10,7 @@ use App\Services\PaymentService\Providers\Stripe\StripePaymentService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PaymentProvider extends Model implements PaymentProviderModelContract
+class PaymentProvider extends Model
 {
     use HasFactory;
 

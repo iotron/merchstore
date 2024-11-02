@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Promotion;
 
 use App\Filament\Resources\Promotion\SaleResource\Pages;
 use App\Models\Promotion\Sale;
-use App\Services\Iotron\MoneyService\Money;
+use App\Services\MoneyServices\Money;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;

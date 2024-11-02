@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Promotion\VoucherResource\Pages;
 
 use App\Filament\Resources\Promotion\VoucherResource;
-use App\Services\Iotron\MoneyService\Money;
+use App\Services\MoneyServices\Money;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\DeleteBulkAction;

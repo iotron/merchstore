@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\Product\ProductResource\Pages;
 
 use App\Filament\Resources\Product\ProductResource;
-use App\Services\Iotron\MoneyService\Money;
+
+use App\Services\MoneyServices\Money;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;

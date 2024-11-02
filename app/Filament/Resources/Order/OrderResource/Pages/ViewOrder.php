@@ -7,7 +7,7 @@ use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;
 use App\Models\Payment\Refund;
 use App\Models\Shipping\ShippingProvider;
-use App\Services\Iotron\MoneyService\Money;
+use App\Services\MoneyServices\Money;
 use App\Services\OrderService\Return\OrderRefundPayService;
 use App\Services\OrderService\Shipping\OrderShipmentShippingService;
 use App\Services\PaymentService\PaymentService;
@@ -136,29 +136,14 @@ class ViewOrder extends ViewRecord
                 ->weight(FontWeight::Bold),
 
             Split::make([
-                TextEntry::make('amount')
-                    ->formatStateUsing(function ($state) {
-                        return ($state instanceof Money) ? $state->formatted() : $state;
-                    }),
-                TextEntry::make('subtotal')
-                    ->formatStateUsing(function ($state) {
-                        return ($state instanceof Money) ? $state->formatted() : $state;
-                    }),
+                TextEntry::make('amount')->money(Money::defaultCurrency()),
+                TextEntry::make('subtotal')->money(Money::defaultCurrency()),
 
-                TextEntry::make('discount')
-                    ->formatStateUsing(function ($state) {
-                        return ($state instanceof Money) ? $state->formatted() : $state;
-                    }),
+                TextEntry::make('discount')->money(Money::defaultCurrency()),
 
-                TextEntry::make('tax')
-                    ->formatStateUsing(function ($state) {
-                        return ($state instanceof Money) ? $state->formatted() : $state;
-                    }),
+                TextEntry::make('tax')->money(Money::defaultCurrency()),
 
-                TextEntry::make('total')
-                    ->formatStateUsing(function ($state) {
-                        return ($state instanceof Money) ? $state->formatted() : $state;
-                    }),
+                TextEntry::make('total')->money(Money::defaultCurrency()),
             ]),
 
             TextEntry::make('voucher'),
