@@ -2,7 +2,8 @@
 
 namespace App\Models\Order;
 
-use App\Helpers\Money\MoneyCast;
+
+use App\Casts\MoneyCast;
 use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Payment\Payment;
@@ -106,7 +107,7 @@ class Order extends Model
         return $this->hasOne(Payment::class, 'order_id', 'id');
     }
 
-    public function refunds()
+    public function refunds(): HasMany
     {
         return $this->hasMany(Refund::class, 'order_id', 'id');
     }

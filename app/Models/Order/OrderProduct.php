@@ -2,7 +2,8 @@
 
 namespace App\Models\Order;
 
-use App\Helpers\Money\MoneyCast;
+
+use App\Casts\MoneyCast;
 use App\Models\Payment\Refund;
 use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

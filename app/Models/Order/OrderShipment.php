@@ -2,7 +2,8 @@
 
 namespace App\Models\Order;
 
-use App\Helpers\Money\MoneyCast;
+
+use App\Casts\MoneyCast;
 use App\Models\Localization\Address;
 use App\Models\Shipping\ShippingProvider;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

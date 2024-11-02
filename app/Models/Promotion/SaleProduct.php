@@ -2,7 +2,8 @@
 
 namespace App\Models\Promotion;
 
-use App\Helpers\Money\MoneyCast;
+
+use App\Casts\MoneyCast;
 use App\Models\Customer\CustomerGroup;
 use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
