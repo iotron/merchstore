@@ -5,8 +5,10 @@ namespace App\Filament\Resources\Product\ProductResource\Pages;
 use App\Filament\Resources\Product\ProductResource;
 use App\Helpers\ProductHelper\Support\Attributes\AttributeHelper;
 use App\Models\Category\Category;
+use App\Models\Enums\Product\ProductStatusCast;
 use App\Models\Product\Product;
 use App\Services\MoneyServices\Money;
+use Awcodes\Shout\Components\Shout;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
@@ -22,6 +24,7 @@ use Filament\Resources\Pages\EditRecord;
 use FilamentTiptapEditor\Enums\TiptapOutput;
 use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\HtmlString;
 
 class EditProduct extends EditRecord
 {
@@ -153,8 +156,10 @@ class EditProduct extends EditRecord
                                     Forms\Components\Select::make('status')
                                         ->label(__('Status'))
                                         ->inlineLabel()
-                                        ->options(Product::StatusOptions)
-                                        ->default(Product::DRAFT)
+                                        ->options(collect(ProductStatusCast::cases())
+                                            ->mapWithKeys(fn(ProductStatusCast $status) => [$status->value => $status->getLabel()])
+                                            ->toArray())
+                                        ->default(ProductStatusCast::DRAFT->value)
                                         ->selectablePlaceholder(false)->required(),
                                 ])->columns(3),
 
@@ -169,6 +174,7 @@ class EditProduct extends EditRecord
                                 SpatieMediaLibraryFileUpload::make('productDisplay')
                                     ->multiple()
                                     ->collection('productDisplay')
+                                    ->imageEditor()
                                     ->reorderable(),
 
                                 SpatieMediaLibraryFileUpload::make('productGallery')
@@ -199,74 +205,120 @@ class EditProduct extends EditRecord
 
                     Forms\Components\Tabs\Tab::make('Pricing & Tax')
                         ->schema([
+
                             Forms\Components\Section::make('Product Pricing')
+                                ->columns()
                                 ->schema([
-                                    Forms\Components\TextInput::make('base_price')
-                                        ->columnSpan(2)
-                                        ->label(__('Base Price'))
-                                        ->lazy()
-//                        ->mask(
-//                            fn (TextInput\Mask $mask) => $mask->numeric()
-//                                ->decimalPlaces(2)
-//                                ->decimalSeparator('.')
-//                                ->minValue(1)
-//                                ->maxValue(99999999)
-//                                ->thousandsSeparator(',')
-//                        )
-                                        ->afterStateHydrated(function (Forms\Components\TextInput $component, $state) {
-                                            if ($state instanceof Money) {
-                                                $component->state($state->getAmount());
-                                            }
 
-                                            return $state;
-                                        })
-                                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
-                                            $basePrice = new Money($state);
-                                            $taxPercent = $get('tax_percent');
-                                            $this->calculate($basePrice, $taxPercent, $set, $get);
-                                        })
-                                        ->hint('enter value multiply by 100')
-                                        ->default(0.00)
-                                        ->columnSpan(2)
-                                        ->required(),
 
-                                    Forms\Components\TextInput::make('price')
-                                        ->disabled(),
+                                    Forms\Components\Grid::make(['md' => 1])
+                                        ->schema([
+                                            Forms\Components\TextInput::make('base_price')
+                                                ->columnSpan(2)
+                                                ->label(__('Base Price'))
+                                                ->lazy()
+                                                ->numeric()
+                                                ->inputMode('decimal')
+                                                ->default(0.00)
+                                                ->minValue(0)
+                                                ->maxValue(99999999)
+                                                ->required()
+                                                ->lazy()
+                                                ->extraInputAttributes(['step' => '0.01', 'min' => 0, 'max' => 99999999])
+                                                ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
+                                                    $basePrice = new Money($state);
+                                                    $taxPercent = $get('tax_percent');
+                                                    $this->calculate($basePrice, $taxPercent, $set, $get);
+                                                })
+                                                ->hint('enter value multiply by 100')
+                                                ->default(0.00)
+                                                ->columnSpan(2)
+                                                ->required(),
 
-                                    Forms\Components\TextInput::make('formatted_total')
-                                        ->label(__('Formatted Total'))
-                                        ->formatStateUsing(function (\Filament\Forms\Get $get) {
-                                            $priceAmount = $get('price');
-                                            if ($priceAmount instanceof Money) {
-                                                return $priceAmount->formatted();
-                                            } else {
-                                                if (! empty($priceAmount)) {
-                                                    $result = new Money($priceAmount);
+                                            Forms\Components\TextInput::make('hsn_code')
+                                                ->columnSpanFull()
+                                                ->maxLength(50)->hint(__('Max: 50')),
+                                            Forms\Components\TextInput::make('tax_percent')
+                                                ->lazy()
+                                                ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
+                                                    $taxPercent = $state;
+                                                    $basePrice = new Money($get('base_price'));
+                                                    $this->calculate($basePrice, $taxPercent, $set, $get);
+                                                }),
+                                        ])
+                                        ->columnSpan(1),
 
-                                                    return $result->formatted();
-                                                } else {
-                                                    return 0.00;
-                                                }
-                                            }
-                                        })->disabled(),
+                                    Shout::make('pricingInfo')
+                                        ->color('info')
+                                        ->content(function (Get $get) {
+                                            // Retrieve base price and tax percentage values
+                                            $basePrice = $get('base_price') ?? 0;
+                                            $taxPercent = $get('tax_percent') ?? 0;
+                                            $baseMoney = new Money($basePrice * 100);
 
-                                ])->columns(2),
+                                            // Calculate tax amount and total price
+                                            $taxAmount = ($taxPercent > 0) ? $baseMoney->multiplyOnce($taxPercent / 100) : new Money(0);
+                                            $totalPrice = $baseMoney->addOnce($taxAmount);
+                                            $formattedBasePrice = $baseMoney->formatted();
+                                            $formattedTaxAmount = $taxAmount->formatted();
+                                            $formattedTotal = $totalPrice->formatted();
 
-                            Forms\Components\Section::make('Tax Calculation')
-                                ->schema([
-                                    Forms\Components\TextInput::make('hsn_code')->columnSpanFull()->maxLength(50)->hint(__('Max: 50')),
-                                    Forms\Components\TextInput::make('tax_percent')
-                                        ->lazy()
-                                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
-                                            $taxPercent = $state;
-                                            $basePrice = new Money($get('base_price'));
-                                            $this->calculate($basePrice, $taxPercent, $set, $get);
+                                            // Return formatted HTML string for display using a simple list style
+                                            return new HtmlString("
+            <div class='p-3 border rounded shadow-sm'>
+                <h2 class='text-center font-semibold text-base mb-2'>Summary</h2>
+
+                <ul class='space-y-1'>
+                    <li class='flex justify-between'>
+                        <span class='font-medium'>Base Price:</span>
+                        <span>{$formattedBasePrice}</span>
+                    </li>
+                    <li class='flex justify-between'>
+                        <span class='font-medium'>Tax Amount ({$taxPercent}%):</span>
+                        <span>{$formattedTaxAmount}</span>
+                    </li>
+                    <li class='flex justify-between font-semibold'>
+                        <span>Total Price:</span>
+                        <span>{$formattedTotal}</span>
+                    </li>
+                </ul>
+            </div>
+        ");
                                         }),
-                                    Forms\Components\TextInput::make('tax_amount')
-                                        ->disabled(),
+
+
+
+
+
+//                                    Forms\Components\TextInput::make('price')
+//                                        ->numeric()
+//                                        ->inputMode('decimal')
+//                                        ->default(0.00)
+//                                        ->minValue(0)
+//                                        ->maxValue(99999999)
+//                                        ->required()
+//                                        ->lazy()
+//                                        ->extraInputAttributes(['step' => '0.01', 'min' => 0, 'max' => 99999999])
+//                                        ->disabled(),
+//
+//                                    Forms\Components\TextInput::make('formatted_total')
+//                                        ->label(__('Formatted Total'))
+//                                        ->formatStateUsing(function (\Filament\Forms\Get $get) {
+//                                            return Money::format($get('price') ?? 0);
+//                                        })->disabled(),
 
                                 ])->columns(2),
+
+//                            Forms\Components\Section::make('Tax Calculation')
+//                                ->schema([
+//
+//                                    Forms\Components\TextInput::make('tax_amount')
+//                                        ->disabled(),
+//
+//                                ])->columns(2),
                         ]),
+
+
 
                     Forms\Components\Tabs\Tab::make('Allocation')
                         ->schema([
