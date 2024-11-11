@@ -265,25 +265,25 @@ class EditProduct extends EditRecord
 
                                             // Return formatted HTML string for display using a simple list style
                                             return new HtmlString("
-            <div class='p-3 border rounded shadow-sm'>
-                <h2 class='text-center font-semibold text-base mb-2'>Summary</h2>
+                                                <div class='p-3 border rounded shadow-sm'>
+                                                    <h2 class='text-center font-semibold text-base mb-2'>Summary</h2>
 
-                <ul class='space-y-1'>
-                    <li class='flex justify-between'>
-                        <span class='font-medium'>Base Price:</span>
-                        <span>{$formattedBasePrice}</span>
-                    </li>
-                    <li class='flex justify-between'>
-                        <span class='font-medium'>Tax Amount ({$taxPercent}%):</span>
-                        <span>{$formattedTaxAmount}</span>
-                    </li>
-                    <li class='flex justify-between font-semibold'>
-                        <span>Total Price:</span>
-                        <span>{$formattedTotal}</span>
-                    </li>
-                </ul>
-            </div>
-        ");
+                                                    <ul class='space-y-1'>
+                                                        <li class='flex justify-between'>
+                                                            <span class='font-medium'>Base Price:</span>
+                                                            <span>{$formattedBasePrice}</span>
+                                                        </li>
+                                                        <li class='flex justify-between'>
+                                                            <span class='font-medium'>Tax Amount ({$taxPercent}%):</span>
+                                                            <span>{$formattedTaxAmount}</span>
+                                                        </li>
+                                                        <li class='flex justify-between font-semibold'>
+                                                            <span>Total Price:</span>
+                                                            <span>{$formattedTotal}</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            ");
                                         }),
 
 
