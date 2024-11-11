@@ -10,17 +10,14 @@ use App\Services\MoneyServices\Money;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
+
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Forms;
 use Filament\Resources\Pages\EditRecord;
 use FilamentTiptapEditor\Enums\TiptapOutput;
 use FilamentTiptapEditor\TiptapEditor;
@@ -99,86 +96,115 @@ class EditProduct extends EditRecord
     {
         return [
 
-            Section::make('General')->schema([
+            Forms\Components\Tabs::make('Tabs')
+                ->tabs([
+                    Forms\Components\Tabs\Tab::make('General')
+                        ->schema([
 
-                TextInput::make('sku')
-                    ->label(__('SKU'))->helperText('Stock Keeping Unit (Unique) for the product')
-                    ->hint('Max - 100')
-                    ->maxLength(100)
-                    ->required(),
-                TextInput::make('name')
-                    ->label(__('Name'))
-                    ->helperText('Name of the product')
-                    ->hint('Max - 100')
-                    ->maxLength(100)
-                    ->required(),
-                TextInput::make('url')
-                    ->label(__('Url'))
-                    ->prefix(fn () => config('project.client_url').'/product/')
-                    ->helperText('Url of the product')
-                    ->hint('Max - 100')
-                    ->maxLength(100)
-                    ->required(),
+                            Forms\Components\Section::make('General')->schema([
 
-                Toggle::make('is_returnable')
-                    ->label(__('Returnable'))
-                    ->helperText(__('customers have the option to return this product'))
-                    ->inlineLabel()
-                    ->lazy()
-                    ->default(false),
+                                Forms\Components\TextInput::make('sku')
+                                    ->label(__('SKU'))->helperText('Stock Keeping Unit (Unique) for the product')
+                                    ->hint('Max - 100')
+                                    ->maxLength(100)
+                                    ->required(),
 
-                DateTimePicker::make('return_window')
-                    ->seconds(false)
-                    ->label(__('Cancellation Period'))
-                    ->inlineLabel()
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('Name'))
+                                    ->helperText('Name of the product')
+                                    ->hint('Max - 100')
+                                    ->maxLength(100)
+                                    ->required(),
+                                Forms\Components\TextInput::make('url')
+                                    ->label(__('Url'))
+                                    ->prefix(fn () => config('project.client_url').'/product/')
+                                    ->helperText('Url of the product')
+                                    ->hint('Max - 100')
+                                    ->maxLength(100)
+                                    ->required(),
+
+                                Toggle::make('is_returnable')
+                                    ->label(__('Returnable'))
+                                    ->helperText(__('customers have the option to return this product'))
+                                    ->inlineLabel()
+                                    ->lazy()
+                                    ->default(false),
+
+                                Forms\Components\DateTimePicker::make('return_window')
+                                    ->seconds(false)
+                                    ->label(__('Cancellation Period'))
+                                    ->inlineLabel()
 //                    ->minValue(1)
 //                    ->maxValue(function () {
 //                        return now()->diffInDays($this->record->start_date, false);
 //                    })
-                    ->visible(function (Get $get) {
-                        return $get('is_returnable');
-                    }),
+                                    ->visible(function (Get $get) {
+                                        return $get('is_returnable');
+                                    }),
 
-                Fieldset::make(__('Manage'))->schema([
-                    Toggle::make('visible_individually')
-                        ->label(__('Visibility'))
-                        ->helperText('Visible on '.config('project.client_url'))
-                        ->required(),
-                    Toggle::make('featured')
-                        ->label(__('Featured'))
-                        ->required(),
-                    Select::make('status')
-                        ->label(__('Status'))
-                        ->inlineLabel()
-                        ->options(Product::StatusOptions)
-                        ->default(Product::DRAFT)
-                        ->selectablePlaceholder(false)->required(),
-                ])->columns(3),
+                                Forms\Components\Fieldset::make(__('Manage'))->schema([
+                                    Toggle::make('visible_individually')
+                                        ->label(__('Visibility'))
+                                        ->helperText('Visible on '.config('project.client_url'))
+                                        ->required(),
+                                    Toggle::make('featured')
+                                        ->label(__('Featured'))
+                                        ->required(),
+                                    Forms\Components\Select::make('status')
+                                        ->label(__('Status'))
+                                        ->inlineLabel()
+                                        ->options(Product::StatusOptions)
+                                        ->default(Product::DRAFT)
+                                        ->selectablePlaceholder(false)->required(),
+                                ])->columns(3),
 
-            ]),
+                            ]),
 
-            Section::make('Description')->schema([
 
-                Textarea::make('short_description')
-                    ->label(__(' Short Description'))
-                    ->hint('Max - 255')
-                    ->maxLength(255)
-                    ->required(),
-                TiptapEditor::make('description')
-                    ->label(__('Long Description'))
-                    ->hint('Max - 2000')
-                    //->maxLength(2000)
-                    ->output(TiptapOutput::Html)
-                    ->required(),
+                        ]),
+                    Forms\Components\Tabs\Tab::make('Media')
+                        ->schema([
+                            Forms\Components\Section::make('Media')->schema([
 
-            ]),
+                                SpatieMediaLibraryFileUpload::make('productDisplay')
+                                    ->multiple()
+                                    ->collection('productDisplay')
+                                    ->reorderable(),
 
-            Section::make('Product Pricing')
-                ->schema([
-                    TextInput::make('base_price')
-                        ->columnSpan(2)
-                        ->label(__('Base Price'))
-                        ->lazy()
+                                SpatieMediaLibraryFileUpload::make('productGallery')
+                                    ->multiple()
+                                    ->collection('productGallery')
+                                    ->columnSpan(2)
+                                    ->reorderable(),
+                            ])->columns(3),
+                        ]),
+                    Forms\Components\Tabs\Tab::make('About')
+                        ->schema([
+                            Forms\Components\Section::make('Description')->schema([
+
+                                Forms\Components\Textarea::make('short_description')
+                                    ->label(__(' Short Description'))
+                                    ->hint('Max - 255')
+                                    ->maxLength(255)
+                                    ->required(),
+                                TiptapEditor::make('description')
+                                    ->label(__('Long Description'))
+                                    ->hint('Max - 2000')
+                                    //->maxLength(2000)
+                                    ->output(TiptapOutput::Html)
+                                    ->required(),
+
+                            ]),
+                        ]),
+
+                    Forms\Components\Tabs\Tab::make('Pricing & Tax')
+                        ->schema([
+                            Forms\Components\Section::make('Product Pricing')
+                                ->schema([
+                                    Forms\Components\TextInput::make('base_price')
+                                        ->columnSpan(2)
+                                        ->label(__('Base Price'))
+                                        ->lazy()
 //                        ->mask(
 //                            fn (TextInput\Mask $mask) => $mask->numeric()
 //                                ->decimalPlaces(2)
@@ -187,62 +213,65 @@ class EditProduct extends EditRecord
 //                                ->maxValue(99999999)
 //                                ->thousandsSeparator(',')
 //                        )
-                        ->afterStateHydrated(function (TextInput $component, $state) {
-                            if ($state instanceof Money) {
-                                $component->state($state->getAmount());
-                            }
+                                        ->afterStateHydrated(function (Forms\Components\TextInput $component, $state) {
+                                            if ($state instanceof Money) {
+                                                $component->state($state->getAmount());
+                                            }
 
-                            return $state;
-                        })
-                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
-                            $basePrice = new Money($state);
-                            $taxPercent = $get('tax_percent');
-                            $this->calculate($basePrice, $taxPercent, $set, $get);
-                        })
-                        ->hint('enter value multiply by 100')
-                        ->default(0.00)
-                        ->columnSpan(2)
-                        ->required(),
+                                            return $state;
+                                        })
+                                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
+                                            $basePrice = new Money($state);
+                                            $taxPercent = $get('tax_percent');
+                                            $this->calculate($basePrice, $taxPercent, $set, $get);
+                                        })
+                                        ->hint('enter value multiply by 100')
+                                        ->default(0.00)
+                                        ->columnSpan(2)
+                                        ->required(),
 
-                    TextInput::make('price')
-                        ->disabled(),
+                                    Forms\Components\TextInput::make('price')
+                                        ->disabled(),
 
-                    TextInput::make('formatted_total')
-                        ->label(__('Formatted Total'))
-                        ->formatStateUsing(function (\Filament\Forms\Get $get) {
-                            $priceAmount = $get('price');
-                            if ($priceAmount instanceof Money) {
-                                return $priceAmount->formatted();
-                            } else {
-                                if (! empty($priceAmount)) {
-                                    $result = new Money($priceAmount);
+                                    Forms\Components\TextInput::make('formatted_total')
+                                        ->label(__('Formatted Total'))
+                                        ->formatStateUsing(function (\Filament\Forms\Get $get) {
+                                            $priceAmount = $get('price');
+                                            if ($priceAmount instanceof Money) {
+                                                return $priceAmount->formatted();
+                                            } else {
+                                                if (! empty($priceAmount)) {
+                                                    $result = new Money($priceAmount);
 
-                                    return $result->formatted();
-                                } else {
-                                    return 0.00;
-                                }
-                            }
-                        })->disabled(),
+                                                    return $result->formatted();
+                                                } else {
+                                                    return 0.00;
+                                                }
+                                            }
+                                        })->disabled(),
 
-                ])->columns(2),
+                                ])->columns(2),
 
-            Section::make('Tax Calculation')
-                ->schema([
-                    TextInput::make('hsn_code')->columnSpanFull()->maxLength(50)->hint(__('Max: 50')),
-                    TextInput::make('tax_percent')
-                        ->lazy()
-                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
-                            $taxPercent = $state;
-                            $basePrice = new Money($get('base_price'));
-                            $this->calculate($basePrice, $taxPercent, $set, $get);
-                        }),
-                    TextInput::make('tax_amount')
-                        ->disabled(),
+                            Forms\Components\Section::make('Tax Calculation')
+                                ->schema([
+                                    Forms\Components\TextInput::make('hsn_code')->columnSpanFull()->maxLength(50)->hint(__('Max: 50')),
+                                    Forms\Components\TextInput::make('tax_percent')
+                                        ->lazy()
+                                        ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, $state) {
+                                            $taxPercent = $state;
+                                            $basePrice = new Money($get('base_price'));
+                                            $this->calculate($basePrice, $taxPercent, $set, $get);
+                                        }),
+                                    Forms\Components\TextInput::make('tax_amount')
+                                        ->disabled(),
 
-                ])->columns(2),
+                                ])->columns(2),
+                        ]),
 
-            Section::make('Allocation Per Customer')->schema([
-                TextInput::make('min_range')
+                    Forms\Components\Tabs\Tab::make('Allocation')
+                        ->schema([
+                            Forms\Components\Section::make('Allocation Per Customer')->schema([
+                                Forms\Components\TextInput::make('min_range')
 //                    ->mask(
 //                        fn (TextInput\Mask $mask) => $mask
 //                            ->numeric()
@@ -251,8 +280,8 @@ class EditProduct extends EditRecord
 //                            ->minValue(1)
 //                            ->maxValue(10)
 //                    )
-                    ->default(1),
-                TextInput::make('max_range')
+                                    ->default(1),
+                                Forms\Components\TextInput::make('max_range')
 //                    ->mask(
 //                        fn (TextInput\Mask $mask) => $mask
 //                            ->numeric()
@@ -261,58 +290,69 @@ class EditProduct extends EditRecord
 //                            ->minValue(1)
 //                            ->maxValue(10)
 //                    )
-                    ->default(1),
-            ])->columns(2),
+                                    ->default(1),
+                            ])->columns(2),
+                        ]),
 
-            Section::make('Shipping')->schema([
+                    Forms\Components\Tabs\Tab::make('Shipping')
+                        ->schema([
+                            Forms\Components\Section::make('Shipping')->schema([
 
-                TextInput::make('length')
-                    ->label(__('Length'))
-                    ->placeholder('Length in CMs')
-                    ->hint('Enter decimal in Unit CM')
-                    ->required(),
-                TextInput::make('width')
-                    ->label(__('Width'))
-                    ->placeholder('width in CMs')
-                    ->hint('Enter decimal in Unit CM')
-                    ->required(),
-                TextInput::make('height')
-                    ->label(__('Height'))
-                    ->placeholder('Height in CMs')
-                    ->hint('Enter decimal in Unit CM')
-                    ->required(),
-                TextInput::make('weight')
-                    ->label(__('Weight'))->placeholder('weight in KGs')
-                    ->hint('Enter decimal in Unit KG')
-                    ->required(),
+                                Forms\Components\TextInput::make('length')
+                                    ->label(__('Length'))
+                                    ->placeholder('Length in CMs')
+                                    ->hint('Enter decimal in Unit CM')
+                                    ->required(),
+                                Forms\Components\TextInput::make('width')
+                                    ->label(__('Width'))
+                                    ->placeholder('width in CMs')
+                                    ->hint('Enter decimal in Unit CM')
+                                    ->required(),
+                                Forms\Components\TextInput::make('height')
+                                    ->label(__('Height'))
+                                    ->placeholder('Height in CMs')
+                                    ->hint('Enter decimal in Unit CM')
+                                    ->required(),
+                                Forms\Components\TextInput::make('weight')
+                                    ->label(__('Weight'))->placeholder('weight in KGs')
+                                    ->hint('Enter decimal in Unit KG')
+                                    ->required(),
 
-            ])->columns(2),
+                            ])->columns(2),
+                        ]),
 
-            Section::make('Media')->schema([
+                    Forms\Components\Tabs\Tab::make('Attributes')
+                        ->schema([
+                            Forms\Components\Section::make('Product Details')
+                                ->schema(array_merge([
+                                    Forms\Components\Select::make('categories')
+                                        ->relationship('categories', 'name', function ($query) {
+                                            return $query->notParents()->select('id', 'name', 'desc')->where('status', '=', true)->orderBy('name');
+                                        })
+                                        ->getOptionLabelFromRecordUsing(fn (Category $record) => "{$record->name} - {$record->desc}")
+                                        ->multiple()
+                                        ->placeholder(__('Select Categories'))
+                                        ->required(),
+                                ], $this->productAttributeSchema())),
+                        ]),
+                ])->columnSpanFull()->contained(false),
 
-                SpatieMediaLibraryFileUpload::make('productDisplay')
-                    ->multiple()
-                    ->collection('productDisplay')
-                    ->reorderable(),
 
-                SpatieMediaLibraryFileUpload::make('productGallery')
-                    ->multiple()
-                    ->collection('productGallery')
-                    ->columnSpan(2)
-                    ->reorderable(),
-            ])->columns(3),
 
-            Section::make('Product Details')
-                ->schema(array_merge([
-                    Select::make('categories')
-                        ->relationship('categories', 'name', function ($query) {
-                            return $query->notParents()->select('id', 'name', 'desc')->where('status', '=', true)->orderBy('name');
-                        })
-                        ->getOptionLabelFromRecordUsing(fn (Category $record) => "{$record->name} - {$record->desc}")
-                        ->multiple()
-                        ->placeholder(__('Select Categories'))
-                        ->required(),
-                ], $this->productAttributeSchema())),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         ];
     }
