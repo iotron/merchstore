@@ -11,6 +11,7 @@ use App\Http\Resources\Product\ProductIndexResource;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Category\Category;
 use App\Models\Category\Theme;
+use App\Models\Enums\Product\ProductStatusCast;
 use App\Models\Filter\FilterGroup;
 use App\Models\Product\Product;
 use App\Scoping\Scopes\CategoryScope;
@@ -102,7 +103,7 @@ class ProductController extends Controller implements CanBeSortableContract
         $query = Product::with([
             'media',
             'availableStocks',
-        ])->where('status', Product::PUBLISHED)->whereHas('categories', function ($query) use ($category) {
+        ])->where('status', ProductStatusCast::PUBLISHED)->whereHas('categories', function ($query) use ($category) {
             $query->with('media')->where('categories.id', $category->id);
         });
         // finding all the filters before pagination
@@ -164,7 +165,7 @@ class ProductController extends Controller implements CanBeSortableContract
     {
 
         $theme->load('children');
-        $query = Product::where('status', Product::PUBLISHED)
+        $query = Product::where('status', ProductStatusCast::PUBLISHED)
             ->whereHas('themes', function ($query) use ($theme) {
                 $query->where('themes.id', $theme->id);
             });

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Customer\CustomerResource\Pages;
 
 use App\Filament\Resources\Customer\CustomerResource;
 use App\Models\Customer\Customer;
+use App\Models\Enums\Product\ProductStatusCast;
 use App\Models\Product\Product;
 use App\Services\Iotron\MoneyService\Money;
 use Filament\Actions\Action;
@@ -140,7 +141,7 @@ class ListCustomerCart extends ListRecords
         return [
 
             Select::make('product_id')
-                ->options(Product::where('status', '=', Product::PUBLISHED)->get()->pluck('sku', 'id'))
+                ->options(Product::where('status', '=', ProductStatusCast::PUBLISHED)->get()->pluck('sku', 'id'))
                 ->label(__('Select Product'))
                 ->searchable()
                 ->placeholder(__('select or search product by sku'))

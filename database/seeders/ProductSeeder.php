@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category\Category;
 use App\Models\Category\Theme;
+use App\Models\Enums\Product\ProductTypeCast;
 use App\Models\Filter\Filter;
 use App\Models\Filter\FilterGroup;
 use App\Models\Localization\Address;
@@ -95,7 +96,7 @@ class ProductSeeder extends Seeder
     {
 
         $parentCategories->each(function (Category $category) {
-            $rawProductData = Product::factory()->raw(['type' => Product::CONFIGURABLE]);
+            $rawProductData = Product::factory()->raw(['type' => ProductTypeCast::CONFIGURABLE->value]);
             $typeInstance = app(config('project.product_types.'.$rawProductData['type'].'.class'));
             $rawProductData['filter_attributes'] = $this->getFilterDetails($rawProductData['filter_group_id']);
             // Create Configurable Product

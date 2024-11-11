@@ -29,11 +29,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            // Try
+            ->maxContentWidth('full')
             ->sidebarCollapsibleOnDesktop()
-           // ->topNavigation(true)
-
-            // Try
             ->passwordReset()
             ->profile()
             ->plugin(
@@ -43,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->collapsibleNavigationGroups()
             //->favicon(asset('favicon.ico'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Violet,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

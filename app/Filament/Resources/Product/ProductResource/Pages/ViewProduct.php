@@ -6,9 +6,8 @@ use App\Filament\Resources\Product\ProductResource;
 
 use App\Services\MoneyServices\Money;
 use Filament\Actions\EditAction;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Infolists;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewProduct extends ViewRecord
@@ -39,22 +38,66 @@ class ViewProduct extends ViewRecord
     {
         return parent::infolist($infolist)
             ->schema([
-                Section::make('Product Information')
-                    ->aside()
-                    ->columns(2)
-                    ->schema([
 
-                        TextEntry::make('name'),
-                        TextEntry::make('sku'),
-                        TextEntry::make('price')->money(Money::defaultCurrency()),
+                Infolists\Components\Tabs::make('Tabs')
+                    ->tabs([
+                        Infolists\Components\Tabs\Tab::make('General')
+                            ->schema([
+                                Infolists\Components\Section::make('General Info')
+                                    ->aside()
+                                    ->columns(2)
+                                    ->schema([
 
-                    ]),
+                                        Infolists\Components\TextEntry::make('name'),
+                                        Infolists\Components\TextEntry::make('sku'),
+                                        Infolists\Components\TextEntry::make('price')->money(Money::defaultCurrency()),
 
-                Section::make('Description')
-                    ->aside()
-                    ->schema([
-                        TextEntry::make('flat.description')->hiddenLabel()->alignJustify()->columnSpanFull()->html()
-                    ])
+                                    ]),
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('Media')
+                            ->columns()
+                            ->schema([
+
+                                Infolists\Components\SpatieMediaLibraryImageEntry::make('displayImage')
+                                    ->collection('productDisplay'),
+
+                                Infolists\Components\SpatieMediaLibraryImageEntry::make('bannerImage')
+                                    ->collection('productGallery'),
+
+
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('About')
+                            ->schema([
+                                Infolists\Components\Section::make('Description')
+                                    ->aside()
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('flat.description')->hiddenLabel()->alignJustify()->columnSpanFull()->html()
+                                    ])
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('Pricing & Tax')
+                            ->schema([
+                                // ...
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('Allocation')
+                            ->schema([
+                                // ...
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('Shipping')
+                            ->schema([
+                                // ...
+                            ]),
+                        Infolists\Components\Tabs\Tab::make('Attributes')
+                            ->schema([
+                                // ...
+                            ]),
+                    ])->columnSpanFull()->contained(false),
+
+
+
+
+
+
+
 
             ]);
     }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Product\ProductResource\Pages;
 
 use App\Filament\Resources\Product\ProductResource;
+use App\Models\Enums\Product\ProductTypeCast;
 use App\Models\Filter\FilterGroup;
 use App\Models\Product\Product;
 use Filament\Actions\Action;
@@ -45,7 +46,7 @@ class CreateProduct extends Page
                 return ($this->step == 1 && $this->isContinue) ? 'Continue' : 'Create';
             })->color(function () {
                 return ($this->step == 1 && $this->isContinue) ? 'primary' : 'success';
-            }),
+            })->icon(fn() => ($this->step == 1 && $this->isContinue) ? 'heroicon-o-paper-airplane' : 'heroicon-m-plus-circle')->iconPosition('after'),
         ];
     }
 
@@ -74,14 +75,21 @@ class CreateProduct extends Page
             Section::make('Product Details')
                 ->schema([
                     Select::make('type')
-                        ->options(Product::TYPE_OPTION)
+                        ->placeholder(__('Select a type'))
+                        ->options(collect(ProductTypeCast::cases())
+                            ->mapWithKeys(fn(ProductTypeCast $type) => [$type->value => $type->getLabel()])
+                            ->toArray())
+                        ->default(ProductTypeCast::SIMPLE->value)
                         ->lazy()
                         ->afterStateUpdated(function ($state) {
-                            $this->isContinue = $state == Product::CONFIGURABLE;
+                            $this->isContinue = $state == ProductTypeCast::CONFIGURABLE->value;
                         })
                         ->required(),
-                    TextInput::make('name')->required()->helperText('product name to be displayed.'),
+                    TextInput::make('name')->required()
+                        ->placeholder(__('Give this product a name'))
+                        ->helperText('product name to be displayed.'),
                     TextInput::make('sku')->label('SKU')
+                        ->placeholder('Type stock keeping unit number or code')
                         ->required()
                         ->unique(table: Product::class)
                         ->helperText('Stock Keeping Unit (SKU) is the unique id that will be assigned to your product.'),
@@ -89,6 +97,7 @@ class CreateProduct extends Page
                     Select::make('filter_group_id')
                         ->label('Filter Group')
                         ->lazy()
+                        ->placeholder(__('Select a group'))
                         ->options(FilterGroup::where('type', FilterGroup::FILTERABLE)->pluck('admin_name', 'id'))->required()->helperText('filters family adds a group of attributes to your product. (eg. color, size, material, medium)
                             choose the family according to your product type.'),
                 ]),
@@ -108,14 +117,14 @@ class CreateProduct extends Page
         $formData = $this->form->getState();
         $this->type = $formData['type'];
 
-        if ($formData['type'] == Product::SIMPLE) {
+        if ($formData['type'] == ProductTypeCast::SIMPLE->value) {
             $this->createSimple($formData);
-        } elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 1) {
+        } elseif ($formData['type'] == ProductTypeCast::CONFIGURABLE->value && $this->step == 1) {
             $this->type = $formData['type'];
             $this->form->fill($formData);
             $this->step = 2;
 
-        } elseif ($formData['type'] == Product::CONFIGURABLE && $this->step == 2) {
+        } elseif ($formData['type'] == ProductTypeCast::CONFIGURABLE->value && $this->step == 2) {
             $this->createConfigurable($formData);
         } else {
             $this->notify('danger', 'undefined product type selected');

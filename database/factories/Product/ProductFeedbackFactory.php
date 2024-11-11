@@ -3,6 +3,7 @@
 namespace Database\Factories\Product;
 
 use App\Models\Customer\Customer;
+use App\Models\Enums\Product\ProductStatusCast;
 use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +20,7 @@ class ProductFeedbackFactory extends Factory
     public function definition(): array
     {
         return [
-            'product_id' => Product::where('status', Product::PUBLISHED)->get()->random()->id,
+            'product_id' => Product::where('status', ProductStatusCast::PUBLISHED)->get()->random()->id,
             'customer_id' => Customer::all()->random()->id,
             'rating' => $this->faker->randomElement([1, 2, 3, 4, 5]),
             'comment' => $this->faker->sentence(10),

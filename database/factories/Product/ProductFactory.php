@@ -2,6 +2,8 @@
 
 namespace Database\Factories\Product;
 
+use App\Models\Enums\Product\ProductStatusCast;
+use App\Models\Enums\Product\ProductTypeCast;
 use App\Models\Product\Product;
 use App\Models\Product\ProductFlat;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,10 +23,10 @@ class ProductFactory extends Factory
     {
         $data = [
             'sku' => $this->faker->unique()->word,
-            'type' => Product::SIMPLE,
+            'type' => ProductTypeCast::SIMPLE,
             'name' => $productName = ucwords($this->faker->unique()->words(2, true)),
             'url' => Str::slug($productName),
-            'status' => Product::PUBLISHED,
+            'status' => fake()->randomElement(ProductStatusCast::cases()),
             'base_price' => $basePrice = fake()->numberBetween(1000, 12000),
             'price' => $basePrice,
             'filter_group_id' => fake()->randomElement([5, 6]),

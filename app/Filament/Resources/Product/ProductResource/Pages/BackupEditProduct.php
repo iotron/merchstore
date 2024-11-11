@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Product\ProductResource\Pages;
 use App\Filament\Resources\Product\ProductResource;
 use App\Helpers\ProductHelper\Support\Attributes\AttributeHelper;
 use App\Models\Category\Category;
+use App\Models\Enums\Product\ProductStatusCast;
 use App\Models\Product\Product;
 use App\Services\Iotron\MoneyService\Money;
 use Filament\Actions\Action;
@@ -130,8 +131,10 @@ class BackupEditProduct extends Page
                         ->required(),
                     Select::make('status')
                         ->label(__('Status'))
-                        ->options(Product::StatusOptions)
-                        ->default(Product::DRAFT)
+                        ->options(collect(ProductStatusCast::cases())
+                            ->mapWithKeys(fn(ProductStatusCast $status) => [$status->value => $status->getLabel()])
+                            ->toArray())
+                        ->default(ProductStatusCast::DRAFT->value)
                         ->selectablePlaceholder(false)->required(),
                 ])->columns(3),
 

@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Helpers\Cart\Cart;
 use App\Models\Customer\Customer;
+use App\Models\Enums\Product\ProductStatusCast;
+use App\Models\Enums\Product\ProductTypeCast;
 use App\Models\Order\Order;
 use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
@@ -21,14 +23,14 @@ class OrderSeeder extends Seeder
         // Fake Order Seeder
 
         $nonReturnableProducts = Product::where([
-            ['type', '=', Product::SIMPLE],
-            ['status', '=', Product::PUBLISHED],
+            ['type', '=', ProductTypeCast::SIMPLE],
+            ['status', '=', ProductStatusCast::PUBLISHED],
             ['is_returnable', '=', false],
         ])->limit(3)->get();
 
         $returnableProducts = Product::where([
-            ['type', '=', Product::SIMPLE],
-            ['status', '=', Product::PUBLISHED],
+            ['type', '=', ProductTypeCast::SIMPLE],
+            ['status', '=', ProductStatusCast::PUBLISHED],
             ['is_returnable', '=', true],
         ])->limit(3)->get();
 
