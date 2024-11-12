@@ -33,9 +33,10 @@ class Configurable extends AbstractSupportProductSupport
     private function createMultipleVariants(array $data, Product $product): Product
     {
         // Multiple Case
-        $allFilterable = $this->array_permutation($data['filter_attributes']);
+        $allFilterable = $this->array_permutation($data['filter_options']);
 
         $dataBag = [];
+        $optionBag = [];
         foreach ($allFilterable as $key => $permutation) {
             $dataBag[$key]['name'] = $product->sku;
             $dataBag[$key]['url'] = Str::slug($product->sku.'-variant-'.implode('-', $permutation)).'-'.now();
@@ -45,17 +46,21 @@ class Configurable extends AbstractSupportProductSupport
             //            $dataBag[$key]['vendor_id'] = $product->vendor_id;
             //          $dataBag[$key]['product_id'] = $product->id;
             //    $dataBag[$key]['filter_attributes'] = $permutation;
+            $optionBag[$product->sku.'-variant-'.implode('-', $permutation)] = $permutation;
         }
         // Create Variants Products
-        $variants = $product->variants()->createMany($dataBag);
 
-        $variants->each(function ($item, $key) {
-            //            dd($dataBag[$key]);
-            // update
+        $variants = $product->variants()->createMany($dataBag);
+        $variants->each(function ($item, $key) use($optionBag) {
+            // Create Variant Flat
             $item->flat()->create();
-            //            dd($dataBag[$key]['filter_attributes']);
-            // attach filterOptions  ('filter_attributes') must hold ids
-            //$item->filterOptions()->attach($filter->options->first->id);
+            // Attach Options
+            $option = $optionBag[$item->sku];
+            foreach ($option as $key => $value)
+            {
+                $item->filterOptions()->attach($value);
+            }
+
 
             // old
             //$item->flat()->create($dataBag[$key]);

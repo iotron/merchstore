@@ -21,9 +21,10 @@ class AttributeHelper
                     return [$item['id'] => $item['display_name']];
                 })->toArray();
 
-                return Select::make('filter_attributes.'.$item->display_name)
+                return Select::make('filter_options.'.$item->display_name)
                     ->options($optionBag)
                     ->required($item->is_required)
+                    ->default(3)
                     ->helperText($item->desc);
             })->toArray();
 

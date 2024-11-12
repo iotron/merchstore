@@ -57,13 +57,12 @@ class EditProduct extends EditRecord
         $this->record = $this->resolveRecord($record);
         $this->record->load('flat');
         $data = $this->record->toArray();
-//        $filterOption = collect($this->record->filterOptions)->flatMap(function ($option) {
-//            return [
-//                 $option->filter->display_name => $option->id,
-//            ];
-//        });
-//        $data['filter_options'] = $filterOption->toArray();
-//        dd($data);
+        $filterOption = collect($this->record->filterOptions)->flatMap(function ($option) {
+            return [
+                 $option->filter->display_name => $option->id,
+            ];
+        });
+        $data['filter_options'] = $filterOption->toArray();
 
        $this->form->fill($data);
 

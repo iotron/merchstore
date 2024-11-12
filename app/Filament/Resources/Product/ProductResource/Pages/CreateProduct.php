@@ -61,10 +61,10 @@ class CreateProduct extends Page
 
         return $group->filters->map(function ($item, $key) {
             $optionBag = $item->options->mapWithKeys(function ($item, $key) {
-                return [$item['display_name'] => $item['display_name']];
+                return [$item['id'] => $item['display_name']];
             })->toArray();
 
-            return Select::make('filter_attributes.'.$item->display_name)->options($optionBag)->multiple()->required();
+            return Select::make('filter_options.'.$item->display_name)->options($optionBag)->multiple()->required();
         })->toArray();
     }
 
@@ -137,13 +137,13 @@ class CreateProduct extends Page
     {
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        $this->redirect(ProductResource::getUrl('edit', ['record' => $product->id]));
+        $this->redirect(ProductResource::getUrl('edit', ['record' => $product->sku]));
     }
 
     public function createConfigurable(array $data)
     {
         $typeInstance = app(config('project.product_types.'.$data['type'].'.class'));
         $product = $typeInstance->create($data);
-        $this->redirect(ProductResource::getUrl('edit', ['record' => $product->id]));
+        $this->redirect(ProductResource::getUrl('edit', ['record' => $product->sku]));
     }
 }
