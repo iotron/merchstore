@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
+    protected static ?string $recordRouteKeyName = 'sku';
 
     protected static ?string $slug = 'product';
 
@@ -22,6 +23,7 @@ class ProductResource extends Resource
     {
         return [
             RelationManagers\AllStocksRelationManager::class,
+            RelationManagers\VariantsRelationManager::class,
         ];
     }
 
@@ -30,8 +32,8 @@ class ProductResource extends Resource
         return [
             'index' => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
-            'view' => Pages\ViewProduct::route('/{record}'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'view' => Pages\ViewProduct::route('/{record:sku}'),
+            'edit' => Pages\EditProduct::route('/{record:sku}/edit'),
         ];
     }
 }

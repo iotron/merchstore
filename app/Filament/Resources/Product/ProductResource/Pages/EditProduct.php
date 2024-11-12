@@ -6,6 +6,7 @@ use App\Filament\Resources\Product\ProductResource;
 use App\Helpers\ProductHelper\Support\Attributes\AttributeHelper;
 use App\Models\Category\Category;
 use App\Models\Enums\Product\ProductStatusCast;
+use App\Models\Enums\Product\ProductTypeCast;
 use App\Models\Product\Product;
 use App\Services\MoneyServices\Money;
 use Awcodes\Shout\Components\Shout;
@@ -40,9 +41,20 @@ class EditProduct extends EditRecord
         ];
     }
 
+    public function getRelationManagers(): array
+    {
+        $relationManagers [] = ProductResource\RelationManagers\AllStocksRelationManager::class;
+        if ($this->record->type == ProductTypeCast::CONFIGURABLE)
+        {
+            $relationManagers [] = ProductResource\RelationManagers\VariantsRelationManager::class;
+        }
+        return $relationManagers;
+    }
+
     public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
+        $this->record->load('flat');
         $product = $this->record->toArray();
 
         // Add Product Flat Too
@@ -66,7 +78,7 @@ class EditProduct extends EditRecord
         }
         if ($validator) {
             // Get And Set Product Type Instance/Class From App/Types
-            $typeInstance = app(config('project.product_types.'.$this->record->type.'.class'));
+            $typeInstance = app(config('project.product_types.'.$this->record->type->value.'.class'));
             // Create Product From App\Type Class->create
             $product = $typeInstance->update($this->record->id, $data);
             $product->save();
@@ -136,6 +148,7 @@ class EditProduct extends EditRecord
                                 Forms\Components\DateTimePicker::make('return_window')
                                     ->seconds(false)
                                     ->label(__('Cancellation Period'))
+                                    ->minDate(now()->toDateTimeString())
                                     ->inlineLabel()
 //                    ->minValue(1)
 //                    ->maxValue(function () {
@@ -188,12 +201,12 @@ class EditProduct extends EditRecord
                         ->schema([
                             Forms\Components\Section::make('Description')->schema([
 
-                                Forms\Components\Textarea::make('short_description')
+                                Forms\Components\Textarea::make('flat.short_description')
                                     ->label(__(' Short Description'))
                                     ->hint('Max - 255')
                                     ->maxLength(255)
                                     ->required(),
-                                TiptapEditor::make('description')
+                                TiptapEditor::make('flat.description')
                                     ->label(__('Long Description'))
                                     ->hint('Max - 2000')
                                     //->maxLength(2000)
@@ -322,7 +335,8 @@ class EditProduct extends EditRecord
 
                     Forms\Components\Tabs\Tab::make('Allocation')
                         ->schema([
-                            Forms\Components\Section::make('Allocation Per Customer')->schema([
+                            Forms\Components\Section::make('Allocation Per Customer')
+                                ->schema([
                                 Forms\Components\TextInput::make('min_range')
 //                    ->mask(
 //                        fn (TextInput\Mask $mask) => $mask
@@ -343,34 +357,37 @@ class EditProduct extends EditRecord
 //                            ->maxValue(10)
 //                    )
                                     ->default(1),
-                            ])->columns(2),
+                            ])
+                                ->columns(2),
                         ]),
 
                     Forms\Components\Tabs\Tab::make('Shipping')
                         ->schema([
-                            Forms\Components\Section::make('Shipping')->schema([
+                            Forms\Components\Section::make('Shipping')
+                                ->schema([
 
-                                Forms\Components\TextInput::make('length')
+                                Forms\Components\TextInput::make('flat.length')
                                     ->label(__('Length'))
                                     ->placeholder('Length in CMs')
                                     ->hint('Enter decimal in Unit CM')
                                     ->required(),
-                                Forms\Components\TextInput::make('width')
+                                Forms\Components\TextInput::make('flat.width')
                                     ->label(__('Width'))
                                     ->placeholder('width in CMs')
                                     ->hint('Enter decimal in Unit CM')
                                     ->required(),
-                                Forms\Components\TextInput::make('height')
+                                Forms\Components\TextInput::make('flat.height')
                                     ->label(__('Height'))
                                     ->placeholder('Height in CMs')
                                     ->hint('Enter decimal in Unit CM')
                                     ->required(),
-                                Forms\Components\TextInput::make('weight')
+                                Forms\Components\TextInput::make('flat.weight')
                                     ->label(__('Weight'))->placeholder('weight in KGs')
                                     ->hint('Enter decimal in Unit KG')
                                     ->required(),
 
-                            ])->columns(2),
+                            ])
+                                ->columns(2),
                         ]),
 
                     Forms\Components\Tabs\Tab::make('Attributes')

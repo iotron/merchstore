@@ -38,7 +38,7 @@ abstract class AbstractSupportProductSupport implements ProductTypeSupportContra
         //Update Product
         $product->fill($data)->save();
         // Update Product Flat
-        $product->flat->fill($data)->save();
+        $product->flat()->update($data['flat']);
 
         return $product;
     }

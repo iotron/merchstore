@@ -68,7 +68,8 @@ class ListProducts extends ListRecords
                             SpatieMediaLibraryImageColumn::make('thumb')
                                 ->square()
                                 ->size('70%')
-                                ->extraImgAttributes(['class' => 'rounded-xl'])
+                                ->alignCenter()
+                                ->extraImgAttributes(['class' => 'rounded-xl mx-auto'])
                                 ->columnSpan(1)
                                 ->collection('productDisplay'),
 
