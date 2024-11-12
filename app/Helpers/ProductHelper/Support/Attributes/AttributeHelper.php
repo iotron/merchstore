@@ -12,13 +12,13 @@ class AttributeHelper
     public function getProductAttributes($id): array
     {
         $groups = FilterGroup::where('id', $id)
-            ->with('attributes.options')->get();
+            ->with('filters.options')->get();
 
         return $groups->map(function ($group, $key) {
             // Filterable Only
-            $attributeBag = $group->attributes->map(function ($item, $key) {
+            $attributeBag = $group->filters->map(function ($item, $key) {
                 $optionBag = $item->options->mapWithKeys(function ($item, $key) {
-                    return [$item['display_name'] => $item['display_name']];
+                    return [$item['id'] => $item['display_name']];
                 })->toArray();
 
                 return Select::make('filter_attributes.'.$item->display_name)

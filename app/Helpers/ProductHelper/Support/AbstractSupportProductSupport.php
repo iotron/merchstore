@@ -35,10 +35,16 @@ abstract class AbstractSupportProductSupport implements ProductTypeSupportContra
         if (is_null($product)) {
             return false;
         }
+
         //Update Product
+        $filterOptions = $data['filter_options'];
+        unset($data['filter_options']);
         $product->fill($data)->save();
         // Update Product Flat
         $product->flat()->update($data['flat']);
+
+        // Save Relation
+        $product->filterOptions()->sync(array_values($filterOptions));
 
         return $product;
     }

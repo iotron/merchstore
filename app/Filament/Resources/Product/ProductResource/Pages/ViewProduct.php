@@ -90,11 +90,8 @@ class ViewProduct extends ViewRecord
 
 
                                         Infolists\Components\Fieldset::make('Manage')
-                                            ->columns(3)
+                                            ->columns(2)
                                             ->schema([
-                                                Infolists\Components\IconEntry::make('visible_individually')
-                                                    ->default(false)->boolean()->inlineLabel()
-                                                    ->alignCenter()->label('Visibility'),
 
                                                 Infolists\Components\IconEntry::make('featured')
                                                     ->default(false)->boolean()->inlineLabel()
@@ -145,22 +142,13 @@ class ViewProduct extends ViewRecord
                             ->schema([
 
                                 Infolists\Components\Section::make([
-                                    Infolists\Components\TextEntry::make('base_price')
-                                        ->label(__('Base Price'))
-                                        ->default(0)
-                                        ->money(Money::defaultCurrency()),
-
-                                    Infolists\Components\TextEntry::make('tax_percent')
-                                        ->label(__('Tax Percentage'))->suffix('%'),
 
                                     Infolists\Components\TextEntry::make('hsn_code')
                                         ->default('--not provided yet--')
                                         ->label(__('HSN Code')),
 
-                                    Infolists\Components\TextEntry::make('tax_amount')
-                                        ->default(0)
-                                        ->label(__('Tax Amount'))
-                                        ->money(Money::defaultCurrency()),
+                                    Infolists\Components\TextEntry::make('tax_percent')
+                                        ->label(__('Tax Percentage'))->suffix('%'),
 
                                     Infolists\Components\TextEntry::make('price')
                                         ->label(__('Price'))

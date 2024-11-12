@@ -73,11 +73,8 @@ class Product extends Model implements HasMedia
         'status',
         'is_returnable',
         'return_window',
-        //'visible_individually',
-        'base_price',
-        'hsn_code',
+        'tax_code',
         'tax_percent',
-        'tax_amount',
         'price',
         'filter_group_id',
         'parent_id',
@@ -86,9 +83,7 @@ class Product extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'base_price' => MoneyCast::class,
         'price' => MoneyCast::class,
-        'tax_amount' => MoneyCast::class,
         'is_returnable' => 'boolean',
         'return_window' => 'datetime',
         'type' => ProductTypeCast::class,
@@ -148,7 +143,7 @@ class Product extends Model implements HasMedia
 
     public function filterOptions(): BelongsToMany
     {
-        return $this->belongsToMany(FilterOption::class, 'product_filter_options');
+        return $this->belongsToMany(FilterOption::class, 'product_filter_options','product_id','filter_option_id');
     }
 
     /**

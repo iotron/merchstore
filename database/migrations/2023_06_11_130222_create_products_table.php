@@ -29,21 +29,21 @@ return new class extends Migration
             $table->boolean('is_returnable')->default(false);
             $table->dateTime('return_window')->nullable();
 
+            // pricing info
+            $table->integer('price')->default(0);
+            $table->string('tax_code')->nullable();
+            $table->float('tax_percent', 4, 2, true)->default(0.00);
+
+
             // visibility control for vendor
             // $table->boolean('visible_individually')->default(false);
-
-            $table->float('base_price', 10, 2, true)->default(0.00);
 
             //            $table->float('commission_percent', 4, 2, true)->default(0.00);
             //            $table->float('commission_amount', 10, 2, true)->default(0.00);
             //            $table->json('commissions')->nullable();
 
-            // tax info
-            $table->string('hsn_code')->nullable();
-            $table->float('tax_percent', 4, 2, true)->default(0.00);
-            $table->float('tax_amount', 10, 2)->default(0.00);
 
-            $table->float('price', 10, 2, true)->default(0.00);
+
 
             $table->foreignId('filter_group_id')->nullable()->constrained('filter_groups')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('parent_id')->nullable()->constrained('products')->onUpdate('cascade')->onDelete('cascade');
