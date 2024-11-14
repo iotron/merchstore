@@ -44,10 +44,9 @@ class EditProduct extends EditRecord
 
     public function getRelationManagers(): array
     {
-        $relationManagers [] = ProductResource\RelationManagers\AllStocksRelationManager::class;
-        if ($this->record->type == ProductTypeCast::CONFIGURABLE)
-        {
-            $relationManagers [] = ProductResource\RelationManagers\VariantsRelationManager::class;
+        $relationManagers[] = ProductResource\RelationManagers\AllStocksRelationManager::class;
+        if ($this->record->type == ProductTypeCast::CONFIGURABLE) {
+            $relationManagers[] = ProductResource\RelationManagers\VariantsRelationManager::class;
         }
         return $relationManagers;
     }
@@ -59,15 +58,15 @@ class EditProduct extends EditRecord
         $data = $this->record->toArray();
         $filterOption = collect($this->record->filterOptions)->flatMap(function ($option) {
             return [
-                 $option->filter->display_name => $option->id,
+                $option->filter->display_name => $option->id,
             ];
         });
         $data['filter_options'] = $filterOption->toArray();
 
-       $this->form->fill($data);
+        $this->form->fill($data);
 
 
-       // dd($this->data,$this->record->toArray());
+        // dd($this->data,$this->record->toArray());
     }
 
     public function save(bool $shouldRedirect = true, bool $shouldSendSavedNotification = true): void
@@ -84,11 +83,11 @@ class EditProduct extends EditRecord
         }
         if ($validator) {
             // Get And Set Product Type Instance/Class From App/Types
-            $typeInstance = app(config('project.product_types.'.$this->record->type->value.'.class'));
+            $typeInstance = app(config('project.product_types.' . $this->record->type->value . '.class'));
             // Create Product From App\Type Class->create
             $product = $typeInstance->update($this->record->id, $data);
             $product->save();
-           // $this->notify('success', 'You have successfully modify product details', isAfterRedirect: true);
+            // $this->notify('success', 'You have successfully modify product details', isAfterRedirect: true);
             $this->getSavedNotification()?->send();
         }
     }
@@ -113,62 +112,79 @@ class EditProduct extends EditRecord
                 ->tabs([
                     Forms\Components\Tabs\Tab::make('General')
                         ->schema([
-                            Forms\Components\Section::make('General')
+                            Forms\Components\Section::make('Primary')
+                                ->aside()->description('Primary details about the product')
                                 ->schema([
 
-                                Forms\Components\TextInput::make('sku')
-                                    ->label(__('SKU'))->helperText('Stock Keeping Unit (Unique) for the product')
-                                    ->hint('Max - 100')
-                                    ->maxLength(100)
-                                    ->required(),
-
-                                Forms\Components\TextInput::make('name')
-                                    ->label(__('Name'))
-                                    ->helperText('Name of the product')
-                                    ->hint('Max - 100')
-                                    ->maxLength(100)
-                                    ->required(),
-                                Forms\Components\TextInput::make('url')
-                                    ->label(__('Url'))
-                                    ->prefix(fn () => config('project.client_url').'/product/')
-                                    ->helperText('Url of the product')
-                                    ->hint('Max - 100')
-                                    ->maxLength(100)
-                                    ->required(),
-
-                                Toggle::make('is_returnable')
-                                    ->label(__('Returnable'))
-                                    ->helperText(__('customers have the option to return this product'))
-                                    ->inlineLabel()
-                                    ->lazy()
-                                    ->default(false),
-
-                                Forms\Components\DateTimePicker::make('return_window')
-                                    ->seconds(false)
-                                    ->time(false)
-                                    ->label(__('Cancellation Period'))
-                                    ->minDate($this->record->created_at)
-                                    ->inlineLabel()
-                                    ->visible(function (Get $get) {
-                                        return $get('is_returnable');
-                                    }),
-
-                                Forms\Components\Fieldset::make(__('Manage'))->schema([
-
-                                    Toggle::make('featured')
-                                        ->label(__('Featured'))
+                                    Forms\Components\TextInput::make('sku')
+                                        ->label(__('SKU'))->helperText('Stock Keeping Unit (Unique) for the product')
+                                        ->hint('Max - 100')
+                                        ->maxLength(100)
                                         ->required(),
-                                    Forms\Components\Select::make('status')
-                                        ->label(__('Status'))
-                                        ->inlineLabel()
-                                        ->options(collect(ProductStatusCast::cases())
-                                            ->mapWithKeys(fn(ProductStatusCast $status) => [$status->value => $status->getLabel()])
-                                            ->toArray())
-                                        ->default(ProductStatusCast::DRAFT->value)
-                                        ->selectablePlaceholder(false)->required(),
-                                ])->columns(3),
 
-                            ]),
+                                    Forms\Components\TextInput::make('name')
+                                        ->label(__('Name'))
+                                        ->helperText('Name of the product')
+                                        ->hint('Max - 100')
+                                        ->maxLength(100)
+                                        ->required(),
+                                    Forms\Components\TextInput::make('url')
+                                        ->label(__('Url'))
+                                        ->prefix(fn() => config('project.client_url') . '/product/')
+                                        ->helperText('Url of the product')
+                                        ->hint('Max - 100')
+                                        ->maxLength(100)
+                                        ->required(),
+
+
+                                    Forms\Components\Fieldset::make(__('Manage'))->schema([
+
+                                        Toggle::make('featured')
+                                            ->label(__('Featured'))
+                                            ->required(),
+                                        Forms\Components\Select::make('status')
+                                            ->label(__('Status'))
+                                            ->inlineLabel()
+                                            ->options(collect(ProductStatusCast::cases())
+                                                ->mapWithKeys(fn(ProductStatusCast $status) => [$status->value => $status->getLabel()])
+                                                ->toArray())
+                                            ->default(ProductStatusCast::DRAFT->value)
+                                            ->selectablePlaceholder(false)->required(),
+                                    ])->columns(3),
+
+                                ]),
+
+                            Forms\Components\Section::make('Price')
+                                ->aside()->description('Price details about the product')
+                                ->schema([
+                                    Forms\Components\TextInput::make('price')
+                                        ->columnSpan(2)
+                                        ->label(__('Base Price'))
+                                        ->lazy()
+                                        ->numeric()
+                                        ->inputMode('decimal')
+                                        ->default(0.00)
+                                        ->minValue(0)
+                                        ->maxValue(99999999)
+                                        ->required()
+                                        ->lazy()
+                                        ->extraInputAttributes(['step' => '0.01', 'min' => 0, 'max' => 99999999])
+                                        ->hint('enter value multiply by 100')
+                                        ->default(0.00)
+                                        ->columnSpan(2)
+                                        ->required(),
+
+                                    Forms\Components\TextInput::make('hsn_code')
+                                        ->columnSpanFull()
+                                        ->maxLength(50)->hint(__('Max: 50')),
+                                    Forms\Components\TextInput::make('tax_percent')
+                                        ->lazy(),
+                                    Shout::make('pricingInfo')
+                                        ->color('info')
+                                        ->content(fn(Get $get) => $this->getShoutContent($get)),
+                                ]),
+
+
                         ]),
                     Forms\Components\Tabs\Tab::make('Media')
                         ->schema([
@@ -206,56 +222,34 @@ class EditProduct extends EditRecord
                             ]),
                         ]),
 
-                    Forms\Components\Tabs\Tab::make('Pricing & Tax')
+                    Forms\Components\Tabs\Tab::make('Policies')
                         ->schema([
 
-                            Forms\Components\Section::make('Product Pricing')
-                                ->columns()
-                                ->schema([
+                            Toggle::make('is_returnable')
+                                ->label(__('Returnable'))
+                                ->helperText(__('customers have the option to return this product'))
+                                ->inlineLabel()
+                                ->lazy()
+                                ->default(false),
 
-
-                                    Forms\Components\Grid::make(['md' => 1])
-                                        ->schema([
-                                            Forms\Components\TextInput::make('price')
-                                                ->columnSpan(2)
-                                                ->label(__('Base Price'))
-                                                ->lazy()
-                                                ->numeric()
-                                                ->inputMode('decimal')
-                                                ->default(0.00)
-                                                ->minValue(0)
-                                                ->maxValue(99999999)
-                                                ->required()
-                                                ->lazy()
-                                                ->extraInputAttributes(['step' => '0.01', 'min' => 0, 'max' => 99999999])
-                                                ->hint('enter value multiply by 100')
-                                                ->default(0.00)
-                                                ->columnSpan(2)
-                                                ->required(),
-
-                                            Forms\Components\TextInput::make('hsn_code')
-                                                ->columnSpanFull()
-                                                ->maxLength(50)->hint(__('Max: 50')),
-                                            Forms\Components\TextInput::make('tax_percent')
-                                                ->lazy(),
-                                        ])
-                                        ->columnSpan(1),
-
-                                    Shout::make('pricingInfo')
-                                        ->color('info')
-                                        ->content(fn (Get $get) => $this->getShoutContent($get)),
-
-
-                                ])->columns(2),
+                            Forms\Components\DateTimePicker::make('return_window')
+                                ->seconds(false)
+                                ->time(false)
+                                ->label(__('Cancellation Period'))
+                                ->minDate($this->record->created_at)
+                                ->inlineLabel()
+                                ->visible(function (Get $get) {
+                                    return $get('is_returnable');
+                                }),
                         ]),
 
                     Forms\Components\Tabs\Tab::make('Allocation')
                         ->schema([
                             Forms\Components\Section::make('Allocation Per Customer')
                                 ->schema([
-                                Forms\Components\TextInput::make('min_range')->default(1),
-                                Forms\Components\TextInput::make('max_range')->default(1),
-                            ])
+                                    Forms\Components\TextInput::make('min_range')->default(1),
+                                    Forms\Components\TextInput::make('max_range')->default(1),
+                                ])
                                 ->columns(2),
                         ]),
 
@@ -264,27 +258,27 @@ class EditProduct extends EditRecord
                             Forms\Components\Section::make('Shipping')
                                 ->schema([
 
-                                Forms\Components\TextInput::make('flat.length')
-                                    ->label(__('Length'))
-                                    ->placeholder('Length in CMs')
-                                    ->hint('Enter decimal in Unit CM')
-                                    ->required(),
-                                Forms\Components\TextInput::make('flat.width')
-                                    ->label(__('Width'))
-                                    ->placeholder('width in CMs')
-                                    ->hint('Enter decimal in Unit CM')
-                                    ->required(),
-                                Forms\Components\TextInput::make('flat.height')
-                                    ->label(__('Height'))
-                                    ->placeholder('Height in CMs')
-                                    ->hint('Enter decimal in Unit CM')
-                                    ->required(),
-                                Forms\Components\TextInput::make('flat.weight')
-                                    ->label(__('Weight'))->placeholder('weight in KGs')
-                                    ->hint('Enter decimal in Unit KG')
-                                    ->required(),
+                                    Forms\Components\TextInput::make('flat.length')
+                                        ->label(__('Length'))
+                                        ->placeholder('Length in CMs')
+                                        ->hint('Enter decimal in Unit CM')
+                                        ->required(),
+                                    Forms\Components\TextInput::make('flat.width')
+                                        ->label(__('Width'))
+                                        ->placeholder('width in CMs')
+                                        ->hint('Enter decimal in Unit CM')
+                                        ->required(),
+                                    Forms\Components\TextInput::make('flat.height')
+                                        ->label(__('Height'))
+                                        ->placeholder('Height in CMs')
+                                        ->hint('Enter decimal in Unit CM')
+                                        ->required(),
+                                    Forms\Components\TextInput::make('flat.weight')
+                                        ->label(__('Weight'))->placeholder('weight in KGs')
+                                        ->hint('Enter decimal in Unit KG')
+                                        ->required(),
 
-                            ])
+                                ])
                                 ->columns(2),
                         ]),
 
@@ -296,7 +290,7 @@ class EditProduct extends EditRecord
                                         ->relationship('categories', 'name', function ($query) {
                                             return $query->notParents()->select('id', 'name', 'desc')->where('status', '=', true)->orderBy('name');
                                         })
-                                        ->getOptionLabelFromRecordUsing(fn (Category $record) => "{$record->name} - {$record->desc}")
+                                        ->getOptionLabelFromRecordUsing(fn(Category $record) => "{$record->name} - {$record->desc}")
                                         ->multiple()
                                         ->placeholder(__('Select Categories'))
                                         ->required(),
