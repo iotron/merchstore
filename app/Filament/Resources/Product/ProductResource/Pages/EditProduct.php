@@ -155,11 +155,11 @@ class EditProduct extends EditRecord
                                 ]),
 
                             Forms\Components\Section::make('Price')
-                                ->aside()->description('Price details about the product')
+                                ->aside()->columns(2)
+                                ->description('Price details about the product')
                                 ->schema([
                                     Forms\Components\TextInput::make('price')
-                                        ->columnSpan(2)
-                                        ->label(__('Base Price'))
+                                        ->hint('price including tax')
                                         ->lazy()
                                         ->numeric()
                                         ->inputMode('decimal')
@@ -169,16 +169,17 @@ class EditProduct extends EditRecord
                                         ->required()
                                         ->lazy()
                                         ->extraInputAttributes(['step' => '0.01', 'min' => 0, 'max' => 99999999])
-                                        ->hint('enter value multiply by 100')
                                         ->default(0.00)
-                                        ->columnSpan(2)
                                         ->required(),
 
                                     Forms\Components\TextInput::make('hsn_code')
-                                        ->columnSpanFull()
-                                        ->maxLength(50)->hint(__('Max: 50')),
+                                        ->maxLength(50)->hint(__('Max: 50'))
+                                        ->columnSpan(1),
+
                                     Forms\Components\TextInput::make('tax_percent')
-                                        ->lazy(),
+                                        ->lazy()
+                                        ->columnSpan(1),
+
                                     Shout::make('pricingInfo')
                                         ->color('info')
                                         ->content(fn(Get $get) => $this->getShoutContent($get)),
