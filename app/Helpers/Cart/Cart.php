@@ -2,36 +2,68 @@
 
 namespace App\Helpers\Cart;
 
-use App\Helpers\Cart\Services\CartCalculator;
-use App\Helpers\Cart\Services\CartService;
+//use App\Helpers\Cart\Services\CartCalculator;
+//use App\Helpers\Cart\Services\CartService;
+
+use App\Services\CartService\CartService;
 
 class Cart extends CartService
 {
+
+
+
     public function getMeta(): array
     {
-        $cartCalculator = new CartCalculator($this);
-        $cartCalculator->calculate();
 
-        return [
-            'empty' => $this->isEmpty(),
-            'changed' => $this->changed,
-            'coupon' => $this->couponCode,
-            'validCoupon' => $this->validCoupon,
-            'couponModel' => $this->couponModel,
-            'subtotal' => $this->subTotal,
-            'tax' => $this->taxTotal,
-            'discount' => ! is_null($this->discountTotal) ? $this->discountTotal : null,
-            'total' => $this->total,
-            'quantity' => $this->getTotalQuantity(),
-            'subtotal_formatted' => $this->subTotal->formatted(),
-            'tax_formatted' => $this->taxTotal->formatted(),
-            'discount_formatted' => ! is_null($this->discountTotal) ? $this->discountTotal->formatted() : null,
-            'total_formatted' => $this->total->formatted(),
-            'error' => $this->getErrors(),
-            'products' => $this->meta,
-        ];
+        $data = $this->getCalculatedData();
+
+        return array_merge($data,[
+            'currency' => $data['subTotal']->getCurrency()->getCurrency(),
+            'net_total_amount' => $data['amount']->getAmount(),
+
+            'subtotal' => $data['subTotal'],
+            'total' => $data['amount'],
+            'subtotal_formatted' => $data['subTotal']->formatted(),
+            'tax_formatted' => $data['tax']->formatted(),
+            'discount_formatted' => $data['discount']->formatted(),
+            'total_formatted' => $data['amount']->formatted(),
+            'products' => collect($data['products']),
+        ]);
 
     }
+
+
+
+
+
+
+
+
+//    public function getMeta(): array
+//    {
+////        $cartCalculator = new CartCalculator($this);
+////        $cartCalculator->calculate();
+//
+//        return [
+//            'empty' => $this->isEmpty(),
+//            'changed' => $this->changed,
+//            'coupon' => $this->couponCode,
+//            'validCoupon' => $this->validCoupon,
+//            'couponModel' => $this->couponModel,
+//            'subtotal' => $this->subTotal,
+//            'tax' => $this->taxTotal,
+//            'discount' => ! is_null($this->discountTotal) ? $this->discountTotal : null,
+//            'total' => $this->total,
+//            'quantity' => $this->getTotalQuantity(),
+//            'subtotal_formatted' => $this->subTotal->formatted(),
+//            'tax_formatted' => $this->taxTotal->formatted(),
+//            'discount_formatted' => ! is_null($this->discountTotal) ? $this->discountTotal->formatted() : null,
+//            'total_formatted' => $this->total->formatted(),
+//            'error' => $this->getErrors(),
+//            'products' => $this->meta,
+//        ];
+//
+//    }
 
     public function getMetaData(): array
     {

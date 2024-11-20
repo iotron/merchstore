@@ -88,7 +88,7 @@ abstract class CartService implements CartServiceContract
         $this->taxTotal = $taxTotal;
     }
 
-    public function setTotal(Money $total)
+    public function setTotal(Money $total): void
     {
         $this->total = $total;
     }

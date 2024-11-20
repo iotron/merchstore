@@ -54,6 +54,7 @@ class CartCalculator implements CartCalculatorContract
         $collectionBag = $this->productCollection->mapWithKeys(function ($product) use ($subTotal, $totalTax) {
             // subtotal
             $productSubTotal = new Money(0.00);
+
             $productSubTotal->add($product->base_price->multiplyOnce($product->pivot->quantity));
             $subTotal->add($productSubTotal);
             // tax
