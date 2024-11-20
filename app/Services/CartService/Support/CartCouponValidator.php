@@ -75,7 +75,7 @@ class CartCouponValidator
     private function validMaxUsage(): bool
     {
         // max usage limit reached for this customer
-        $customerUsage = $this->couponModel->usages?->pivot->times_used ?? null;
+        $customerUsage = $this->couponModel->usages->first()?->pivot->times_used ?? null;
         // validate coupon usage
         if (! is_null($customerUsage)) {
             if ($customerUsage > $this->couponModel->usage_per_customer) {

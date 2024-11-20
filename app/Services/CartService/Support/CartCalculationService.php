@@ -40,7 +40,7 @@ class CartCalculationService
 
     public function get()
     {
-
+        $this->calculateCartItems();
     }
 
 
@@ -66,13 +66,15 @@ class CartCalculationService
 
             if(!is_null($this->couponModel))
             {
-                $this->couponModel->loadMissing('voucher','voucher.conditions');
+                $this->couponModel->loadMissing('voucher');
                 $voucherService = new VoucherService($this->couponModel->voucher);
             }
 
 
 
         }
+
+        dd($this);
     }
 
 
