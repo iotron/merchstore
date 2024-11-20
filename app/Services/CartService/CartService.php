@@ -3,6 +3,7 @@
 namespace App\Services\CartService;
 
 use App\Models\Customer\Customer;
+use App\Models\Product\Product;
 use App\Models\Promotion\VoucherCode;
 use App\Services\CartService\Support\CartCalculationService;
 use App\Services\CartService\Support\CartCouponValidator;
@@ -90,11 +91,15 @@ class CartService
         $cartCalculatorService = CartCalculationService::make()->items($this->products());
         $this->couponModel = VoucherCode::with([
             'voucher',
+            'voucher.customer_groups' => fn($query) => $query->where('customer_group_id', $this->customer->customer_group_id),
             'usages' => fn($query) => $query->where('customer_id',$this->customer->id)
         ])->firstWhere('code', $this->couponCode);
         if (!$this->isEmpty() && $this->couponModel) {
-            if (CartCouponValidator::make($this->couponModel)->validate()) {
+            $couponValidator = CartCouponValidator::make($this->couponModel);
+            if ($couponValidator->validate($this->getTotalQuantity())) {
                 $cartCalculatorService->setCoupon($this->validCoupon, $this->couponModel);
+            }else{
+                $this->errors = array_merge($this->errors,$couponValidator->getErrors());
             }
         }
 
@@ -128,8 +133,79 @@ class CartService
 
 
     /**
+     * Coupon
      * CURD OPERATIONS AND RELATED METHODS
      */
+
+    public function addCoupon(string $code)
+    {
+        $this->couponModel = VoucherCode::with([
+            'voucher',
+            'voucher.customer_groups' => fn($query) => $query->where('customer_group_id', $this->customer->customer_group_id),
+            'usages' => fn($query) => $query->where('customer_id',$this->customer->id)
+        ])->firstWhere('code', $code);
+        $couponValidator = CartCouponValidator::make($this->couponModel);
+        if ($this->couponModel && $couponValidator->validate())
+        {
+            $this->couponCode = $code;
+            $this->validCoupon = true;
+            session(['coupon' => $code]);
+        }else{
+            $this->errors = array_merge($this->errors,$couponValidator->getErrors());
+        }
+
+    }
+
+    public function removeCoupon(string $code)
+    {
+        if ($this->couponCode === $code) {
+            session()->forget('coupon');
+            $this->couponCode = null;
+            $this->validCoupon = false;
+        }
+    }
+
+
+
+    /**
+     * Products
+     * CURD OPERATIONS AND RELATED METHODS
+     */
+
+
+    public function add(int $itemId, int $quantity):void
+    {
+        // Exist Item Handel In Controller, And we got product id here, not sku
+        // So We do only fresh insert record
+        $selectedItem = Product::firstWhere('id',$itemId);
+        if ($selectedItem->max_range >= $quantity && $selectedItem->min_range <= $quantity)
+        {
+            // Fresh Add in Cart
+            $this->customer->cart()->attach($selectedItem->id, ['quantity' => $quantity]);
+        }else{
+            $this->customer->cart()->attach($selectedItem->id, ['quantity' => $selectedItem->max_range]);
+        }
+    }
+
+
+    public function update(int $itemID, int $quantity): void
+    {
+        $this->customer->cart()->updateExistingPivot($itemID, [
+            'quantity' => $quantity,
+        ]);
+    }
+
+    public function delete(int $itemID): void
+    {
+
+        if ($this->products()->contains('id', $itemID)) {
+            $this->customer->cart()->detach($itemID);
+
+        } else {
+            $this->errors[] = 'product not found!';
+        }
+    }
+
 
 
 

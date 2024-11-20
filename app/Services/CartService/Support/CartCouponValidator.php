@@ -9,6 +9,7 @@ class CartCouponValidator
 {
 
     protected VoucherCode $couponModel;
+    protected int $totalQuantity = 0;
     protected array $errors = [];
 
 
@@ -21,8 +22,9 @@ class CartCouponValidator
     }
 
 
-    public function validate():bool
+    public function validate(int $totalQuantity = 0):bool
     {
+        $this->totalQuantity = $totalQuantity;
         return $this->validVoucherStatus() &&
             $this->validSchedule() &&
             $this->validTotalUsage() &&
@@ -31,10 +33,15 @@ class CartCouponValidator
             $this->validCustomerGroup();
     }
 
+    public function getErrors():array
+    {
+        return $this->errors;
+    }
+
     private function validVoucherStatus(): bool
     {
         if (! $this->couponModel->voucher->status) {
-            $this->errors [] = 'Coupon code not found!';
+            $this->errors[] = 'The coupon code is either invalid or inactive.';
             return false;
         }
         return true;
@@ -55,34 +62,49 @@ class CartCouponValidator
         return true;
     }
 
-    private function validTotalUsage()
+    private function validTotalUsage(): bool
     {
-        dd($this->couponModel,$this->couponModel->usages);
-        // max usage limit reached for this customer
-        $customerUsage = $this->couponModel->usages()->where('customer_id', $this->cartService->getCustomer()->id)->pivot->times_used ?? null;
+        // max total usages reached
+        if ($this->couponModel->times_used > $this->couponModel->coupon_usage_limit) {
+            $this->errors [] = 'max coupon usage reached';
+            return false;
+        }
+        return true;
+    }
 
+    private function validMaxUsage(): bool
+    {
+        // max usage limit reached for this customer
+        $customerUsage = $this->couponModel->usages?->pivot->times_used ?? null;
         // validate coupon usage
         if (! is_null($customerUsage)) {
             if ($customerUsage > $this->couponModel->usage_per_customer) {
-                $this->cartService->setError('already used'.$customerUsage.'times');
-
+                $this->errors[] = 'already used'.$customerUsage.'times';
                 return false;
             }
+        }
+        return true;
+    }
+
+    private function validateMinimumQuantity(): bool
+    {
+        // Check If Match with Minimum Quantity in Cart
+        if ($this->totalQuantity < $this->couponModel->min_quantity) {
+            $this->errors [] = 'coupon not fulfill with minimum ticket requirement';
+            return false;
         }
 
         return true;
     }
 
-    private function validMaxUsage()
-    {
-    }
-
-    private function validateMinimumQuantity()
-    {
-    }
-
     private function validCustomerGroup()
     {
+        $customerGroup = $this->couponModel?->voucher?->customer_groups;
+        if (is_null($customerGroup)) {
+            $this->errors [] = 'voucher code not applicable for your group';
+            return false;
+        }
+        return true;
     }
 
 

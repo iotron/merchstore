@@ -36,28 +36,7 @@ class Product extends Model implements HasMedia
 
     public const PRODUCT_THEME_TABLE = 'product_themes';
 
-    // product type
-//    public const SIMPLE = 'simple';
-//
-//    public const CONFIGURABLE = 'configurable';
-//
-//    public const TYPE_OPTION = [
-//        self::SIMPLE => 'Simple',
-//        self::CONFIGURABLE => 'Configurable',
-//    ];
-//
-//    // product status
-//    public const DRAFT = 'draft';
-//
-//    public const REVIEW = 'review';
-//
-//    public const PUBLISHED = 'published';
 
-//    public const StatusOptions = [
-//        self::DRAFT => 'Draft',
-//        self::REVIEW => 'Review',
-//        self::PUBLISHED => 'Published',
-//    ];
 
     //    protected $filterDataScope = 'ProductDataScope';
 

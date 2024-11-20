@@ -31,6 +31,7 @@ class ProductFactory extends Factory
             'filter_group_id' => fake()->randomElement([5, 6]),
             'quantity' => 0,
             'is_returnable' => $returnable = fake()->boolean(40),
+            'max_range' => random_int(3,10)
         ];
 
         if ($data['is_returnable']) {
