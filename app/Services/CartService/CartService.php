@@ -103,16 +103,21 @@ class CartService
             }
         }
 
-        $data = $cartCalculatorService->get();
-
-
         $data = [
             'subTotal' => new Money(0.00),
             'discount' => new Money(0.00),
             'tax' => new Money(0.00),
             'amount' => new Money(0.00),
+            'totalQuantity' => $this->getTotalQuantity(),
             'products' => []
         ];
+
+        if (empty($this->errors))
+        {
+            $data = $cartCalculatorService->get($data);
+        }
+
+//        dd($data);
 
         return array_merge([
             'coupon' => $this->couponCode,

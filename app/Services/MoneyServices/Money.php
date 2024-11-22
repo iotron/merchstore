@@ -88,4 +88,11 @@ class Money extends MoneyService
     {
         return $this->laravelMoney->lessThan($money->get());
     }
+
+    public function lessThanOrEqual(Money $money)
+    {
+        return $this->laravelMoney->lessThanOrEqual($money->get());
+    }
+
+
 }

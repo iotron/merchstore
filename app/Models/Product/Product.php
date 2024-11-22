@@ -109,7 +109,7 @@ class Product extends Model implements HasMedia
         if ($this->typeInstance) {
             return $this->typeInstance;
         }
-        $this->typeInstance = app(config('project.product_types.'.$this->type.'.class'));
+        $this->typeInstance = app(config('project.product_types.'.$this->type->value.'.class'));
         $this->typeInstance->setProduct($this);
 
         return $this->typeInstance;

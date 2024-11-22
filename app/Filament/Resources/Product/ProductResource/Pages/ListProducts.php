@@ -19,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Model;
 
 class ListProducts extends ListRecords
 {
@@ -102,7 +103,9 @@ class ListProducts extends ListRecords
 
                                     TextColumn::make('quantity')
                                         ->badge()->color('info')
+                                        ->formatStateUsing(fn(Model $record) => $record->availableStocks()->count())
                                         ->alignRight()
+                                        ->sortable()
                                         ->prefix('Qty : ')->toggleable(),
                                 ])->columnSpanFull()
 

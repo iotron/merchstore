@@ -17,7 +17,8 @@ class ProductStockFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'init_quantity' => fake()->numberBetween(10, 100),
+            'priority' => fake()->numberBetween(1, 5),
         ];
     }
 }

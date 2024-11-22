@@ -93,6 +93,7 @@ class ConditionValidator
 
     private function getLessThanOrEqual(array $condition, mixed $attributeValue, Product $product): void
     {
+        // Case Less Than Or Equal
         if (! is_scalar($attributeValue) && ! ($attributeValue instanceof Money)) {
             $this->cartService->setError($condition['attribute'].' value must be scalar type');
         }
@@ -114,6 +115,7 @@ class ConditionValidator
      */
     private function getGreaterThan(array $condition, mixed $attributeValue, Product $product): void
     {
+        //Greater Than
         if (! ($attributeValue instanceof Money) && ! is_scalar($attributeValue)) {
             $this->cartService->setError($condition['attribute'].' value must be scalar type');
         }

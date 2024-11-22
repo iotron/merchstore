@@ -109,18 +109,17 @@ class EditVoucher extends EditRecord
 
                     TextInput::make('discount_amount')
                         ->label('Discount Amount')
+                        ->numeric()
                         ->inputMode('decimal')
-                        ->integer()
-                        ->minValue(1)
-                        ->maxValue(999999999)
+                        ->default(0.00)
+                        ->minValue(0)
+                        ->maxValue(99999999)
                         ->required()
-                        ->afterStateHydrated(function (TextInput $component, $state) {
-                            if ($state instanceof Money) {
-                                $component->state($state->getAmount());
-                            }
-
-                            return $state;
-                        })
+                        ->lazy()
+                        ->extraInputAttributes(['step' => '0.01', 'min' => 0, 'max' => 99999999])
+                        ->hint('enter value multiply by 100')
+                        ->default(0.00)
+                        ->required()
                         ->placeholder('Enter Discount')
                         ->hint(__('eg: 45020 = '.Money::format(45020)))
                         ->lazy(),
@@ -129,7 +128,9 @@ class EditVoucher extends EditRecord
                         ->live()
                         ->label(__('Discount (Formatted)'))
                         ->content(function (Get $get) {
-                            return Money::format($get('discount_amount') ?? 0);
+
+                            $discountAmount = $get('discount_amount') ?? 0;
+                            return Money::format($discountAmount);
                         }),
 
                     TextInput::make('discount_quantity')->label('Max Allowed Discountable Quantity'),
