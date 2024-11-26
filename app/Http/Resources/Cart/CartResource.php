@@ -15,7 +15,35 @@ class CartResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        return parent::toArray($request);
+       // return parent::toArray($request);
+
+        return [
+            'customer' => [
+                'email' => $this['customer']
+            ],
+            'status' => [
+                'empty' => $this['empty'],
+                'changed' => $this['changed'],
+            ],
+            'coupon' => [
+                'code' => $this['coupon'] ?? null,
+                'isValid' => $this['validCoupon'],
+            ],
+            'total' => [
+                'quantity' => $this['quantity'],
+                'subtotal' => $this['subTotal']->formatted(),
+                'discount' => $this['discount']->formatted(),
+                'tax_amount' => $this['tax_amount']->formatted(),
+                'total' => $this['total']->formatted()
+            ],
+            'items' => $this['items']
+
+        ];
+
+
+
+
+
 
 //        return [
 //            'empty' => $this->when(isset($this['empty']), $this['empty']),

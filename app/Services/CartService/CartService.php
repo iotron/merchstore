@@ -117,7 +117,6 @@ class CartService
             $data = $cartCalculatorService->get($data);
         }
 
-//        dd($data);
 
         return array_merge([
             'coupon' => $this->couponCode,
