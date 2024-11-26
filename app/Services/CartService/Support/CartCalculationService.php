@@ -101,7 +101,7 @@ class CartCalculationService
             // Accumulate discounts
             $this->data['discount']->add($product['discount'] ?? new Money(0));
             // Validate Coupon Code
-            $this->data['validCoupon'] = $product['checked'];
+            $this->data['validCoupon'] = $product['checked'] ?? false;
 
             // Calculate price after discount
             $productPrice = $product['price'];
