@@ -16,35 +16,27 @@ class PaymentProviderSeeder extends Seeder
     public function run(): void
     {
 
-        $cashOnDeliveryProvider = PaymentProvider::create([
-            'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::CUSTOM],
-            'code' => PaymentProvider::CUSTOM,
-            'service_provider' => CustomPaymentService::class,
-            'status' => true,
-            'is_primary' => false,
-            'has_api' => false,
-            'desc' => 'This provider only for testing purpose',
-        ]);
-
         $razorpay = PaymentProvider::create([
-            'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::RAZORPAY],
-            'code' => PaymentProvider::RAZORPAY,
-            'service_provider' => RazorpayPaymentService::class,
+            'name' => 'Razorpay',
+            'url' => config('laravel-razorpay.payment-provider.url'),
+            'key' => base64_encode(config('laravel-razorpay.auth.key')),
+            'secret' => base64_encode(config('laravel-razorpay.auth.secret')),
+            'webhook' => config('laravel-razorpay.auth.webhook'),
             'status' => true,
             'is_primary' => true,
-            'has_api' => true,
-            'desc' => 'Take Payment and Disburse Payout On Fly',
         ]);
 
-        $stripe = PaymentProvider::create([
-            'name' => PaymentProvider::CODE_OPTIONS[PaymentProvider::STRIPE],
-            'code' => PaymentProvider::STRIPE,
-            'service_provider' => StripePaymentService::class,
+        $cash = PaymentProvider::create([
+            'name' => 'Cash',
+            'url' => PaymentProvider::CASH,
+            'key' => null,
+            'secret' => null,
+            'webhook' => null,
             'status' => true,
-            'is_primary' => false,
-            'has_api' => true,
-            'desc' => 'Take Payment On Fly',
+            'is_primary' => true,
         ]);
+
+
 
     }
 }

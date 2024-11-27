@@ -3,57 +3,43 @@
 namespace App\Models\Payment;
 
 use App\Models\Order\Order;
-use App\Services\Iotron\LaravelPayments\Contracts\Models\PaymentProviderModelContract;
-use App\Services\PaymentService\Providers\Custom\CustomPaymentService;
-use App\Services\PaymentService\Providers\Razorpay\RazorpayPaymentService;
-use App\Services\PaymentService\Providers\Stripe\StripePaymentService;
+
+use App\Services\Iotron\LaravelRazorpay\Support\Contracts\LaravelRazorpayPaymentProviderModelContract;
+use App\Services\Iotron\LaravelRazorpay\Support\Traits\HasLaravelRazorpayPaymentProvider;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PaymentProvider extends Model
+class PaymentProvider extends Model implements LaravelRazorpayPaymentProviderModelContract
 {
-    use HasFactory;
+    use HasFactory,HasLaravelRazorpayPaymentProvider;
 
     public const RAZORPAY = 'razorpay';
+    public const CASH = 'cash';
 
-    public const RAZORPAYX = 'razorpay-x';
 
-    public const STRIPE = 'stripe';
-
-    public const CUSTOM = 'custom';
-
-    public const CODE_OPTIONS = [
-        self::CUSTOM => 'Custom',
-        self::RAZORPAY => 'Razorpay',
-        self::RAZORPAYX => 'Razorpay X',
-        self::STRIPE => 'Stripe',
-    ];
-
-    public const AVAILABLE_PROVIDERS = [
-        CustomPaymentService::class => 'Cash On Delivery Payment Provider',
-        RazorpayPaymentService::class => 'Razorpay Payment Provider',
-        StripePaymentService::class => 'Stripe Payment Provider',
-    ];
 
     protected $fillable = [
         'name',
-        'code',
+        'url',
         'key',
         'secret',
         'webhook',
-        'service_provider',
-        'is_primary',
-        'has_api',
         'status',
-        'desc',
+        'is_primary',
     ];
 
-    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    protected $casts = [
+        'is_primary' => 'boolean',
+    ];
+
+
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'payment_provider_id', 'id');
     }
 
-    public function orders(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'payment_provider_id', 'id');
     }

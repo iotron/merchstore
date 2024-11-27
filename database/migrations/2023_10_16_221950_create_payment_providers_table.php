@@ -14,15 +14,13 @@ return new class extends Migration
         Schema::create('payment_providers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code')->unique();
-            $table->string('key')->unique()->nullable();
+            $table->string('url')->unique();
+            $table->string('key')->nullable();
             $table->string('secret')->nullable();
             $table->string('webhook')->nullable();
-            $table->string('service_provider')->nullable();
+
+            $table->boolean('status')->default(false);
             $table->boolean('is_primary')->default(false);
-            $table->boolean('has_api')->default(false);
-            $table->boolean('status')->default(true);
-            $table->text('desc')->nullable();
             $table->timestamps();
         });
     }
