@@ -73,26 +73,60 @@ class OrderCreationService
     /**
      * Get Newly Placed
      * Order Checkout Info
-     * @return JsonResponse
+     * @param bool $isPanelCheckout
+     * @return JsonResponse|array
      */
-    public function checkout(): JsonResponse
+    public function checkout(bool $isPanelCheckout = false): JsonResponse|array
     {
-        $this->processCheckout();
 
+        if($this->processCheckout())
+        {
+            return $isPanelCheckout ? [
+                'provider' => $this->provider,
+                'cart' => $this->cart,
+                'meta' => $this->cartMeta,
+                'order' => [
+                    'id' => $this->order?->id,
+                    'uuid' => $this->order?->uuid,
+                    'model' => $this->order
+                ],
+                'payment' => $this->payment,
+                'address' => [
+                    'shipping' => $this->shippingAddress,
+                    'billing' => $this->billingAddress,
+                ],
+            ] :$this->getSuccessCheckoutResponse();
+        }else{
+            $errorMessage = [
+                'status' => false,
+                'message' => 'Order not placed successfully!'
+            ];
+            return $isPanelCheckout ? $errorMessage : response()->json($errorMessage, 400);
+        }
+    }
+
+
+    private function getSuccessCheckoutResponse():JsonResponse
+    {
+        // Response Returns
         return response()->json([
-            'status' => false,
-            'message' => 'Order not placed successfully!'
-        ], 400);
+            'success' => true,
+            'message' => $this->provider == PaymentProvider::CASH ? 'order confirmed successfully' :'order placed successfully',
+            'redirect' => $this->provider == PaymentProvider::CASH ? $this->getRedirectUrls()['success_url'] : route('checkout', ['payment' => $this->payment->provider_gen_id]),
+            'order_uuid' => $this->order->uuid,
+            'provider' => $this->provider,
+        ]);
 
     }
 
 
+
+
     /**
-     * Frontend Checkout Service
      * Handel Checkout
-     * @return void
+     * @return bool
      */
-    protected function processCheckout(): void
+    protected function processCheckout(): bool
     {
 
         // Create Order
@@ -114,17 +148,21 @@ class OrderCreationService
         $this->attachingProductIntoOrderProduct();
 
 
+
+
+
         if ($this->provider == PaymentProvider::CASH)
         {
             // Confirm Cash On Delivery Order
 
+            $orderConfirmService = OrderConfirmService::make($this->order);
+            $orderConfirmService->validate();
         }
 
         // Clean up Cart
+        $this->cart->reset();
 
-        // Send New Order Mail
-
-        // Send Notification
+        return !is_null($this->order);
     }
 
 

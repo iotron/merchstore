@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Button;
+namespace App\Livewire\Backup\Button;
 
 use App\Models\Payment\Payment;
 use Livewire\Component;

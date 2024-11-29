@@ -11,6 +11,7 @@ use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use App\Services\BackupServices\OrderService\OrderConfirmService;
 use App\Services\BackupServices\OrderService\Return\OrderReturnRefundService;
+use App\Services\Iotron\LaravelRazorpay\LaravelRazorpay;
 use App\Services\OrderService\OrderCreationService;
 use App\Services\PaymentService\PaymentService;
 use App\Services\ShippingService\ShippingService;
@@ -38,7 +39,7 @@ class OrderActionController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:customer')->except('captureCallback', 'verifyPayment', 'confirmPayment');
+        $this->middleware('auth:customer')->except('captureCallback', 'verifyPayment', 'confirmOrder');
     }
 
 
@@ -95,7 +96,18 @@ class OrderActionController extends Controller
     public function confirmOrder(Order $order,OrderConfirmRequest $request)
     {
 
-        dd($order,$request);
+        $order->load('payment', 'payment.provider');
+        $payment = $order->payment;
+        // default Laravel Razorpay Payment Provider
+        $paymentVerified = LaravelRazorpay::make()->verify()->viaCallback($request);
+        if ($paymentVerified && \App\Services\OrderService\OrderConfirmService::make($order)->validate())
+        {
+            //Send Notification To Event Manager
+            //$this->notifyManagerOnSuccess($booking->event->host, 'new booking found!', 'a new booking '.$booking->uuid.' found for event - '.$booking->event->name);
+            //Redirect On Success
+            return redirect()->to($payment->success_url);
+        }
+        return redirect()->to($payment->failure_url);
 
 
     }

@@ -33,8 +33,8 @@ Route::middleware(['auth:customer'])->group(function () {
     })->name('remove-cart');
 
     // Checkout Route
-    Route::get('checkout/{payment:receipt}', \App\Livewire\CheckoutPage::class)->name('payment.visit');
+    Route::get('checkout/{payment:provider_gen_id}', \App\Livewire\Checkout\CheckoutPage::class)->name('checkout');
 
 });
 
-Route::get('test', [\App\Http\Controllers\TestController::class, 'index']);
+Route::get('__testing', [\App\Http\Controllers\TestController::class, 'index']);

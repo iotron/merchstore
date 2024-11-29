@@ -58,13 +58,6 @@ class CartService
         return $this->errors;
     }
 
-
-
-    public function isEmpty(): bool
-    {
-        return $this->customer->cart->sum('pivot.quantity') === 0;
-    }
-
     public function products(): Collection
     {
         if (App::runningInConsole() || $this->requestForReLoadCustomerCartInRuntime) {
@@ -78,6 +71,33 @@ class CartService
         $this->totalQuantity = $this->products()->sum('pivot.quantity');
 
         return $this->totalQuantity;
+    }
+
+    /**
+     * Remove Cart Items
+     * @return void
+     */
+    public function empty(): void
+    {
+        $this->customer->cart()->detach();
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->customer->cart->sum('pivot.quantity') === 0;
+    }
+
+    /**
+     * Reset Cart
+     * @return void
+     */
+    public function reset()
+    {
+        // Clean up Products From Cart
+        $this->empty();
+        // Destroy Exist Coupon
+        $this->removeCoupon($this->couponCode);
+
     }
 
 
@@ -161,9 +181,9 @@ class CartService
 
     }
 
-    public function removeCoupon(string $code)
+    public function removeCoupon(?string $code = null): void
     {
-        if ($this->couponCode === $code) {
+        if ($code && $this->couponCode === $code) {
             session()->forget('coupon');
             $this->couponCode = null;
             $this->validCoupon = false;
