@@ -115,7 +115,7 @@ class CartService
         if (empty($this->errors))
         {
             $data = $cartCalculatorService->get($data);
-            dd($data);
+
         }
 
 

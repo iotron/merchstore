@@ -15,6 +15,7 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Split;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -192,8 +193,32 @@ class EditVoucher extends EditRecord
                                 })
                                 ->lazy(),
 
-                            TextInput::make('operator'),
-                            TextInput::make('value'),
+
+                            Split::make(function (Get $get){
+                                $conditionArray = [];
+
+                                if ($get('attribute') != null) {
+                                    $conditionArray = $this->conditions?->where('key', $get('attribute'))->first();
+                                }
+
+                                if (! empty($conditionArray)) {
+                                    $field = [$this->getConditionField($conditionArray)];
+                                } else {
+                                    $field = [];
+                                }
+
+                                    return array_merge([
+
+                                        Select::make('operator')
+                                            ->hiddenLabel()
+                                            ->options($conditionArray['operator'] ?? []),
+
+                                    ],$field);
+
+
+                            })->visible(function (\Filament\Forms\Get $get) {
+                                return ! empty($get('attribute'));
+                            }),
 
 
 
@@ -265,15 +290,18 @@ class EditVoucher extends EditRecord
             return match ($attribute['type']) {
                 'select' => Select::make('value')
                     ->label('Value')
+                    ->hiddenLabel()
                     ->options(function () use ($attribute) {
                         return $attribute['options'];
                     })->required(),
                 'multiselect' => Select::make('value')->label('Value')
+                    ->hiddenLabel()
                     ->multiple()
                     ->options(function () use ($attribute) {
                         return $attribute['options'];
                     })->required(),
                 default => TextInput::make('value')
+                    ->hiddenLabel()
                     ->type(function () use ($attribute) {
                         return $attribute['options'] ?? 'text';
                     })->placeholder(function () use ($attribute) {

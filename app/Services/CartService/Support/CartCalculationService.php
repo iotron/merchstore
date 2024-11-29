@@ -61,6 +61,7 @@ class CartCalculationService
         foreach ($this->items as $item)
         {
             $itemPrice = new Money($item->price);
+            $subtotal = $itemPrice->multiplyOnce($item->pivot->quantity);
             $this->data ['items'][$item->sku] = [
                 'id' => $item->id,
                 'name' => $item->name,
@@ -73,7 +74,7 @@ class CartCalculationService
                // 'item' => $item
             ];
             // Only Update SubTotal value
-            $this->data['subTotal']->add($itemPrice);
+            $this->data['subTotal']->add($subtotal);
         }
     }
 
@@ -94,7 +95,6 @@ class CartCalculationService
 
         }
 
-        dd($this->data);
 
         // Here All Preparation Complete And We Can Now Make Total Discount, Tax, and Net Amount
         $totalTax = new Money();
@@ -134,9 +134,11 @@ class CartCalculationService
         $this->data['tax_amount'] = $totalTax;
 
         // Calculate Total
-        $cartDiscountedSubtotal = $this->data['subTotal']->subOnce($this->data['discount']);
-        $this->data['amount'] = $cartDiscountedSubtotal->add($this->data['tax_amount']);
-
+        $cartDiscountedSubtotal = new Money();
+        $cartDiscountedSubtotal->add($this->data['subTotal']);
+        $cartDiscountedSubtotal->subtract($this->data['discount']);
+        $cartDiscountedSubtotal->add($this->data['tax_amount']);
+        $this->data['amount'] = $cartDiscountedSubtotal;
 
 
     }

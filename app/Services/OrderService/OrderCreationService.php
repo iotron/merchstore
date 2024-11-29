@@ -8,6 +8,7 @@ use App\Models\Order\Order;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
 use App\Services\Iotron\LaravelRazorpay\LaravelRazorpay;
+use App\Services\MoneyServices\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
@@ -87,29 +88,30 @@ class OrderCreationService
 
 
     /**
+     * Frontend Checkout Service
      * Handel Checkout
      * @return void
      */
-    protected function processCheckout()
+    protected function processCheckout(): void
     {
 
         // Create Order
         $this->order = $this->createOrder();
 
-//        // New Order Request From Payment Provider
-//        $providerOrderArray = [];
-//        if ($this->provider != PaymentProvider::CASH)
-//        {
-//            // init provider order for payment
-//            $providerOrderArray = $this->getGeneratedProviderOrder();
-//        }
-//
-//        // Make Payment For Order
-//        $this->payment = $this->createAnPendingPayment($providerOrderArray);
+        // New Order Request From Payment Provider
+        $providerOrderArray = [];
+        if ($this->provider != PaymentProvider::CASH)
+        {
+            // init provider order for payment
+            $providerOrderArray = $this->getGeneratedProviderOrder();
+        }
+
+        // Make Payment For Order
+        $this->payment = $this->createAnPendingPayment($providerOrderArray);
 
         // Attach Products
 
-        dd($this->attachingProductIntoOrderProduct());
+        $this->attachingProductIntoOrderProduct();
 
 
         if ($this->provider == PaymentProvider::CASH)
@@ -272,14 +274,23 @@ class OrderCreationService
     {
         foreach ($this->cartMeta['products'] as $product)
         {
-            dd($product,$this->cartMeta);
             $productPrice = $product['price']; // money instance carrier
+            $discountPrice = $product['discount'] ?? new Money();
+            $priceAfterDiscount = $productPrice->multiplyOnce($product['pivot_quantity'])->subOnce($discountPrice);
+            $taxAmount = new Money();
+            if ($priceAfterDiscount->greaterThanOrEqual(new Money(500)))
+            {
+                $taxAmount->add($priceAfterDiscount->multiplyOnce($product['pivot_quantity'])->multiplyOnce($product['tax_percent'])->divideOnce(100));
+            }
+            $total = new Money();
+            $total->add($priceAfterDiscount)->add($taxAmount);
+
             $this->order->orderProducts()->create([
                 'quantity' => $product['pivot_quantity'],
-                'amount' => null,
-                'discount' => null,
-                'tax' => null,
-                'total' => null,
+                'amount' => $productPrice->multiply($product['pivot_quantity'])->getValue(),
+                'discount' => $discountPrice->getValue(),
+                'tax' => $taxAmount->getValue(),
+                'total' => $total->getValue(),
                 'product_id' => $product['id'],
             ]);
 

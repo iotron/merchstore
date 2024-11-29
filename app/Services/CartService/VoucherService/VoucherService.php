@@ -123,12 +123,6 @@ class VoucherService
                 $this->meta['items'][$item->sku]['checked'] = true;
             }
 
-            dump([
-                'value' => $attributeValue,
-                'valid' => $voucherValidator->validate($condition,$attributeValue),
-                'condition' => $condition,
-                'v_conditions' => $this->conditions
-            ]);
 
             if ($voucherValidator->validate($condition,$attributeValue))
             {
@@ -142,14 +136,6 @@ class VoucherService
 
             $this->errors = array_merge($this->errors,$voucherValidator->getError());
 
-
-//            dump([
-//                'value' =>$attributeValue,
-//                'condi' => $condition,
-//                'check' => empty($attributeValue),
-//                'validator' => VoucherConditionValidator::make()->validate($condition,$attributeValue),
-//                'meta' => $this->meta
-//            ]);
         }
 
         return empty($this->errors);
