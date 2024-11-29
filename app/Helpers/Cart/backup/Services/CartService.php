@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Helpers\Cart\Services;
+namespace App\Helpers\Cart\backup\Services;
 
-use App\Helpers\Cart\Contracts\CartServiceContract;
+use App\Helpers\Cart\backup\Contracts\CartServiceContract;
 use App\Models\Customer\Customer;
 use App\Models\Promotion\VoucherCode;
-
 use App\Services\MoneyServices\Money;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;

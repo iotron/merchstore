@@ -2,9 +2,9 @@
 
 namespace App\Helpers\Cart\backup;
 
-use App\Helpers\Cart\Contracts\CartCalculatorContract;
-use App\Helpers\Cart\Contracts\CartServiceContract;
-use App\Helpers\Cart\Services\CartCouponService;
+use App\Helpers\Cart\backup\Contracts\CartCalculatorContract;
+use App\Helpers\Cart\backup\Contracts\CartServiceContract;
+use App\Helpers\Cart\backup\Services\CartCouponService;
 use App\Helpers\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 

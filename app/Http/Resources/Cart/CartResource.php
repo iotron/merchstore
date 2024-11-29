@@ -29,6 +29,7 @@ class CartResource extends JsonResource
                 'code' => $this['coupon'] ?? null,
                 'isValid' => $this['validCoupon'],
             ],
+            'errors' => $this['error'],
             'total' => [
                 'quantity' => $this['quantity'],
                 'subtotal' => $this['subTotal']->formatted(),

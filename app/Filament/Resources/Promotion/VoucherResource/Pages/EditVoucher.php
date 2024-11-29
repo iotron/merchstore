@@ -6,11 +6,14 @@ use App\Filament\Resources\Promotion\VoucherResource;
 use App\Helpers\Promotion\Voucher\VoucherHelper;
 use App\Models\Promotion\Voucher;
 use App\Services\MoneyServices\Money;
+use Awcodes\TableRepeater\Components\TableRepeater;
+use Awcodes\TableRepeater\Header;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -37,14 +40,19 @@ class EditVoucher extends EditRecord
 
     public function mount(int|string $record): void
     {
-        $this->record = $this->resolveRecord($record);
+      //  $this->record = $this->resolveRecord($record);
       //  dd($this->record);
-       // parent::mount($record);
+        parent::mount($record);
+
         $this->voucherHelper = new VoucherHelper();
         $this->conditions = $this->voucherHelper->getCondition();
+//        $data = $this->record->toArray();
+//       // dd($data);
+//        $this->form->fill($data);
+
+
       //  $this->form->fill($this->record->toArray());
 
-        $this->form->fill($this->record->toArray());
 
     }
 
@@ -158,15 +166,42 @@ class EditVoucher extends EditRecord
 
                 ])->columns(2),
 
-//            Fieldset::make('Conditions_list')
-//                ->schema([
-//
-//                    Select::make('condition_type')
-//                        ->options(Voucher::CONDITION_TYPE)
-//                        ->required()
-//                        ->placeholder(__('select a condition type'))
-//                        ->label('Apply By'),
-//
+            Fieldset::make('Conditions_list')
+                ->schema([
+
+                    Select::make('condition_type')
+                        ->options(Voucher::CONDITION_TYPE)
+                        ->required()
+                        ->placeholder(__('select a condition type'))
+                        ->label('Apply By'),
+
+
+                    TableRepeater::make('conditions')
+                        ->columns(3)
+                        ->headers([
+                            Header::make('attribute'),
+                            Header::make('operator'),
+                            Header::make('value'),
+                        ])
+                        ->schema([
+                            Select::make('attribute')
+                                ->label('Choose Condition')
+                                ->options(fn() => !is_null($this->conditions) ? $this->conditions->pluck('label', 'key')->toArray() : [])
+                                ->columnSpan(function ($state) {
+                                    return empty($state) ? 3 : 1;
+                                })
+                                ->lazy(),
+
+                            TextInput::make('operator'),
+                            TextInput::make('value'),
+
+
+
+
+                        ])
+
+
+
 //                    Repeater::make('conditions')
 //                        ->label(__('Condition List'))
 //                        ->schema([
@@ -178,38 +213,48 @@ class EditVoucher extends EditRecord
 //                                })
 //                                ->lazy(),
 //
-////                            Fieldset::make('options')
-////                                ->schema(function (callable $get) {
-////                                    if ($get('attribute') !== null) {
-////                                        // $conditionList = $this->getCondition();
-////                                        $item = $this->conditions?->where('key', $get('attribute'))->first();
-////
-////
-////
-////                                        if (! empty($item)) {
-////                                            $field = $this->getConditionField($item);
-////                                        } else {
-////                                            $field = [];
-////                                        }
-////                                        // return $item['operator'];
-////                                        return [
-////                                            Select::make('operator')->options($item['operator']),
-////                                            $field
-////                                        ];
-////                                    } else {
-////                                        return [];
-////                                    }
-////                                })
-////                                ->label('Details')
-////                                ->visible(function (\Filament\Forms\Get $get) {
-////                                    return ! empty($get('attribute'));
-////                                }),
+//                            Fieldset::make('options')
+//                                ->schema(function (callable $get) {
+//                                    if ($get('attribute') != null) {
+//                                        // $conditionList = $this->getCondition();
+//                                        $conditionArray = $this->conditions?->where('key', $get('attribute'))->first();
+//
+//
+//                                        if (! empty($conditionArray)) {
+//                                            $field = $this->getConditionField($conditionArray);
+//                                        } else {
+//                                            $field = [];
+//                                        }
+//                                        $operatorField = [];
+//                                        if (isset($conditionArray['operator']))
+//                                        {
+//                                            $operatorField = Select::make('operator')->options($conditionArray['operator']);
+//                                        }
+//
+//
+//
+//                                        return array_merge([
+//                                            $operatorField,
+//                                            $field
+//                                        ]);
+//                                    } else {
+//                                        return [];
+//                                    }
+//                                })
+//                                ->label('Details')
+//                                ->visible(function (\Filament\Forms\Get $get) {
+//                                    return ! empty($get('attribute'));
+//                                }),
 //
 //                        ])
 //                        ->columns(3)
 //                        ->defaultItems(0)
 //                        ->collapsible(false),
-//                ])->columns(1)->label('Condition Details'),
+
+
+
+
+                ])->columns(1)->label('Condition Details'),
 
         ];
     }

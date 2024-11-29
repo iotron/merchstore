@@ -2,7 +2,7 @@
 
 namespace App\Helpers\Cart\backup;
 
-use App\Helpers\Cart\Contracts\CartServiceContract;
+use App\Helpers\Cart\backup\Contracts\CartServiceContract;
 use App\Helpers\Money\Money;
 use App\Models\Product\Product;
 use App\Models\Promotion\Voucher;

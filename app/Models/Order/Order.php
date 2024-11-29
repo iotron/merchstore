@@ -8,11 +8,13 @@ use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Payment\Payment;
 use App\Models\Payment\Refund;
+use App\Models\Traits\HasUnique;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * @property $shipping_is_billing;
@@ -30,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory,HasUnique;
 
     // order status
     const PROCESSING = 'processing';
@@ -97,14 +99,23 @@ class Order extends Model
         'total' => MoneyCast::class,
     ];
 
+
+
+
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
-    public function payment(): HasOne
+//    public function payment(): HasOne
+//    {
+//        return $this->hasOne(Payment::class, 'order_id', 'id');
+//    }
+
+    public function payment(): MorphOne
     {
-        return $this->hasOne(Payment::class, 'order_id', 'id');
+        return $this->morphOne(Payment::class, 'bookable');
     }
 
     public function refunds(): HasMany

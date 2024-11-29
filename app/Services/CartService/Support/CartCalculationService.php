@@ -33,9 +33,9 @@ class CartCalculationService
         return $this;
     }
 
-    public function setCoupon(?string $couponCode = null,?VoucherCode $couponModel = null): static
+    public function setCoupon(VoucherCode $couponModel): static
     {
-        $this->couponCode = $couponCode;
+        $this->couponCode = $couponModel->code;
         $this->couponModel = $couponModel;
         return $this;
     }
@@ -81,6 +81,7 @@ class CartCalculationService
     protected function calculateDiscountIfApplicable(): void
     {
         // Check For Coupon And Discount
+
         if(!is_null($this->couponModel) && empty($this->errors))
         {
             $this->couponModel->loadMissing('voucher');
@@ -93,36 +94,42 @@ class CartCalculationService
 
         }
 
+        dd($this->data);
 
         // Here All Preparation Complete And We Can Now Make Total Discount, Tax, and Net Amount
         $totalTax = new Money();
 
-        foreach ($this->data['items'] as $sku => $product) {
-            // Accumulate discounts
-            $this->data['discount']->add($product['discount'] ?? new Money(0));
-            // Validate Coupon Code
-            $this->data['validCoupon'] = $product['checked'] ?? false;
+        if ($this->items->count())
+        {
+            foreach ($this->data['items'] as $sku => $product) {
+                // Accumulate discounts
+                $this->data['discount']->add($product['discount'] ?? new Money(0));
+                // Validate Coupon Code
+                $this->data['validCoupon'] = $product['checked'] ?? false;
 
-            // Calculate price after discount
-            $productPrice = $product['price'];
-            $discount = $product['discount'] ?? new Money(0);
-            $productPriceAfterDiscount = $productPrice->subOnce($discount);
+                // Calculate price after discount
+                $productPrice = $product['price'];
+                $discount = $product['discount'] ?? new Money(0);
+                $productPriceAfterDiscount = $productPrice->subOnce($discount);
 
-            // Check if the product is eligible for tax
-            if ($productPriceAfterDiscount->greaterThanOrEqual(new Money(500))) {
-                // Calculate taxable amount for the product
-                $quantity = $product['pivot_quantity'] ?? 1;
-                $taxPercentage = $product['tax_percent'] ?? 0;
+                // Check if the product is eligible for tax
+                if ($productPriceAfterDiscount->greaterThanOrEqual(new Money(500))) {
+                    // Calculate taxable amount for the product
+                    $quantity = $product['pivot_quantity'] ?? 1;
+                    $taxPercentage = $product['tax_percent'] ?? 0;
 
-                $taxableAmount = $productPriceAfterDiscount
-                    ->multiplyOnce($quantity)
-                    ->multiply($taxPercentage)
-                    ->divide(100);
+                    $taxableAmount = $productPriceAfterDiscount
+                        ->multiplyOnce($quantity)
+                        ->multiply($taxPercentage)
+                        ->divide(100);
 
-                // Accumulate total tax
-                $totalTax->add($taxableAmount);
+                    // Accumulate total tax
+                    $totalTax->add($taxableAmount);
+                }
             }
         }
+
+
 
         $this->data['tax_amount'] = $totalTax;
 

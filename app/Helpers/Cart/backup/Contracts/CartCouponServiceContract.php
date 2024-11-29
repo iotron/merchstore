@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\Cart\Contracts;
+namespace App\Helpers\Cart\backup\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 

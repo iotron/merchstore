@@ -19,7 +19,7 @@ class Cart extends CartService
 
         return array_merge($data,[
             'currency' => $data['subTotal']->getCurrency()->getCurrency(),
-            'net_total_amount' => $data['amount']->getAmount(),
+            'net_total_amount' => $data['amount']->getValue(),
 
             'subtotal' => $data['subTotal'],
             'total' => $data['amount'],
@@ -27,7 +27,7 @@ class Cart extends CartService
             'tax_formatted' => $data['tax']->formatted(),
             'discount_formatted' => $data['discount']->formatted(),
             'total_formatted' => $data['amount']->formatted(),
-            'products' => collect($data['products']),
+            'products' => collect($data['items']),
         ]);
 
     }

@@ -38,7 +38,7 @@ class VoucherService
         return $this;
     }
 
-    public function applyDiscount()
+    public function applyDiscount(): static
     {
         if ($this->validateAllConditions())
         {
@@ -49,7 +49,7 @@ class VoucherService
 
     public function getMeta(): array
     {
-        return $this->meta;
+        return array_merge($this->meta,['errors' => $this->errors]);
     }
 
 
@@ -116,13 +116,19 @@ class VoucherService
             $voucherValidator = VoucherConditionValidator::make();
 
 
-
             if (empty($attributeValue)) {
                 $this->errors [] = $condition['attribute']."'s value not resolved";
                 $this->meta['items'][$item->sku]['checked'] = false;
             } else {
                 $this->meta['items'][$item->sku]['checked'] = true;
             }
+
+            dump([
+                'value' => $attributeValue,
+                'valid' => $voucherValidator->validate($condition,$attributeValue),
+                'condition' => $condition,
+                'v_conditions' => $this->conditions
+            ]);
 
             if ($voucherValidator->validate($condition,$attributeValue))
             {
@@ -132,7 +138,10 @@ class VoucherService
                 $this->meta['items'][$item->sku]['checked'] = false;
             }
 
+
+
             $this->errors = array_merge($this->errors,$voucherValidator->getError());
+
 
 //            dump([
 //                'value' =>$attributeValue,
@@ -189,6 +198,14 @@ class VoucherService
 
     private function getCartItemAttributeValue(string $attributeCode, Product $product)
     {
+//        if (isset($product->pivot->{$attributeCode}))
+//        {
+//            return $product->pivot->{$attributeCode};
+//        }elseif (isset($product->{$attributeCode}))
+//        {
+//            return $product->{$attributeCode};
+//        }
+//        return null;
         return isset($product->pivot->{$attributeCode}) ? $product->pivot->{$attributeCode} : null;
     }
 

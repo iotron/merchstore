@@ -9,7 +9,7 @@ use App\Models\Enums\Product\ProductTypeCast;
 use App\Models\Order\Order;
 use App\Models\Payment\PaymentProvider;
 use App\Models\Product\Product;
-use App\Services\OrderService\OrderCreationService;
+use App\Services\BackupServices\OrderService\OrderCreationService;
 use App\Services\PaymentService\PaymentService;
 use Illuminate\Database\Seeder;
 

@@ -2,180 +2,289 @@
 
 namespace App\Services\OrderService;
 
-use App\Models\Customer\Customer;
+use App\Helpers\Cart\Cart;
 use App\Models\Localization\Address;
 use App\Models\Order\Order;
-use App\Models\Order\OrderProduct;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentProvider;
-use App\Services\Iotron\MoneyService\Money;
-use App\Services\PaymentService\Contracts\PaymentProviderContract;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
+use App\Services\Iotron\LaravelRazorpay\LaravelRazorpay;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class OrderCreationService
 {
-    protected PaymentProviderContract $paymentProvider;
 
-    protected bool $isCod = false;
-
-    protected ?string $error = null;
-
-    protected ?string $token = null;
-
+    protected Cart $cart;
+    protected ?Order $order = null;
+    protected ?Payment $payment = null;
     protected ?Address $shippingAddress = null;
-
     protected ?Address $billingAddress = null;
+    protected array $cartMeta;
+    protected ?string $provider = null;
+    protected ?string $redirectUrl = null;
 
-    protected Order $order;
 
-    protected null|Authenticatable|Customer $customer = null;
 
-    protected array $cartMeta = [];
 
-    protected Payment|null|Model $payment = null;
 
-    protected array $codProducts = [];
-
-    public function __construct(PaymentProviderContract $paymentProvider, Authenticatable|Customer $customer, array $cartMeta)
+    public static function make(): static
     {
-        $this->paymentProvider = $paymentProvider;
-        $this->isCod = ($this->paymentProvider->getProviderName() == PaymentProvider::CUSTOM);
-        $this->customer = $customer;
+        return new static();
+    }
+
+    public function create(\App\Helpers\Cart\Cart $cart): static
+    {
+        $this->cart = $cart;
+        return $this;
+    }
+
+    public function setCartMeta(array $cartMeta): static
+    {
         $this->cartMeta = $cartMeta;
+        return $this;
     }
 
-    public function getError(): ?string
+    public function setProvider(string $provider): static
     {
-        return $this->error;
+        $this->provider = $provider;
+        return $this;
     }
 
-    public function placeOrder(string $orderToken, Address $shippingAddress, Address $billing_address): void
+    public function redirectUrl(string $redirect_url): static
     {
-        // Fill First
-        $this->token = $orderToken;
+        $this->redirectUrl = $redirect_url;
+        return $this;
+    }
+
+    public function setShippingAddress(Address $shippingAddress): static
+    {
         $this->shippingAddress = $shippingAddress;
-        $this->billingAddress = $billing_address;
-
-        // Start Process
-        // Step 1
-        $this->order = $this->makeAnOrder();
-        // Step 2
-        $this->payment = $this->makePayment();
-        // Step 3
-        if (! is_null($this->payment)) {
-            $this->attachProducts();
-        }
-
-        // Only For CashOnDelivery Order
-        if ($this->isCod && is_null($this->error)) {
-            // Order Will Be Confirmed After Order Placed
-            $orderConfirmService = new OrderConfirmService($this->payment);
-            $orderConfirmService->confirmOrder();
-            $this->error = $orderConfirmService->getError();
-        }
-
+        return $this;
     }
 
-    public function isCashOnDelivery(): bool
+    public function setBillingAddress(Address $billingAddress): static
     {
-        return $this->isCod;
+        $this->billingAddress = $billingAddress;
+        return $this;
     }
 
-    public function getOrder(): Order
-    {
-        return $this->order;
-    }
-
-    public function getPayment(): Payment
-    {
-        return $this->payment;
-    }
 
     /**
-     * Step 1
+     * Get Newly Placed
+     * Order Checkout Info
+     * @return JsonResponse
      */
-    protected function makeAnOrder(): Order
+    public function checkout(): JsonResponse
     {
-        return $this->customer->orders()->create([
-            'uuid' => $this->token,
+        $this->processCheckout();
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Order not placed successfully!'
+        ], 400);
+
+    }
+
+
+    /**
+     * Handel Checkout
+     * @return void
+     */
+    protected function processCheckout()
+    {
+
+        // Create Order
+        $this->order = $this->createOrder();
+
+//        // New Order Request From Payment Provider
+//        $providerOrderArray = [];
+//        if ($this->provider != PaymentProvider::CASH)
+//        {
+//            // init provider order for payment
+//            $providerOrderArray = $this->getGeneratedProviderOrder();
+//        }
+//
+//        // Make Payment For Order
+//        $this->payment = $this->createAnPendingPayment($providerOrderArray);
+
+        // Attach Products
+
+        dd($this->attachingProductIntoOrderProduct());
+
+
+        if ($this->provider == PaymentProvider::CASH)
+        {
+            // Confirm Cash On Delivery Order
+
+        }
+
+        // Clean up Cart
+
+        // Send New Order Mail
+
+        // Send Notification
+    }
+
+
+    // Helper Methods
+
+    private function getDefaultRedirectUrl(): string
+    {
+        return config('app.client_url').'/orders/'.$this->order->id;
+    }
+
+    private function getRedirectUrls(): array
+    {
+        return [
+            'callback_url' => route('confirm.checkout.order', ['order' => $this->order->uuid]),
+            'success_url' => ! is_null($this->redirectUrl) ? $this->redirectUrl : config('app.client_url').'/orders/'.$this->order->uuid,
+            'failure_url' => ! is_null($this->redirectUrl) ? $this->redirectUrl : config('app.client_url').'/cart/',
+        ];
+    }
+
+    private static function getUniqueBookingID(object $bookingArray): string
+    {
+        $uid = ucwords(Str::random(6));
+        $result = $bookingArray->contains('uuid', $uid);
+        return (! $result) ? $uid : self::getUniqueBookingID($bookingArray);
+    }
+
+
+
+
+    // Order Process
+
+    protected function createOrder():Order
+    {
+        $uuid = $this->generateUniqueID();
+
+        return $this->cart->getCustomer()->orders()->create([
+            'uuid' => $uuid,
             'voucher' => $this->cartMeta['coupon'],
             'quantity' => $this->cartMeta['quantity'],
-            'amount' => $this->cartMeta['total'],
-            'subtotal' => $this->cartMeta['subtotal'],
-            'discount' => $this->cartMeta['discount'],
-            'tax' => $this->cartMeta['tax'],
-            'total' => $this->cartMeta['total'],
-            'status' => (! $this->isCod) ? Order::PENDING : Order::CONFIRM,
+            'amount' => $this->cartMeta['total']->getValue(),
+            'subtotal' => $this->cartMeta['subtotal']->getValue(),
+            'discount' => $this->cartMeta['discount']->getValue(),
+            'tax' => $this->cartMeta['tax']->getValue(),
+            'total' => $this->cartMeta['total']->getValue(),
+            'status' => ($this->provider != PaymentProvider::CASH) ? Order::PENDING : Order::CONFIRM,
             'payment_success' => false,
-            'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
-            'customer_id' => $this->customer->id,
+            'expire_at' => ($this->provider == PaymentProvider::CASH) ? now()->addMonth() : now()->addMinutes((int)config('services.defaults.order_cleanup_time_limit')),
+//            'customer_id' => $this->cart->getCustomer()->id,
             'customer_gstin' => null, // need data here
             'shipping_is_billing' => $this->shippingAddress->id == $this->billingAddress->id,
             'billing_address_id' => $this->billingAddress->id,
             'shipping_address_id' => $this->shippingAddress->id,
-            'is_cod' => $this->isCod,
+            'is_cod' => $this->provider == PaymentProvider::CASH,
         ]);
     }
 
-    /**
-     * Step 2
-     */
-    private function makePayment(): Payment|Model|null
+
+
+
+
+
+
+
+
+
+
+
+
+    // Provider Order And Payment Creation
+
+    private function getGeneratedProviderOrder(): JsonResponse|array
     {
-        // Now Make AN Order On Payment Provider Based On This Order
-        $newOrder = $this->paymentProvider->order()->create($this->order);
 
-        if (isset($newOrder['error']) && ! empty($newOrder['error'])) {
-            if (isset($newOrder['error']['description']) && isset($newOrder['error']['reason'])) {
-                $this->error = $newOrder['error']['description'].' |reason : '.$newOrder['error']['reason'];
-            }
 
+
+        $responseArray = LaravelRazorpay::make()->order()->create([
+            'receipt' => $this->order->uuid,
+            'amount' => (integer) $this->cartMeta['net_total_amount'],
+            'currency' => $this->cartMeta['currency'],
+        ]);
+
+
+        if (!$responseArray['success'])
+        {
+            return response()->json([
+                'success' => $responseArray['success'],
+                'message' => $responseArray['error'],
+            ],400);
+        }
+
+        if (is_null($responseArray['data']['payment_provider_id']))
+        {
+            $responseArray['data']['payment_provider_id'] = $this->order->payment_provider_id;
+        }
+
+        $responseArray['data'] = array_merge($responseArray['data'],[
+            'details' => array_merge($responseArray['data']['details'],[
+                'additional' => [
+                    'currency' => $this->cartMeta['currency'],
+                    'buyer_email' => $this->cart->getCustomer()->email,
+                    'buyer_name' => $this->cart->getCustomer()->name,
+                    'buyer_contact' => $this->cart->getCustomer()->contact,
+                ],
+            ]),
+            'callback_url' => $this->getRedirectUrls()['callback_url'],
+            'success_url' => $this->getRedirectUrls()['success_url'],
+            'failure_url' => $this->getRedirectUrls()['failure_url'],
+        ]);
+
+
+        return $responseArray['data'];
+    }
+
+    private function createAnPendingPayment(array|object $newProviderOrder)
+    {
+        return $this->order->payment()->create(array_merge($newProviderOrder, [
+            'expire_at' => now()->addMinutes((int) config('services.defaults.order_cleanup_time_limit')),
+        ]));
+    }
+
+
+
+    // Methods
+
+    protected function generateUniqueID()
+    {
+        $characters = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // Custom character set
+        $prefix = now()->format('dHis'); // Timestamp prefix
+        $maxAttempts = 10;
+        $attempt = 0;
+
+        do {
+            $random = substr(str_shuffle(str_repeat($characters, 4)), 0, 4);
+            $id = $prefix.$random;
+            $attempt++;
+        } while (Order::where('uuid', $id)->exists() && $attempt < $maxAttempts);
+
+        if ($attempt == $maxAttempts) {
+            //throw new Exception('Unable to generate unique ID');
             return null;
-        } else {
-            return $this->order->payment()->create([
-                'receipt' => 'receipt_'.$this->order->uuid,
-                'provider_gen_id' => $newOrder['id'],
-                'provider_class' => $this->paymentProvider->getClass(),
-                'voucher' => $this->order->voucher,
-                'quantity' => $this->order->quantity,
-                'subtotal' => $this->order->subtotal,
-                'discount' => $this->order->discount,
-                'tax' => $this->order->tax,
-                'total' => $this->order->total,
-                'details' => is_object($newOrder) ? $newOrder->toArray() : $newOrder,
-                'expire_at' => ($this->isCod) ? now()->addMonth() : now()->addMinutes(config('services.defaults.order_cleanup_time_limit')),
-                'payment_provider_id' => $this->paymentProvider->getModel()->id,
-                'customer_id' => $this->customer->id,
+        }
+
+        return $id;
+    }
+
+    private function attachingProductIntoOrderProduct()
+    {
+        foreach ($this->cartMeta['products'] as $product)
+        {
+            dd($product,$this->cartMeta);
+            $productPrice = $product['price']; // money instance carrier
+            $this->order->orderProducts()->create([
+                'quantity' => $product['pivot_quantity'],
+                'amount' => null,
+                'discount' => null,
+                'tax' => null,
+                'total' => null,
+                'product_id' => $product['id'],
             ]);
-        }
 
-    }
-
-    /**
-     * Step 3
-     */
-    protected function attachProducts(): void
-    {
-        foreach ($this->cartMeta['products'] as $productArray) {
-            $newOrderProduct = $this->makeOrderProduct($productArray);
         }
     }
 
-    /**
-     * Step 3.1
-     */
-    protected function makeOrderProduct(array $item): OrderProduct|Model
-    {
-        $discountAmount = isset($item['total_discount_amount']) ? $item['total_discount_amount'] : new Money(0.0);
 
-        return $this->order->orderProducts()->create([
-            'quantity' => $item['pivot_quantity'],
-            'amount' => ($item['total_base_amount'] instanceof Money) ? $item['total_base_amount']->getAmount() : $item['total_base_amount'],
-            'discount' => ($discountAmount instanceof Money) ? $discountAmount->getAmount() : $discountAmount,
-            'tax' => ($item['total_tax_amount'] instanceof Money) ? $item['total_tax_amount']->getAmount() : $item['total_tax_amount'],
-            'total' => ($item['net_total'] instanceof Money) ? $item['net_total']->getAmount() : $item['net_total'],
-            'product_id' => $item['id'],
-        ]);
-    }
 }

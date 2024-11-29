@@ -15,4 +15,7 @@ Route::middleware(['auth:customer'])->group(function () {
 
 });
 
-Route::match(['get', 'post'], 'confirm-payment/{payment:receipt}', [OrderActionController::class, 'confirmPayment'])->name('confirm.payment');
+Route::match(['get', 'post'], 'confirm-order/{order:uuid}', [OrderActionController::class, 'confirmOrder'])->name('confirm.checkout.order');
+
+
+//Route::match(['get', 'post'], 'confirm-payment/{payment:receipt}', [OrderActionController::class, 'confirmPayment'])->name('confirm.payment');

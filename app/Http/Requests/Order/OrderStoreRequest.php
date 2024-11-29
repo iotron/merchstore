@@ -23,7 +23,7 @@ class OrderStoreRequest extends FormRequest
     {
         return [
 
-            'payment_provider_id' => 'int|required',
+            'provider' => 'nullable|string',
             'shipping_address_id' => 'int|required',
             'billing_address_id' => 'int|required_if:shipping_is_billing,false',
             'coupon' => 'string|nullable',
@@ -34,8 +34,8 @@ class OrderStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'payment_provider_id.required' => 'payment method id is required!',
-            'payment_provider_id.int' => 'payment method id must be an integer!',
+            'provider.string' => 'payment method must be string. eg: razorpay!',
+//            'payment_provider_id.int' => 'payment method id must be an integer!',
             'shipping_address_id.required' => 'delivery address id is required!',
             'shipping_address_id.int' => 'delivery address id must be an integer!',
 

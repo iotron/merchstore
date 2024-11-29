@@ -8,9 +8,10 @@ use App\Http\Requests\Order\OrderConfirmRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
-use App\Services\OrderService\OrderConfirmService;
+use App\Models\Payment\PaymentProvider;
+use App\Services\BackupServices\OrderService\OrderConfirmService;
+use App\Services\BackupServices\OrderService\Return\OrderReturnRefundService;
 use App\Services\OrderService\OrderCreationService;
-use App\Services\OrderService\Return\OrderReturnRefundService;
 use App\Services\PaymentService\PaymentService;
 use App\Services\ShippingService\ShippingService;
 use Illuminate\Foundation\Application;
@@ -21,7 +22,7 @@ use Illuminate\Routing\Redirector;
 
 class OrderActionController extends Controller
 {
-    public PaymentService $paymentService;
+
 
     public ShippingService $shippingService;
 
@@ -43,8 +44,63 @@ class OrderActionController extends Controller
 
     public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|RedirectResponse
     {
-        dd($cart);
+        // Validate Request
+        $validate = $request->validated();
+        if ($cart->getTotalQuantity() <= 0) {
+            return response()->json(['success' => false, 'message' => 'cart empty!'], 403);
+        }
+
+        // Addresses For Shipping
+
+        // Validate Delivery Address (auth)
+        $shippingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['shipping_address_id']);
+        // Validate Shipping Method
+        if (is_null($shippingAddress)) {
+            return response()->json(['status' => false, 'message' => 'shipping address does not exist'], 422);
+        }
+
+        // Check Shipping Is Billing
+        if ($validate['shipping_is_billing']) {
+            $billingAddress = $shippingAddress;
+        } else {
+            $billingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['billing_address_id']);
+        }
+
+        // Validate Cart
+        $cartMeta = $cart->getMeta();
+        if (!empty($cartMeta['error']))
+        {
+            return response()->json(['success' => false, 'message' => implode(', ',$cartMeta['error'])], 403);
+        }
+
+        // Placing New Order
+        if (!in_array($request->provider,[PaymentProvider::CASH,PaymentProvider::RAZORPAY]))
+        {
+            return response()->json(['success' => false, 'message' => 'unknown provider given'], 403);
+        }
+
+        return OrderCreationService::make()
+            ->create($cart)
+            ->setCartMeta($cartMeta)
+            ->setProvider($request->provider)
+            ->setShippingAddress($shippingAddress)
+            ->setBillingAddress($billingAddress)
+            ->checkout();
+
+
     }
+
+
+
+    public function confirmOrder(Order $order,OrderConfirmRequest $request)
+    {
+
+        dd($order,$request);
+
+
+    }
+
+
 
 
 //    public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|RedirectResponse

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\OrderService\Shipping;
+namespace App\Services\BackupServices\OrderService\Shipping;
 
 use App\Models\Order\Order;
 use App\Models\Order\OrderShipment;

@@ -97,7 +97,7 @@ class CartService
         if (!$this->isEmpty() && $this->couponModel) {
             $couponValidator = CartCouponValidator::make($this->couponModel);
             if ($couponValidator->validate($this->getTotalQuantity())) {
-                $cartCalculatorService->setCoupon($this->validCoupon, $this->couponModel);
+                $cartCalculatorService->setCoupon($this->couponModel);
             }else{
                 $this->errors = array_merge($this->errors,$couponValidator->getErrors());
             }
@@ -109,12 +109,13 @@ class CartService
             'tax' => new Money(0.00),
             'amount' => new Money(0.00),
             'totalQuantity' => $this->getTotalQuantity(),
-            'products' => []
+            'items' => []
         ];
 
         if (empty($this->errors))
         {
             $data = $cartCalculatorService->get($data);
+            dd($data);
         }
 
 
