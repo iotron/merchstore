@@ -22,56 +22,66 @@ class PaymentProviderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->placeholder('Type Provider Name')
-                    ->lazy()
-                    ->afterStateUpdated(function ($state, Set $set) {
-                        $set('code', Str::slug($state));
-                    })
-                    ->hint('Max: 100')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->placeholder('Type Provider Code')
-                    ->hint('Max: 100')
-                    ->maxLength(100),
-                Forms\Components\Select::make('service_provider')
-                    ->columnSpanFull()
-                    ->placeholder('Select a service provider')
-                    ->options(PaymentProvider::AVAILABLE_PROVIDERS),
+                Forms\Components\Section::make('General Information')
+                    ->aside()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->lazy()
+                            ->placeholder('Type Payment Provider Name')
+                            ->afterStateUpdated(function (Forms\Set $set, $state) {
+                                $set('url', Str::slug($state));
+                            })
+                            ->hint('Max: 200')
+                            ->maxLength(200),
 
-                Forms\Components\TextInput::make('key')
-                    ->placeholder('Type Provider Api Key/ID')
-                    ->hint('Max: 255')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('secret')
-                    ->placeholder('Type Provider Api Secret')
-                    ->hint('Max: 255')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('webhook')
-                    ->columnSpanFull()
-                    ->placeholder('Type Provider Api Webhook Address')
-                    ->hint('Max: 255')
-                    ->maxLength(255),
+                        Forms\Components\TextInput::make('url')
+                            ->required()
+                            ->placeholder('Auto filled with name')
+                            ->maxLength(255),
 
-                Forms\Components\Grid::make([
-                    'md' => 3,
-                ])->schema([
-                    Forms\Components\Toggle::make('is_primary')
-                        ->required(),
-                    Forms\Components\Toggle::make('has_api')
-                        ->required(),
-                    Forms\Components\Toggle::make('status')
-                        ->required(),
-                ]),
+                    ]),
 
-                Forms\Components\Textarea::make('desc')
-                    ->label('Description')
-                    ->maxLength(60000)
-                    ->hint('Max: 60K')
-                    ->placeholder('Type Provider Details')
-                    ->columnSpanFull(),
+                Forms\Components\Section::make('Manage Configuration')
+                    ->aside()
+                    ->columns(2)
+                    ->schema([
+
+                        Forms\Components\Toggle::make('status')
+                            ->required(),
+                        Forms\Components\Toggle::make('is_primary')
+                            ->label(__('Primary'))
+                            ->required(),
+
+                    ]),
+
+
+                Forms\Components\Section::make('Api Configuration')
+                    ->aside()
+                    ->schema([
+                        Forms\Components\TextInput::make('key')
+                            ->label('Api Key')
+                            ->maxLength(255)
+                            ->hint('Max : 255 characters')
+                            ->placeholder('Type Payment Provider Api Key')
+                            ->columnSpanFull()
+                            ->nullable(),
+                        Forms\Components\TextInput::make('secret')
+                            ->label('Api Secret')
+                            ->maxLength(255)
+                            ->hint('Max : 255 characters')
+                            ->placeholder('Type Payment Provider Api Secret')
+                            ->columnSpanFull()
+                            ->nullable(),
+
+                        Forms\Components\TextInput::make('webhook')
+                            ->label('Api WebHook')
+                            ->maxLength(255)
+                            ->hint('Max : 255 characters')
+                            ->placeholder('Type Payment Provider Api WebHook')
+                            ->columnSpanFull()
+                            ->nullable()
+                    ])
             ]);
     }
 
