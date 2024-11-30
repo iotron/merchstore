@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
+    protected static ?string $recordRouteKeyName = 'uuid';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -85,8 +86,8 @@ class OrderResource extends Resource
         return [
             'index' => Pages\ListOrders::route('/'),
             // 'create' => Pages\CreateOrder::route('/create'),
-            'view' => Pages\ViewOrder::route('/{record}'),
-            'edit' => Pages\EditOrder::route('/{record}/edit'),
+            'view' => Pages\ViewOrder::route('/{record:uuid}'),
+            'edit' => Pages\EditOrder::route('/{record:uuid}/edit'),
         ];
     }
 }
