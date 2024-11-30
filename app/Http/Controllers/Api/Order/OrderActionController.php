@@ -100,6 +100,8 @@ class OrderActionController extends Controller
         $payment = $order->payment;
         // default Laravel Razorpay Payment Provider
         $paymentVerified = LaravelRazorpay::make()->verify()->viaCallback($request);
+
+
         if ($paymentVerified && \App\Services\OrderService\OrderConfirmService::make($order)->validate())
         {
             //Send Notification To Event Manager

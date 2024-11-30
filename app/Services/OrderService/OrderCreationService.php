@@ -133,15 +133,16 @@ class OrderCreationService
         $this->order = $this->createOrder();
 
         // New Order Request From Payment Provider
-        $providerOrderArray = [];
-        if ($this->provider != PaymentProvider::CASH)
+
+        if (!$this->order->is_cod)
         {
             // init provider order for payment
             $providerOrderArray = $this->getGeneratedProviderOrder();
+            // Make Payment For Order
+            $this->payment = $this->createAnPendingPayment($providerOrderArray);
         }
 
-        // Make Payment For Order
-        $this->payment = $this->createAnPendingPayment($providerOrderArray);
+
 
         // Attach Products
 
@@ -240,7 +241,7 @@ class OrderCreationService
 
         $responseArray = LaravelRazorpay::make()->order()->create([
             'receipt' => $this->order->uuid,
-            'amount' => (integer) $this->cartMeta['net_total_amount'],
+            'amount' => (new Money($this->order->total))->getAmount(),
             'currency' => $this->cartMeta['currency'],
         ]);
 

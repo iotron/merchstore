@@ -8,6 +8,7 @@ use App\Models\Customer\Customer;
 use App\Models\Localization\Address;
 use App\Models\Payment\Payment;
 use App\Models\Payment\Refund;
+use App\Models\Promotion\VoucherCode;
 use App\Models\Traits\HasUnique;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -101,6 +102,10 @@ class Order extends Model
 
 
 
+    public function voucher_code(): BelongsTo
+    {
+        return $this->belongsTo(VoucherCode::class,'voucher','code');
+    }
 
 
     public function customer(): BelongsTo
