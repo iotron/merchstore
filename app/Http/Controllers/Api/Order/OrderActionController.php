@@ -117,88 +117,21 @@ class OrderActionController extends Controller
 
 
 
-//    public function placeOrder(OrderStoreRequest $request, Cart $cart): JsonResponse|RedirectResponse
-//    {
-//
-//        // Validate Request
-//        $validate = $request->validated();
-//
-//        // Check If Coupon Presence (Voucher)
-//        if (isset($validate['coupon']) && ! empty($validate['coupon'])) {
-//            // Apply Coupon In Cart
-//            $cart->addCoupon($validate['coupon']);
-//        }
-//
-//        // Validate Delivery Address (auth)
-//        $shippingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['shipping_address_id']);
-//        // Validate Shipping Method
-//        if (is_null($shippingAddress)) {
-//            return response()->json(['status' => false, 'message' => 'shipping address does not exist'], 422);
-//        }
-//        // Check Shipping Is Billing
-//        if ($validate['shipping_is_billing']) {
-//            $billingAddress = $shippingAddress;
-//        } else {
-//            $billingAddress = auth('customer')->user()->addresses()->firstWhere('id', $validate['billing_address_id']);
-//        }
-//
-//        // Can not Place Order With Empty Cart (changed option old cart for stock)
-//        if ($cart->getTotalQuantity() <= 0) {
-//            return response()->json(['success' => false, 'message' => 'cart empty!'], 403);
-//        }
-//
-//        // Finish Cart Calculation
-//        $cartMeta = $cart->getMeta();
-//        // Check Cart For Errors
-//        if ($cart->getErrors()) {
-//            return response()->json(['success' => false, 'message' => $cart->getErrors()], 403);
-//        }
-//
-//        // Found Payment Provider
-//        $paymentProvider = $this->paymentService->getAllProvidersModel()->firstWhere('id', '=', $validate['payment_provider_id']);
-//
-//        // Validate Payment Method
-//        if (is_null($paymentProvider)) {
-//            return response()->json(['status' => false, 'message' => 'payment service does not exist'], 422);
-//        }
-//        if (! $paymentProvider->status) {
-//            return response()->json(['status' => false, 'message' => 'please choose another payment service'], 422);
-//        }
-//        // Load Payment Provider Service
-//        $paymentProviderService = $this->paymentService->provider($paymentProvider->code)->getProvider();
-//
-//        // Order UUID Generation
-//        $uuid = $this->generateUniqueID();
-//        if (is_null($uuid)) {
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'unable to generate unique order id, try again!',
-//            ], 409);
-//        }
-//
-//        // Order Place Process Start
-//        $cartCustomer = $cart->getCustomer();
-//        $orderCreation = new OrderCreationService($paymentProviderService, $cartCustomer, $cartMeta);
-//        $orderCreation->placeOrder($uuid, $shippingAddress, $billingAddress);
-//        // Clean Cart Attributes
-//        $cart->reset();
-//
-//        // Return Based On Error
-//        if (! is_null($orderCreation->getError())) {
-//            // Failure
-//            return response()->json([
-//                'success' => true,
-//                'message' => $orderCreation->getError(),
-//            ], 409);
-//        } else {
-//            // Success
-//            //            dd('order success');
-//            return redirect()->to(($orderCreation->isCashOnDelivery()) ?
-//                config('app.client_url').'/orders/'.$orderCreation->getOrder()->uuid :
-//                route('payment.visit', ['payment' => $orderCreation->getPayment()->receipt]));
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function confirmPayment(Payment $payment, OrderConfirmRequest $request): Application|JsonResponse|Redirector|RedirectResponse|\Illuminate\Contracts\Foundation\Application
     {

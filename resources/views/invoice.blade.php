@@ -63,12 +63,12 @@
 
                     <h3>{{ ucwords($orderProduct->product->name) }} </h3>
                 </td>
-                <td class="unit">{{ $orderProduct->product->price->formatted() }}</td>
+                <td class="unit">{{ \App\Services\MoneyServices\Money::format($orderProduct->product->price) }}</td>
 
-                <td class="center">{{ $orderProduct->tax->formatted() }}</td>
+                <td class="center">{{ \App\Services\MoneyServices\Money::format($orderProduct->tax) }}</td>
 
                 <td class="qty">{{ $orderProduct->quantity }}</td>
-                <td class="total">{{ $orderProduct->product->price->multiplyOnce($orderProduct->quantity)->formatted()}}</td>
+                <td class="total">{{ (new \App\Services\MoneyServices\Money($orderProduct->product->price))->multiplyOnce($orderProduct->quantity)->formatted()}}</td>
 
                 {{--                <td class="center">--}}
                 {{--                    @if( $orderProduct->amount instanceof \App\Helpers\Money\Money)--}}
@@ -79,27 +79,27 @@
                 {{--                </td>--}}
 
                 <td class="center">
-                    @if($orderProduct->discount instanceof \App\Services\Iotron\MoneyService\Money)
+                    @if($orderProduct->discount instanceof \App\Services\MoneyServices\Money)
                         {{$orderProduct->discount->formatted()}}
                     @else
-                        {{\App\Services\Iotron\MoneyService\Money::format($orderProduct->discount)}}
+                        {{\App\Services\MoneyServices\Money::format($orderProduct->discount)}}
                     @endif
                 </td>
 
                 <td class="center">
-                    @if($orderProduct->tax instanceof \App\Services\Iotron\MoneyService\Money)
+                    @if($orderProduct->tax instanceof \App\Services\MoneyServices\Money)
                         {{$orderProduct->tax->formatted()}}
                     @else
-                        {{\App\Services\Iotron\MoneyService\Money::format($orderProduct->tax)}}
+                        {{\App\Services\MoneyServices\Money::format($orderProduct->tax)}}
                     @endif
                 </td>
 
 
                 <td class="total">
-                    @if($orderProduct->total instanceof \App\Services\Iotron\MoneyService\Money)
+                    @if($orderProduct->total instanceof \App\Services\MoneyServices\Money)
                         {{$orderProduct->total->formatted()}}
                     @else
-                        {{\App\Services\Iotron\MoneyService\Money::format($orderProduct->total)}}
+                        {{\App\Services\MoneyServices\Money::format($orderProduct->total)}}
                     @endif
                 </td>
 
@@ -115,28 +115,28 @@
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2">SUBTOTAL</td>
-            <td>{{ $order->subtotal->formatted() }}</td>
+            <td>{{ \App\Services\MoneyServices\Money::format($order->subtotal) }}</td>
         </tr>
         <tr>
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2">DISCOUNT</td>
-            <td>{{ $order->discount->formatted()}}</td>
+            <td>{{ \App\Services\MoneyServices\Money::format($order->discount)}}</td>
         </tr>
         <tr>
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2">TOTAL TAX</td>
-            <td>{{ $order->tax->formatted()}}</td>
+            <td>{{ \App\Services\MoneyServices\Money::format($order->tax)}}</td>
         </tr>
         <tr>
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2"></td>
             <td colspan="2">GRAND TOTAL</td>
-            <td>{{ $order->total->formatted()}}</td>
+            <td>{{ \App\Services\MoneyServices\Money::format($order->total)}}</td>
         </tr>
         </tfoot>
 
